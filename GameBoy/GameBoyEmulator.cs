@@ -6,11 +6,11 @@ namespace GameBoy
 {
     class GameBoyEmulator
     {
-        private Random _rng;
+        private CPU _cpu;
 
         public GameBoyEmulator()
         {
-            _rng = new Random();
+            _cpu = new CPU();
 
             Console.CursorVisible = false;
             Console.WriteLine("Staring Game Boy Emulator...");
@@ -31,9 +31,8 @@ namespace GameBoy
             {
                 if (running)
                 {
-                    // TODO: run command
-                    Thread.Sleep(100);
-                    PrintCpuDebug();
+                    Thread.Sleep(500);
+                    Step();
                 }
 
                 if (Console.KeyAvailable)
@@ -41,44 +40,54 @@ namespace GameBoy
 
                     var key = Console.ReadKey(true).Key;
 
-                    if (key == ConsoleKey.Escape)
+                    if (key == ConsoleKey.Escape || key == ConsoleKey.Q)
                     {
                         quit = true;
                     }
                     else if (key == ConsoleKey.N)
                     {
-                        // TODO: run command
-                        PrintCpuDebug();
+                        Step();
+                    }
+                    else if (key == ConsoleKey.Spacebar)
+                    {
+                        running = !running;
                     }
                     else if (key == ConsoleKey.R)
                     {
-                        running = !running;
+                        running = false;
+                        _cpu.Reset();
+                        PrintCpuDebug();
                     }
                 }
             }
         }
 
+        private void Step()
+        {
+            _cpu.RunCommand();
+            PrintCpuDebug();
+        }
+
         private void PrintCpuDebug()
         {
-            var pc = _rng.Next(0, 0xFFFF);
-            var sp = _rng.Next(0, 0xFFFF);
-            var a = _rng.Next(0, 0xFF);
-            var f = _rng.Next(0, 0xFF);
-            var b = _rng.Next(0, 0xFF);
-            var c = _rng.Next(0, 0xFF);
-            var d = _rng.Next(0, 0xFF);
-            var e = _rng.Next(0, 0xFF);
-            var h = _rng.Next(0, 0xFF);
-            var l = _rng.Next(0, 0xFF);
-
             Console.SetCursorPosition(0, 2);
 
+            Console.WriteLine($"PC: 0x{_cpu.PC:X4}, SP: 0x{_cpu.SP:X4}");
+            Console.WriteLine($"Last command: {_cpu.PreviousCommand}");
+            Console.WriteLine("----");
             Console.WriteLine($"Registers");
-            Console.WriteLine($"A: 0x{a:X2} F: 0x{f:X2}");
-            Console.WriteLine($"B: 0x{b:X2} C: 0x{c:X2}");
-            Console.WriteLine($"D: 0x{d:X2} E: 0x{e:X2}");
-            Console.WriteLine($"H: 0x{h:X2} L: 0x{l:X2}");
-            Console.WriteLine($"PC: 0x{pc:X4}, SP: 0x{sp:X4}");
+            Console.WriteLine($"A: 0x{_cpu.a:X2} F: 0x{_cpu.f:X2}");
+            Console.WriteLine("----");
+            Console.WriteLine($"B: 0x{_cpu.b:X2} C: 0x{_cpu.c:X2}");
+            Console.WriteLine($"D: 0x{_cpu.d:X2} E: 0x{_cpu.e:X2}");
+            Console.WriteLine($"H: 0x{_cpu.h:X2} L: 0x{_cpu.l:X2}");
+            Console.WriteLine("----");
+
+            Console.WriteLine("Memory");
+            for (int i = 0; i < _cpu.Memory.Length; i++)
+            {
+                Console.WriteLine($"{(_cpu.PC == i ? "->" : "  ")} { _cpu.Memory[i]:X2}");
+            }
         }
     }
 }
