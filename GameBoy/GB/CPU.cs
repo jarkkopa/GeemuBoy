@@ -23,8 +23,7 @@ namespace GameBoy.GB
         private int cycles = 0;
 
         private Dictionary<byte, Action> _opCodes = new Dictionary<byte, Action>();
-
-        public string PreviousCommand { get; private set; }
+        private Dictionary<byte, string> _opCodeNames = new Dictionary<byte, string>();
 
         public CPU()
         {
@@ -71,24 +70,38 @@ namespace GameBoy.GB
             }
         }
 
+        public string GetOpCodeName(byte code)
+        {
+            if (_opCodeNames.ContainsKey(code))
+            {
+                return _opCodeNames[code];
+            }
+            return "";
+        }
+
         private void CreateOpCodes()
         {
             // 8-bit loads
-            _opCodes.Add(0x06, () => LoadImmediate8(ref b, 8, "LD b, n"));
-            _opCodes.Add(0x0E, () => LoadImmediate8(ref c, 8, "LD c, n"));
-            _opCodes.Add(0x16, () => LoadImmediate8(ref d, 8, "LD d, n"));
-            _opCodes.Add(0x1E, () => LoadImmediate8(ref e, 8, "LD e, n"));
-            _opCodes.Add(0x26, () => LoadImmediate8(ref h, 8, "LD h, n"));
-            _opCodes.Add(0x2E, () => LoadImmediate8(ref l, 8, "LD l, n"));
+            CreateOpCode(0x06, () => LoadImmediate8(ref b, 8), "LD b, n");
+            CreateOpCode(0x0E, () => LoadImmediate8(ref c, 8), "LD c, n");
+            CreateOpCode(0x16, () => LoadImmediate8(ref d, 8), "LD d, n");
+            CreateOpCode(0x1E, () => LoadImmediate8(ref e, 8), "LD e, n");
+            CreateOpCode(0x26, () => LoadImmediate8(ref h, 8), "LD h, n");
+            CreateOpCode(0x2E, () => LoadImmediate8(ref l, 8), "LD l, n");
         }
 
-        private void LoadImmediate8(ref byte dest, int cycles, string name)
+        private void CreateOpCode(byte command, Action action, string name)
+        {
+            _opCodes.Add(command, action);
+            _opCodeNames.Add(command, name);
+        }
+
+        private void LoadImmediate8(ref byte dest, int cycles)
         {
             PC++;
             dest = Memory[PC];
             PC++;
             this.cycles += cycles;
-            PreviousCommand = name;
         }
     }
 }

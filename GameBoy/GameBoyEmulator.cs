@@ -56,6 +56,7 @@ namespace GameBoy
                     {
                         running = false;
                         _cpu.Reset();
+                        Console.Clear();
                         PrintCpuDebug();
                     }
                 }
@@ -73,7 +74,6 @@ namespace GameBoy
             Console.SetCursorPosition(0, 2);
 
             Console.WriteLine($"PC: 0x{_cpu.PC:X4}, SP: 0x{_cpu.SP:X4}");
-            Console.WriteLine($"Last command: {_cpu.PreviousCommand}");
             Console.WriteLine("----");
             Console.WriteLine($"Registers");
             Console.WriteLine($"A: 0x{_cpu.a:X2} F: 0x{_cpu.f:X2}");
@@ -86,7 +86,9 @@ namespace GameBoy
             Console.WriteLine("Memory");
             for (int i = 0; i < _cpu.Memory.Length; i++)
             {
-                Console.WriteLine($"{(_cpu.PC == i ? "->" : "  ")} { _cpu.Memory[i]:X2}");
+                bool isNextOpCode = _cpu.PC == i;
+                var data = _cpu.Memory[i];
+                Console.WriteLine($"{(isNextOpCode ? "->" : "  ")} { data:X2} {(isNextOpCode ? _cpu.GetOpCodeName(data) : "")}");
             }
         }
     }
