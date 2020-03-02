@@ -4,7 +4,7 @@ using System.Text;
 
 namespace GameBoy.GB
 {
-    class CPU
+    public class CPU
     {
         public byte a;
         public byte b;
@@ -20,31 +20,18 @@ namespace GameBoy.GB
 
         public byte[] Memory { get; private set; }
 
-        private int cycles = 0;
+        //private int cycles = 0;
+        public int Cycles { get; set; }
 
         private Dictionary<byte, Action> _opCodes = new Dictionary<byte, Action>();
         private Dictionary<byte, string> _opCodeNames = new Dictionary<byte, string>();
 
-        public CPU()
+        public CPU(byte[] memory)
         {
             CreateOpCodes();
 
             // TODO Implement memory in own class
-            Memory = new byte[]
-            {
-                0x06, // LD B, 0xFE
-                0x06,
-                0x0E, // LD C, 0x08
-                0x0E,
-                0x16,  // LD D, 0x16
-                0x16,
-                0x1E, // LD E, 0x1E
-                0x1E,
-                0x26, // LD H, 0x26
-                0x26,
-                0x2E, // LD L, 0x2E
-                0x2E,
-            };
+            Memory = memory;
         }
 
         public void Reset()
@@ -66,7 +53,9 @@ namespace GameBoy.GB
         {
             if (PC < Memory.Length)
             {
-                _opCodes[Memory[PC]]();
+                var code = Memory[PC];
+                PC++;
+                _opCodes[code]();
             }
         }
 
@@ -96,12 +85,11 @@ namespace GameBoy.GB
             _opCodeNames.Add(command, name);
         }
 
-        private void LoadImmediate8(ref byte dest, int cycles)
+        public void LoadImmediate8(ref byte dest, int cycles)
         {
-            PC++;
             dest = Memory[PC];
             PC++;
-            this.cycles += cycles;
+            Cycles += cycles;
         }
     }
 }

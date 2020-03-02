@@ -10,7 +10,22 @@ namespace GameBoy
 
         public GameBoyEmulator()
         {
-            _cpu = new CPU();
+            var memory = new byte[]
+            {
+                0x06, // LD B, 0xFE
+                0x06,
+                0x0E, // LD C, 0x08
+                0x0E,
+                0x16, // LD D, 0x16
+                0x16,
+                0x1E, // LD E, 0x1E
+                0x1E,
+                0x26, // LD H, 0x26
+                0x26,
+                0x2E, // LD L, 0x2E
+                0x2E,
+            };
+            _cpu = new CPU(memory);
 
             Console.CursorVisible = false;
             Console.WriteLine("Staring Game Boy Emulator...");
@@ -88,7 +103,7 @@ namespace GameBoy
             {
                 bool isNextOpCode = _cpu.PC == i;
                 var data = _cpu.Memory[i];
-                Console.WriteLine($"{(isNextOpCode ? "->" : "  ")} { data:X2} {(isNextOpCode ? _cpu.GetOpCodeName(data) : "")}");
+                Console.WriteLine($"{(isNextOpCode ? "->" : "  ")} 0x{ data:X2} {(isNextOpCode ? _cpu.GetOpCodeName(data) : "")}");
             }
         }
     }
