@@ -91,11 +91,11 @@ namespace GameBoy
             Console.WriteLine($"PC: 0x{_cpu.PC:X4}, SP: 0x{_cpu.SP:X4}");
             Console.WriteLine("----");
             Console.WriteLine($"Registers");
-            Console.WriteLine($"A: 0x{_cpu.a:X2} F: 0x{_cpu.f:X2}");
+            Console.WriteLine($"A: 0x{_cpu.A:X2} F: 0x{_cpu.F:X2}");
             Console.WriteLine("----");
-            Console.WriteLine($"B: 0x{_cpu.b:X2} C: 0x{_cpu.c:X2}");
-            Console.WriteLine($"D: 0x{_cpu.d:X2} E: 0x{_cpu.e:X2}");
-            Console.WriteLine($"H: 0x{_cpu.h:X2} L: 0x{_cpu.l:X2}");
+            Console.WriteLine($"B: 0x{_cpu.B:X2} C: 0x{_cpu.C:X2}");
+            Console.WriteLine($"D: 0x{_cpu.D:X2} E: 0x{_cpu.E:X2}");
+            Console.WriteLine($"H: 0x{_cpu.H:X2} L: 0x{_cpu.L:X2}");
             Console.WriteLine("----");
 
             Console.WriteLine("Memory");

@@ -21,28 +21,28 @@ namespace GameBoy.GB.Tests
             });
 
             cpu.RunCommand();
-            Assert.Equal((byte)0x01, cpu.b);
+            Assert.Equal((byte)0x01, cpu.B);
             Assert.Equal(8, cpu.Cycles);
 
             cpu.RunCommand();
-            Assert.Equal((byte)0x02, cpu.c);
-            Assert.Equal(16, cpu.Cycles);
+            Assert.Equal((byte)0x02, cpu.C);
+            Assert.Equal(8, cpu.Cycles);
 
             cpu.RunCommand();
-            Assert.Equal((byte)0x03, cpu.d);
-            Assert.Equal(24, cpu.Cycles);
+            Assert.Equal((byte)0x03, cpu.D);
+            Assert.Equal(8, cpu.Cycles);
 
             cpu.RunCommand();
-            Assert.Equal((byte)0x04, cpu.e);
-            Assert.Equal(32, cpu.Cycles);
+            Assert.Equal((byte)0x04, cpu.E);
+            Assert.Equal(8, cpu.Cycles);
 
             cpu.RunCommand();
-            Assert.Equal((byte)0x05, cpu.h);
-            Assert.Equal(40, cpu.Cycles);
+            Assert.Equal((byte)0x05, cpu.H);
+            Assert.Equal(8, cpu.Cycles);
 
             cpu.RunCommand();
-            Assert.Equal((byte)0x06, cpu.l);
-            Assert.Equal(48, cpu.Cycles);
+            Assert.Equal((byte)0x06, cpu.L);
+            Assert.Equal(8, cpu.Cycles);
         }
     }
 }

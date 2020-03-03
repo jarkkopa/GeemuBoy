@@ -1,30 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace GameBoy.GB
 {
     public class CPU
     {
-        public byte a;
-        public byte b;
-        public byte c;
-        public byte d;
-        public byte e;
-        public byte f;
-        public byte h;
-        public byte l;
+        public byte A;
+        public byte B;
+        public byte C;
+        public byte D;
+        public byte E;
+        public byte F;
+        public byte H;
+        public byte L;
 
         public ushort PC { get; private set; }
         public ushort SP { get; private set; }
 
         public byte[] Memory { get; private set; }
 
-        //private int cycles = 0;
-        public int Cycles { get; set; }
+        public int Cycles { get; private set; }
 
-        private Dictionary<byte, Action> _opCodes = new Dictionary<byte, Action>();
-        private Dictionary<byte, string> _opCodeNames = new Dictionary<byte, string>();
+        private readonly Dictionary<byte, Action> _opCodes = new Dictionary<byte, Action>();
+        private readonly Dictionary<byte, string> _opCodeNames = new Dictionary<byte, string>();
 
         public CPU(byte[] memory)
         {
@@ -39,14 +37,14 @@ namespace GameBoy.GB
             PC = 0;
             SP = 0;
 
-            a = 0;
-            b = 0;
-            c = 0;
-            d = 0;
-            e = 0;
-            f = 0;
-            h = 0;
-            l = 0;
+            A = 0;
+            B = 0;
+            C = 0;
+            D = 0;
+            E = 0;
+            F = 0;
+            H = 0;
+            L = 0;
         }
 
         public void RunCommand()
@@ -70,13 +68,23 @@ namespace GameBoy.GB
 
         private void CreateOpCodes()
         {
-            // 8-bit loads
-            CreateOpCode(0x06, () => LoadImmediate8(ref b, 8), "LD b, n");
-            CreateOpCode(0x0E, () => LoadImmediate8(ref c, 8), "LD c, n");
-            CreateOpCode(0x16, () => LoadImmediate8(ref d, 8), "LD d, n");
-            CreateOpCode(0x1E, () => LoadImmediate8(ref e, 8), "LD e, n");
-            CreateOpCode(0x26, () => LoadImmediate8(ref h, 8), "LD h, n");
-            CreateOpCode(0x2E, () => LoadImmediate8(ref l, 8), "LD l, n");
+            // LD nn, n
+            CreateOpCode(0x06, () => LoadImmediate8(ref B), "LD b, n");
+            CreateOpCode(0x0E, () => LoadImmediate8(ref C), "LD c, n");
+            CreateOpCode(0x16, () => LoadImmediate8(ref D), "LD d, n");
+            CreateOpCode(0x1E, () => LoadImmediate8(ref E), "LD e, n");
+            CreateOpCode(0x26, () => LoadImmediate8(ref H), "LD h, n");
+            CreateOpCode(0x2E, () => LoadImmediate8(ref L), "LD l, n");
+
+            //LD r1, r2
+            CreateOpCode(0x7F, () => Copy(ref A, ref A), "LD A, A");
+            CreateOpCode(0x78, () => Copy(ref A, ref B), "LD A, B");
+            CreateOpCode(0x79, () => Copy(ref A, ref C), "LD A, C");
+            CreateOpCode(0x7A, () => Copy(ref A, ref D), "LD A, D");
+            CreateOpCode(0x7B, () => Copy(ref A, ref E), "LD A, E");
+            CreateOpCode(0x7C, () => Copy(ref A, ref H), "LD A, H");
+            CreateOpCode(0x7D, () => Copy(ref A, ref L), "LD A, L");
+            CreateOpCode(0x7E, () => CopyFromAddress(ref A, BitUtils.BytesToUshort(H, L)), "LD A, (HL)");
         }
 
         private void CreateOpCode(byte command, Action action, string name)
@@ -85,11 +93,27 @@ namespace GameBoy.GB
             _opCodeNames.Add(command, name);
         }
 
-        public void LoadImmediate8(ref byte dest, int cycles)
+        public void LoadImmediate8(ref byte dest)
         {
             dest = Memory[PC];
             PC++;
-            Cycles += cycles;
+            Cycles = 8;
+        }
+
+        public void Copy(ref byte dest, ref byte source)
+        {
+            dest = source;
+            PC++;
+            Cycles = 4;
+        }
+
+        public void CopyFromAddress(ref byte dest, ushort address)
+        {
+            // TODO Use memory object
+            byte value = Memory[address];
+            dest = value;
+            PC++;
+            Cycles = 8;
         }
     }
 }
