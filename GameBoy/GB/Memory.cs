@@ -4,11 +4,11 @@ namespace GameBoy.GB
 {
     public class Memory
     {
-        public enum State { Boot, Normal }
+        public enum MapMode { Boot, Cartridge }
 
         private const ushort BOOT_ROM_LOCK_ADDRESS = 0xFF50;
 
-        private State state;
+        public MapMode RomMapMode { get; private set; }
 
         private byte[] bootRom;
         private byte[] cartridge;
@@ -51,7 +51,7 @@ namespace GameBoy.GB
         private byte[] oam = new byte[0xA0];
         /// <summary>
         /// I/O Registers
-        /// Address: FF00-FF7F
+        /// Address: FF00-FF4B
         /// 128 B
         /// </summary>
         private byte[] ioRegisters = new byte[0x80];
@@ -68,12 +68,12 @@ namespace GameBoy.GB
         /// </summary>
         private byte interruptEnableRegister;
 
-        public Memory(byte[] bootRom, byte[] cartridge, State initialState = State.Boot)
+        public Memory(byte[] bootRom, byte[] cartridge, MapMode initialMapMode = MapMode.Boot)
         {
             this.bootRom = bootRom;
             this.cartridge = cartridge;
 
-            state = initialState;
+            RomMapMode = initialMapMode;
 
             for (ushort i = 0; i < cartridge.Length; i++)
             {
@@ -85,7 +85,7 @@ namespace GameBoy.GB
         {
             if (addr < 0x4000)
             {
-                if (state == State.Boot)
+                if (RomMapMode == MapMode.Boot && addr < bootRom.Length)
                 {
                     return bootRom[addr];
                 }
@@ -147,18 +147,18 @@ namespace GameBoy.GB
             }
         }
 
-        public void WriteByte(ushort addr, byte data)
-        {
-            WriteByte(addr, data, false);
-        }
+        //public void WriteByte(ushort addr, byte data)
+        //{
+        //    WriteByte(addr, data, false);
+        //}
 
-        private void WriteByte(ushort addr, byte data, bool canWriteRom)
+        public void WriteByte(ushort addr, byte data, bool overwriteRom = false)
         {
-            if (addr < 0x4000 && canWriteRom)
+            if (addr < 0x4000 && overwriteRom)
             {
                 rom[addr] = data;
             }
-            else if (addr < 0x8000 && canWriteRom)
+            else if (addr < 0x8000 && overwriteRom)
             {
                 romBank[addr - 0x4000] = data;
             }
@@ -194,16 +194,19 @@ namespace GameBoy.GB
             }
             else if (addr < 0xFF80)
             {
-                // Empty but unusable for I/O
-                throw new ArgumentException($"Could not write to unusable Game Boy memory address: {addr}");
+                if (addr == BOOT_ROM_LOCK_ADDRESS && data == 0b1 && RomMapMode == MapMode.Boot)
+                {
+                    RomMapMode = MapMode.Cartridge;
+                }
+                else
+                {
+                    // Empty but unusable for I/O
+                    throw new ArgumentException($"Could not write to unusable Game Boy memory address: 0x{addr:X4}");
+                }
             }
             else if (addr < 0xFFFF)
             {
                 highRam[addr - 0xFF80] = data;
-                if (addr == BOOT_ROM_LOCK_ADDRESS && data == 0b1 && state == State.Boot)
-                {
-                    state = State.Normal;
-                }
             }
             else if (addr == 0xFFFF)
             {
