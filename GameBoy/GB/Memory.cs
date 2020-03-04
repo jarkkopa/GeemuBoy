@@ -4,6 +4,12 @@ namespace GameBoy.GB
 {
     public class Memory
     {
+        public enum State { Boot, Normal }
+
+        private const ushort BOOT_ROM_LOCK_ADDRESS = 0xFF50;
+
+        private State state;
+
         private byte[] bootRom;
         private byte[] cartridge;
 
@@ -56,26 +62,37 @@ namespace GameBoy.GB
         /// </summary>
         private byte[] highRam = new byte[0x7F];
         /// <summary>
-        /// Interrupts Enable register FFFF
+        /// Interrupts Enable register
         /// Address: FFFF-FFFF
-        /// 1 b
+        /// 1 B
         /// </summary>
-        private byte interruptsRegister;
+        private byte interruptEnableRegister;
 
-
-        public Memory(byte[] bootRom, byte[] cartridge)
+        public Memory(byte[] bootRom, byte[] cartridge, State initialState = State.Boot)
         {
             this.bootRom = bootRom;
             this.cartridge = cartridge;
 
-            // TODO: Read boot rom and cartridge to memory
+            state = initialState;
+
+            for (ushort i = 0; i < cartridge.Length; i++)
+            {
+                WriteByte(i, cartridge[i], true);
+            }
         }
 
         public byte ReadByte(ushort addr)
         {
             if (addr < 0x4000)
             {
-                return rom[addr];
+                if (state == State.Boot)
+                {
+                    return bootRom[addr];
+                }
+                else
+                {
+                    return rom[addr];
+                }
             }
             else if (addr < 0x8000)
             {
@@ -122,7 +139,7 @@ namespace GameBoy.GB
             }
             else if (addr == 0xFFFF)
             {
-                return interruptsRegister;
+                return interruptEnableRegister;
             }
             else
             {
@@ -130,12 +147,12 @@ namespace GameBoy.GB
             }
         }
 
-        public void WriteByte(byte data, ushort addr)
+        public void WriteByte(ushort addr, byte data)
         {
-            WriteByte(data, addr, false);
+            WriteByte(addr, data, false);
         }
 
-        private void WriteByte(byte data, ushort addr, bool canWriteRom)
+        private void WriteByte(ushort addr, byte data, bool canWriteRom)
         {
             if (addr < 0x4000 && canWriteRom)
             {
@@ -183,10 +200,14 @@ namespace GameBoy.GB
             else if (addr < 0xFFFF)
             {
                 highRam[addr - 0xFF80] = data;
+                if (addr == BOOT_ROM_LOCK_ADDRESS && data == 0b1 && state == State.Boot)
+                {
+                    state = State.Normal;
+                }
             }
             else if (addr == 0xFFFF)
             {
-                interruptsRegister = data;
+                interruptEnableRegister = data;
             }
             else
             {
