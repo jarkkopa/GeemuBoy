@@ -11,14 +11,16 @@ namespace GameBoy.GB.Tests
         [Fact()]
         public void LoadImmediate8Test()
         {
-            CPU cpu = new CPU(new byte[] {
+            var data = new byte[] {
                 0x06, 0x01, // LD B, 0x06
                 0x0E, 0x02, // LD C, 0x0E
                 0x16, 0x03, // LD D, 0x16
                 0x1E, 0x04, // LD E, 0x1E
                 0x26, 0x05, // LD H, 0x26
                 0x2E, 0x06, // LD L, 0x2E
-            });
+            };
+            var memory = new Memory(data);
+            CPU cpu = new CPU(memory);
 
             cpu.RunCommand();
             Assert.Equal((byte)0x01, cpu.B);

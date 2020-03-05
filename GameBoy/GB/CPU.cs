@@ -17,19 +17,19 @@ namespace GameBoy.GB
         public ushort PC { get; private set; }
         public ushort SP { get; private set; }
 
-        public byte[] Memory { get; private set; }
 
         public int Cycles { get; private set; }
+
+        public Memory Memory { get; private set; }
 
         private readonly Dictionary<byte, Action> _opCodes = new Dictionary<byte, Action>();
         private readonly Dictionary<byte, string> _opCodeNames = new Dictionary<byte, string>();
 
-        public CPU(byte[] memory)
+        public CPU(Memory memory)
         {
             CreateOpCodes();
 
-            // TODO Implement memory in own class
-            Memory = memory;
+            this.Memory = memory;
         }
 
         public void Reset()
@@ -49,11 +49,15 @@ namespace GameBoy.GB
 
         public void RunCommand()
         {
-            if (PC < Memory.Length)
+            var code = Memory.ReadByte(PC);
+            PC++;
+            if (_opCodes.ContainsKey(code))
             {
-                var code = Memory[PC];
-                PC++;
                 _opCodes[code]();
+            }
+            else
+            {
+                throw new Exception($"Trying to run opcode 0x{code:4}that is not implemented.");
             }
         }
 
@@ -95,7 +99,7 @@ namespace GameBoy.GB
 
         public void LoadImmediate8(ref byte dest)
         {
-            dest = Memory[PC];
+            dest = Memory.ReadByte(PC);
             PC++;
             Cycles = 8;
         }
@@ -109,8 +113,7 @@ namespace GameBoy.GB
 
         public void CopyFromAddress(ref byte dest, ushort address)
         {
-            // TODO Use memory object
-            byte value = Memory[address];
+            byte value = Memory.ReadByte(address);
             dest = value;
             PC++;
             Cycles = 8;

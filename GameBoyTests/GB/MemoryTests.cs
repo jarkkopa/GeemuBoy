@@ -12,7 +12,7 @@ namespace GameBoy.GB.Tests
         [Fact()]
         public void RomReadWriteTest()
         {
-            var memory = new Memory(new byte[0x80], new byte[0x4000], Memory.MapMode.Cartridge);
+            var memory = new Memory(new byte[0x4000]);
             ushort addrStart = 0x0000;
             ushort addrEnd = 0x3FFF;
 
@@ -26,7 +26,7 @@ namespace GameBoy.GB.Tests
         [Fact]
         public void RomBankReadWriteTest()
         {
-            var memory = new Memory(new byte[0x80], new byte[0x4000]);
+            var memory = new Memory(new byte[0x4000]);
             ushort addrStart = 0x4000;
             ushort addrEnd = 0x7FFF;
 
@@ -40,7 +40,7 @@ namespace GameBoy.GB.Tests
         [Fact]
         public void VideoRamReadWriteTest()
         {
-            var memory = new Memory(new byte[0x80], new byte[0x4000]);
+            var memory = new Memory(new byte[0x4000]);
             ushort addrStart = 0x8000;
             ushort addrEnd = 0x9FFF;
 
@@ -54,7 +54,7 @@ namespace GameBoy.GB.Tests
         [Fact]
         public void RamBankReadWriteTest()
         {
-            var memory = new Memory(new byte[0x80], new byte[0x4000]);
+            var memory = new Memory(new byte[0x4000]);
             ushort addrStart = 0xA000;
             ushort addrEnd = 0xBFFF;
 
@@ -68,7 +68,7 @@ namespace GameBoy.GB.Tests
         [Fact]
         public void WorkRamReadWriteTest()
         {
-            var memory = new Memory(new byte[0x80], new byte[0x4000]);
+            var memory = new Memory(new byte[0x4000]);
             ushort addrStart = 0xC000;
             ushort addrEnd = 0xDFFF;
 
@@ -82,7 +82,7 @@ namespace GameBoy.GB.Tests
         [Fact]
         public void OamReadWriteTest()
         {
-            var memory = new Memory(new byte[0x80], new byte[0x4000]);
+            var memory = new Memory(new byte[0x4000]);
             ushort addrStart = 0xFE00;
             ushort addrEnd = 0xFE9F;
 
@@ -96,7 +96,7 @@ namespace GameBoy.GB.Tests
         [Fact]
         public void ioRegistersReadWriteTest()
         {
-            var memory = new Memory(new byte[0x80], new byte[0x4000]);
+            var memory = new Memory(new byte[0x4000]);
             ushort addrStart = 0xFF00;
             ushort addrEnd = 0xFF4B;
 
@@ -110,7 +110,7 @@ namespace GameBoy.GB.Tests
         [Fact]
         public void highRamReadWriteTest()
         {
-            var memory = new Memory(new byte[0x80], new byte[0x4000]);
+            var memory = new Memory(new byte[0x4000]);
             ushort addrStart = 0xFF80;
             ushort addrEnd = 0xFFFE;
 
@@ -124,7 +124,7 @@ namespace GameBoy.GB.Tests
         [Fact]
         public void InterruptEnableRegisterReadWriteTest()
         {
-            var memory = new Memory(new byte[0x80], new byte[0x4000]);
+            var memory = new Memory(new byte[0x4000]);
             ushort addr = 0xFFFF;
 
             memory.WriteByte(addr, 0xFF);
@@ -138,7 +138,7 @@ namespace GameBoy.GB.Tests
             byte[] bootRom = Enumerable.Repeat((byte)0x10, 0x80).ToArray();
             byte[] cartridge = Enumerable.Repeat((byte)0xFF, 0x4000).ToArray();
 
-            var memory = new Memory(bootRom, cartridge, Memory.MapMode.Boot);
+            var memory = new Memory(cartridge, Memory.MapMode.Boot, bootRom);
 
             // Should read from boot rom
             Assert.Equal(0x10, memory.ReadByte(0x7F));

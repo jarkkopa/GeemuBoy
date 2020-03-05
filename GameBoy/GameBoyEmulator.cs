@@ -6,11 +6,22 @@ namespace GameBoy
 {
     class GameBoyEmulator
     {
+        private enum State
+        {
+            Stop,
+            Running,
+            Quit
+        }
+
         private CPU _cpu;
+
+        private State state = State.Stop;
+
+        private ushort memoryPrintLines = 0;
 
         public GameBoyEmulator()
         {
-            var memory = new byte[]
+            var cartridge = new byte[]
             {
                 0x06, // LD B, 0xFE
                 0x06,
@@ -25,6 +36,9 @@ namespace GameBoy
                 0x2E, // LD L, 0x2E
                 0x2E,
             };
+            memoryPrintLines = (ushort)cartridge.Length;
+
+            var memory = new Memory(cartridge);
             _cpu = new CPU(memory);
 
             Console.CursorVisible = false;
@@ -37,14 +51,13 @@ namespace GameBoy
         private void Run()
         {
 
-            bool quit = false;
-            bool running = false;
+
 
             PrintCpuDebug();
 
-            while (quit == false)
+            while (state != State.Quit)
             {
-                if (running)
+                if (state == State.Running)
                 {
                     Thread.Sleep(500);
                     Step();
@@ -57,7 +70,7 @@ namespace GameBoy
 
                     if (key == ConsoleKey.Escape || key == ConsoleKey.Q)
                     {
-                        quit = true;
+                        state = State.Quit;
                     }
                     else if (key == ConsoleKey.N)
                     {
@@ -65,11 +78,11 @@ namespace GameBoy
                     }
                     else if (key == ConsoleKey.Spacebar)
                     {
-                        running = !running;
+                        state = state == State.Running ? State.Stop : State.Running;
                     }
                     else if (key == ConsoleKey.R)
                     {
-                        running = false;
+                        state = State.Stop;
                         _cpu.Reset();
                         Console.Clear();
                         PrintCpuDebug();
@@ -80,8 +93,16 @@ namespace GameBoy
 
         private void Step()
         {
-            _cpu.RunCommand();
-            PrintCpuDebug();
+            try
+            {
+                _cpu.RunCommand();
+                PrintCpuDebug();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Stopped to opcode that is not implemented", e);
+                state = State.Stop;
+            }
         }
 
         private void PrintCpuDebug()
@@ -99,10 +120,10 @@ namespace GameBoy
             Console.WriteLine("----");
 
             Console.WriteLine("Memory");
-            for (int i = 0; i < _cpu.Memory.Length; i++)
+            for (ushort i = 0; i < Math.Min(memoryPrintLines, Memory.MAX_ADDR); i++)
             {
                 bool isNextOpCode = _cpu.PC == i;
-                var data = _cpu.Memory[i];
+                var data = _cpu.Memory.ReadByte(i);
                 Console.WriteLine($"{(isNextOpCode ? "->" : "  ")} 0x{ data:X2} {(isNextOpCode ? _cpu.GetOpCodeName(data) : "")}");
             }
         }

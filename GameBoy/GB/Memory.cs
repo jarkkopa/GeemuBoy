@@ -6,6 +6,8 @@ namespace GameBoy.GB
     {
         public enum MapMode { Boot, Cartridge }
 
+        public const ushort MAX_ADDR = 0xFFFF;
+
         private const ushort BOOT_ROM_LOCK_ADDRESS = 0xFF50;
 
         public MapMode RomMapMode { get; private set; }
@@ -68,7 +70,7 @@ namespace GameBoy.GB
         /// </summary>
         private byte interruptEnableRegister;
 
-        public Memory(byte[] bootRom, byte[] cartridge, MapMode initialMapMode = MapMode.Boot)
+        public Memory( byte[] cartridge, MapMode initialMapMode = MapMode.Cartridge, byte[] bootRom = null)
         {
             this.bootRom = bootRom;
             this.cartridge = cartridge;
