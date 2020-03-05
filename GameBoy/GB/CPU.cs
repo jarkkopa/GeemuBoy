@@ -107,7 +107,6 @@ namespace GameBoy.GB
         public void Copy(ref byte dest, ref byte source)
         {
             dest = source;
-            PC++;
             Cycles = 4;
         }
 
@@ -115,7 +114,6 @@ namespace GameBoy.GB
         {
             byte value = Memory.ReadByte(address);
             dest = value;
-            PC++;
             Cycles = 8;
         }
     }

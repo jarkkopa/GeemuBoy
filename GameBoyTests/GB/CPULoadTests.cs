@@ -46,5 +46,75 @@ namespace GameBoy.GB.Tests
             Assert.Equal((byte)0x06, cpu.L);
             Assert.Equal(8, cpu.Cycles);
         }
+
+        [Fact]
+        public void CopyToRegisterTest()
+        {
+            var data = new byte[] {
+                0x7F, // LD A, A
+                0x78, // LD A, B
+                0x79, // LD A, C
+                0x7A, // LD A, D
+                0x7B, // LD A, E
+                0x7C, // LD A, H
+                0x7D, // LD A, L
+            };
+            var memory = new Memory(data);
+            CPU cpu = new CPU(memory);
+            cpu.A = 0x01;
+            cpu.B = 0x02;
+            cpu.C = 0x03;
+            cpu.D = 0x04;
+            cpu.E = 0x05;
+            cpu.H = 0x06;
+            cpu.L = 0x07;
+
+            cpu.RunCommand();
+            Assert.Equal(0x01, cpu.A);
+            Assert.Equal(4, cpu.Cycles);
+
+            cpu.RunCommand();
+            Assert.Equal(0x02, cpu.A);
+            Assert.Equal(4, cpu.Cycles);
+
+            cpu.RunCommand();
+            Assert.Equal(0x03, cpu.A);
+            Assert.Equal(4, cpu.Cycles);
+
+            cpu.RunCommand();
+            Assert.Equal(0x04, cpu.A);
+            Assert.Equal(4, cpu.Cycles);
+
+            cpu.RunCommand();
+            Assert.Equal(0x05, cpu.A);
+            Assert.Equal(4, cpu.Cycles);
+
+            cpu.RunCommand();
+            Assert.Equal(0x06, cpu.A);
+            Assert.Equal(4, cpu.Cycles);
+
+            cpu.RunCommand();
+            Assert.Equal(0x07, cpu.A);
+            Assert.Equal(4, cpu.Cycles);
+        }
+
+        [Fact]
+        public void CopyFromAddressTest()
+        {
+            var data = new byte[] {
+                0x7E, // LD A, (HL)
+            };
+            var memory = new Memory(data);
+            CPU cpu = new CPU(memory);
+            
+            cpu.H = 0xAA;
+            cpu.L = 0xBB;
+            memory.WriteByte(0xAABB, 0xFF);
+
+            cpu.RunCommand();
+
+            Assert.Equal(0xFF, cpu.A);
+            Assert.Equal(8, cpu.Cycles);
+        }
     }
 }
