@@ -4,6 +4,11 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningsAsErrors>NU1605;CS8600;CS8602;CS8603</WarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>

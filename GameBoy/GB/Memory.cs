@@ -12,7 +12,7 @@ namespace GameBoy.GB
 
         public MapMode RomMapMode { get; private set; }
 
-        private byte[] bootRom;
+        private byte[]? bootRom;
         private byte[] cartridge;
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace GameBoy.GB
         /// </summary>
         private byte interruptEnableRegister;
 
-        public Memory( byte[] cartridge, MapMode initialMapMode = MapMode.Cartridge, byte[] bootRom = null)
+        public Memory( byte[] cartridge, MapMode initialMapMode = MapMode.Cartridge, byte[]? bootRom = null)
         {
             this.bootRom = bootRom;
             this.cartridge = cartridge;
@@ -87,7 +87,7 @@ namespace GameBoy.GB
         {
             if (addr < 0x4000)
             {
-                if (RomMapMode == MapMode.Boot && addr < bootRom.Length)
+                if (RomMapMode == MapMode.Boot && addr < bootRom?.Length)
                 {
                     return bootRom[addr];
                 }

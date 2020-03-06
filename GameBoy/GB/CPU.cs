@@ -17,13 +17,13 @@ namespace GameBoy.GB
         public ushort PC { get; private set; }
         public ushort SP { get; private set; }
 
-
         public int Cycles { get; private set; }
 
         public Memory Memory { get; private set; }
 
         private readonly Dictionary<byte, Action> _opCodes = new Dictionary<byte, Action>();
         private readonly Dictionary<byte, string> _opCodeNames = new Dictionary<byte, string>();
+
 
         public CPU(Memory memory)
         {
