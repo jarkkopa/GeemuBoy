@@ -6,7 +6,7 @@ using System.Text;
 
 namespace GameBoy.GB.Tests
 {
-    public class CPULoadTests
+    public class CPU8BitLoadTests
     {
         [Fact()]
         public void LoadImmediate8Test()
@@ -58,6 +58,7 @@ namespace GameBoy.GB.Tests
                 0x7B, // LD A, E
                 0x7C, // LD A, H
                 0x7D, // LD A, L
+                0x3E, 0xFF // LD A, n
             };
             var memory = new Memory(data);
             CPU cpu = new CPU(memory)
@@ -98,6 +99,10 @@ namespace GameBoy.GB.Tests
             cpu.RunCommand();
             Assert.Equal(0x07, cpu.A);
             Assert.Equal(4, cpu.Cycles);
+
+            cpu.RunCommand();
+            Assert.Equal(0xFF, cpu.A);
+            Assert.Equal(8, cpu.Cycles);
         }
 
         [Fact]
@@ -435,6 +440,39 @@ namespace GameBoy.GB.Tests
             cpu.RunCommand();
             Assert.Equal(0xFF, cpu.L);
             Assert.Equal(8, cpu.Cycles);
+        }
+
+        [Fact]
+        public void CopyFromAddressRegistersTest()
+        {
+            var data = new byte[] {
+                0x0A, // LD A, (BC)
+                0x1A, // LD A, (DE)
+                0xFA, 0xAB, 0xBA // LD A, (nn)
+            };
+            var memory = new Memory(data);
+            var cpu = new CPU(memory)
+            {
+                B = 0xC0,
+                C = 0x11,
+                D = 0xC1,
+                E = 0x22
+            };
+
+            memory.WriteByte(0xC011, 0xAA);
+            cpu.RunCommand();
+            Assert.Equal(0xAA, cpu.A);
+            Assert.Equal(8, cpu.Cycles);
+
+            memory.WriteByte(0xC122, 0xBB);
+            cpu.RunCommand();
+            Assert.Equal(0xBB, cpu.A);
+            Assert.Equal(8, cpu.Cycles);
+
+            memory.WriteByte(0xABBA, 0x66);
+            cpu.RunCommand();
+            Assert.Equal(0x66, cpu.A);
+            Assert.Equal(16, cpu.Cycles);
         }
 
         [Fact]
