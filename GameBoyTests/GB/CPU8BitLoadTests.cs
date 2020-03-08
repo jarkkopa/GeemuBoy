@@ -526,5 +526,73 @@ namespace GameBoy.GB.Tests
             Assert.Equal(0xFF, memory.ReadByte(0xCCDD));
             Assert.Equal(12, cpu.Cycles);
         }
+
+        [Fact]
+        public void CopyFromRegisterATest()
+        {
+            var data = new byte[] {
+                0x47, // LD B, A
+                0x4F, // LD C, A
+                0x57, // LD D, A
+                0x5F, // LD E, A
+                0x67, // LD H, A
+                0x6F, // LD L, A
+                0x02, // LD (BC), A
+                0x12, // LD (DE), A
+                0x77, // LD (HL), A
+                0xEA, 0xC3, 0x04 // LD (nn), A
+            };
+            var memory = new Memory(data);
+            CPU cpu = new CPU(memory)
+            {
+                A = 0xFF
+            };
+
+            cpu.RunCommand();
+            Assert.Equal(0xFF, cpu.B);
+            Assert.Equal(4, cpu.Cycles);
+
+            cpu.RunCommand();
+            Assert.Equal(0xFF, cpu.C);
+            Assert.Equal(4, cpu.Cycles);
+
+            cpu.RunCommand();
+            Assert.Equal(0xFF, cpu.D);
+            Assert.Equal(4, cpu.Cycles);
+
+            cpu.RunCommand();
+            Assert.Equal(0xFF, cpu.E);
+            Assert.Equal(4, cpu.Cycles);
+
+            cpu.RunCommand();
+            Assert.Equal(0xFF, cpu.H);
+            Assert.Equal(4, cpu.Cycles);
+
+            cpu.RunCommand();
+            Assert.Equal(0xFF, cpu.L);
+            Assert.Equal(4, cpu.Cycles);
+
+            cpu.B = 0xC0;
+            cpu.C = 0x01;
+            cpu.RunCommand();
+            Assert.Equal(0xFF, memory.ReadByte(0xC001));
+            Assert.Equal(8, cpu.Cycles);
+
+            cpu.D = 0xC1;
+            cpu.E = 0x02;
+            cpu.RunCommand();
+            Assert.Equal(0xFF, memory.ReadByte(0xC102));
+            Assert.Equal(8, cpu.Cycles);
+
+            cpu.H = 0xC2;
+            cpu.L = 0x03;
+            cpu.RunCommand();
+            Assert.Equal(0xFF, memory.ReadByte(0xC203));
+            Assert.Equal(8, cpu.Cycles);
+
+            cpu.RunCommand();
+            Assert.Equal(0xFF, memory.ReadByte(0xC304));
+            Assert.Equal(16, cpu.Cycles);
+        }
     }
 }

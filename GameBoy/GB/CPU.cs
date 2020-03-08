@@ -73,12 +73,12 @@ namespace GameBoy.GB
         private void CreateOpCodes()
         {
             // LD nn, n
-            CreateOpCode(0x06, () => LoadImmediate8(ref B), "LD b, n");
-            CreateOpCode(0x0E, () => LoadImmediate8(ref C), "LD c, n");
-            CreateOpCode(0x16, () => LoadImmediate8(ref D), "LD d, n");
-            CreateOpCode(0x1E, () => LoadImmediate8(ref E), "LD e, n");
-            CreateOpCode(0x26, () => LoadImmediate8(ref H), "LD h, n");
-            CreateOpCode(0x2E, () => LoadImmediate8(ref L), "LD l, n");
+            CreateOpCode(0x06, () => LoadImmediate8(ref B), "LD B, n");
+            CreateOpCode(0x0E, () => LoadImmediate8(ref C), "LD C, n");
+            CreateOpCode(0x16, () => LoadImmediate8(ref D), "LD D, n");
+            CreateOpCode(0x1E, () => LoadImmediate8(ref E), "LD E, n");
+            CreateOpCode(0x26, () => LoadImmediate8(ref H), "LD H, n");
+            CreateOpCode(0x2E, () => LoadImmediate8(ref L), "LD L, n");
 
             //LD r1, r2
             CreateOpCode(0x7F, () => Copy(ref A, ref A), "LD A, A");
@@ -138,18 +138,29 @@ namespace GameBoy.GB
             CreateOpCode(0x6D, () => Copy(ref L, ref L), "LD L, L");
             CreateOpCode(0x6E, () => LoadFromAddress(ref L, BitUtils.BytesToUshort(H, L)), "LD L, (HL)");
 
-            CreateOpCode(0x70, () => CopyToAddress(BitUtils.BytesToUshort(H, L), ref B), "LD (HL), B");
-            CreateOpCode(0x71, () => CopyToAddress(BitUtils.BytesToUshort(H, L), ref C), "LD (HL), C");
-            CreateOpCode(0x72, () => CopyToAddress(BitUtils.BytesToUshort(H, L), ref D), "LD (HL), D");
-            CreateOpCode(0x73, () => CopyToAddress(BitUtils.BytesToUshort(H, L), ref E), "LD (HL), E");
-            CreateOpCode(0x74, () => CopyToAddress(BitUtils.BytesToUshort(H, L), ref H), "LD (HL), H");
-            CreateOpCode(0x75, () => CopyToAddress(BitUtils.BytesToUshort(H, L), ref L), "LD (HL), L");
-            CreateOpCode(0x36, () => LoadImmediate8ToAddress(BitUtils.BytesToUshort(H, L)), "LD (HL), ");
+            CreateOpCode(0x70, () => WriteToAddress(BitUtils.BytesToUshort(H, L), ref B), "LD (HL), B");
+            CreateOpCode(0x71, () => WriteToAddress(BitUtils.BytesToUshort(H, L), ref C), "LD (HL), C");
+            CreateOpCode(0x72, () => WriteToAddress(BitUtils.BytesToUshort(H, L), ref D), "LD (HL), D");
+            CreateOpCode(0x73, () => WriteToAddress(BitUtils.BytesToUshort(H, L), ref E), "LD (HL), E");
+            CreateOpCode(0x74, () => WriteToAddress(BitUtils.BytesToUshort(H, L), ref H), "LD (HL), H");
+            CreateOpCode(0x75, () => WriteToAddress(BitUtils.BytesToUshort(H, L), ref L), "LD (HL), L");
+            CreateOpCode(0x36, () => LoadImmediate8ToAddress(BitUtils.BytesToUshort(H, L)), "LD (HL), n");
 
             CreateOpCode(0x0A, () => LoadFromAddress(ref A, BitUtils.BytesToUshort(B, C)), "LD A, (BC)");
             CreateOpCode(0x1A, () => LoadFromAddress(ref A, BitUtils.BytesToUshort(D, E)), "LD A, (DE)");
             CreateOpCode(0xFA, () => LoadFromImmediateAddress(ref A), "LD A, (nn)");
             CreateOpCode(0x3E, () => LoadImmediate8(ref A), "LD A, n");
+
+            CreateOpCode(0x47, () => Copy(ref B, ref A), "LD B, A");
+            CreateOpCode(0x4F, () => Copy(ref C, ref A), "LD C, A");
+            CreateOpCode(0x57, () => Copy(ref D, ref A), "LD D, A");
+            CreateOpCode(0x5F, () => Copy(ref E, ref A), "LD E, A");
+            CreateOpCode(0x67, () => Copy(ref H, ref A), "LD H, A");
+            CreateOpCode(0x6F, () => Copy(ref L, ref A), "LD L, A");
+            CreateOpCode(0x02, () => WriteToAddress(BitUtils.BytesToUshort(B, C), ref A), "LD (BC), A");
+            CreateOpCode(0x12, () => WriteToAddress(BitUtils.BytesToUshort(D, E), ref A), "LD (DE), A");
+            CreateOpCode(0x77, () => WriteToAddress(BitUtils.BytesToUshort(H, L), ref A), "LD (HL), A");
+            CreateOpCode(0xEA, () => WriteImmediateAddress(ref A), "LD (nn), A");
         }
 
         private void CreateOpCode(byte command, Action action, string name)
@@ -178,10 +189,20 @@ namespace GameBoy.GB
             Cycles = 8;
         }
 
-        public void CopyToAddress(ushort address, ref byte source)
+        public void WriteToAddress(ushort address, ref byte source)
         {
             Memory.WriteByte(address, source);
             Cycles = 8;
+        }
+
+        public void WriteImmediateAddress(ref byte source)
+        {
+            byte addrHigh = Memory.ReadByte(PC);
+            PC++;
+            byte addrLow = Memory.ReadByte(PC);
+            PC++;
+            Memory.WriteByte(BitUtils.BytesToUshort(addrHigh, addrLow), source);
+            Cycles = 16;
         }
 
         public void LoadImmediate8ToAddress(ushort address)
