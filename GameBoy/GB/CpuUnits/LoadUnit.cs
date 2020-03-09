@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GameBoy.GB.CpuUnits
+﻿namespace GameBoy.GB.CpuUnits
 {
     public class LoadUnit
     {
-        private Memory _memory;
+        private readonly Memory _memory;
 
         public LoadUnit(Memory memory)
         {
@@ -33,22 +29,6 @@ namespace GameBoy.GB.CpuUnits
             return 8;
         }
 
-        public int WriteToAddress(ushort address, ref byte source)
-        {
-            _memory.WriteByte(address, source);
-            return 8;
-        }
-
-        public int WriteImmediateAddress(ref byte source, ref ushort PC)
-        {
-            byte addrHigh = _memory.ReadByte(PC);
-            PC++;
-            byte addrLow = _memory.ReadByte(PC);
-            PC++;
-            _memory.WriteByte(BitUtils.BytesToUshort(addrHigh, addrLow), source);
-            return 16;
-        }
-
         public int LoadImmediate8ToAddress(ushort address, ref ushort PC)
         {
             byte data = _memory.ReadByte(PC);
@@ -64,6 +44,22 @@ namespace GameBoy.GB.CpuUnits
             byte addressLow = _memory.ReadByte(PC);
             PC++;
             dest = _memory.ReadByte(BitUtils.BytesToUshort(addressHigh, addressLow));
+            return 16;
+        }
+
+        public int WriteToAddress(ushort address, ref byte source)
+        {
+            _memory.WriteByte(address, source);
+            return 8;
+        }
+
+        public int WriteImmediateAddress(ref byte source, ref ushort PC)
+        {
+            byte addrHigh = _memory.ReadByte(PC);
+            PC++;
+            byte addrLow = _memory.ReadByte(PC);
+            PC++;
+            _memory.WriteByte(BitUtils.BytesToUshort(addrHigh, addrLow), source);
             return 16;
         }
     }
