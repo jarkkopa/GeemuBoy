@@ -3,12 +3,12 @@
     public interface ILoadUnit
     {
         public int Copy(ref byte dest, ref byte source);
-        public int LoadImmediate8(ref byte dest, ref ushort PC);
+        public int LoadImmediateByte(ref byte dest, ref ushort PC);
         public int LoadFromAddress(ref byte dest, byte addrHigh, byte addrLow);
-        public int LoadImmediate8ToAddress(byte addrHigh, byte addrLow, ref ushort PC);
+        public int LoadImmediateByteToAddress(byte addrHigh, byte addrLow, ref ushort PC);
         public int LoadFromImmediateAddress(ref byte dest, ref ushort PC);
         public int WriteToAddress(byte addrHigh, byte addrLow, ref byte source);
-        public int WriteImmediateAddress(ref byte source, ref ushort PC);
+        public int WriteToImmediateAddress(byte source, ref ushort PC);
     }
 
     public class LoadUnit : ILoadUnit
@@ -26,7 +26,7 @@
             return 4;
         }
 
-        public int LoadImmediate8(ref byte dest, ref ushort PC)
+        public int LoadImmediateByte(ref byte dest, ref ushort PC)
         {
             dest = _memory.ReadByte(PC);
             PC++;
@@ -40,7 +40,7 @@
             return 8;
         }
 
-        public int LoadImmediate8ToAddress(byte addrHigh, byte addrLow, ref ushort PC)
+        public int LoadImmediateByteToAddress(byte addrHigh, byte addrLow, ref ushort PC)
         {
             byte data = _memory.ReadByte(PC);
             PC++;
@@ -64,7 +64,7 @@
             return 8;
         }
 
-        public int WriteImmediateAddress(ref byte source, ref ushort PC)
+        public int WriteToImmediateAddress(byte source, ref ushort PC)
         {
             byte addrHigh = _memory.ReadByte(PC);
             PC++;

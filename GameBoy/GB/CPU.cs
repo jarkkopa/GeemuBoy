@@ -83,12 +83,12 @@ namespace GameBoy.GB
         private void CreateOpCodes()
         {
             // LD nn, n
-            CreateOpCode(0x06, () => loadUnit.LoadImmediate8(ref B, ref PC), "LD B, n");
-            CreateOpCode(0x0E, () => loadUnit.LoadImmediate8(ref C, ref PC), "LD C, n");
-            CreateOpCode(0x16, () => loadUnit.LoadImmediate8(ref D, ref PC), "LD D, n");
-            CreateOpCode(0x1E, () => loadUnit.LoadImmediate8(ref E, ref PC), "LD E, n");
-            CreateOpCode(0x26, () => loadUnit.LoadImmediate8(ref H, ref PC), "LD H, n");
-            CreateOpCode(0x2E, () => loadUnit.LoadImmediate8(ref L, ref PC), "LD L, n");
+            CreateOpCode(0x06, () => loadUnit.LoadImmediateByte(ref B, ref PC), "LD B, n");
+            CreateOpCode(0x0E, () => loadUnit.LoadImmediateByte(ref C, ref PC), "LD C, n");
+            CreateOpCode(0x16, () => loadUnit.LoadImmediateByte(ref D, ref PC), "LD D, n");
+            CreateOpCode(0x1E, () => loadUnit.LoadImmediateByte(ref E, ref PC), "LD E, n");
+            CreateOpCode(0x26, () => loadUnit.LoadImmediateByte(ref H, ref PC), "LD H, n");
+            CreateOpCode(0x2E, () => loadUnit.LoadImmediateByte(ref L, ref PC), "LD L, n");
 
             //LD r1, r2
             CreateOpCode(0x7F, () => loadUnit.Copy(ref A, ref A), "LD A, A");
@@ -154,12 +154,12 @@ namespace GameBoy.GB
             CreateOpCode(0x73, () => loadUnit.WriteToAddress(H, L, ref E), "LD (HL), E");
             CreateOpCode(0x74, () => loadUnit.WriteToAddress(H, L, ref H), "LD (HL), H");
             CreateOpCode(0x75, () => loadUnit.WriteToAddress(H, L, ref L), "LD (HL), L");
-            CreateOpCode(0x36, () => loadUnit.LoadImmediate8ToAddress(H, L, ref PC), "LD (HL), n");
+            CreateOpCode(0x36, () => loadUnit.LoadImmediateByteToAddress(H, L, ref PC), "LD (HL), n");
 
             CreateOpCode(0x0A, () => loadUnit.LoadFromAddress(ref A, B, C), "LD A, (BC)");
             CreateOpCode(0x1A, () => loadUnit.LoadFromAddress(ref A, D, E), "LD A, (DE)");
             CreateOpCode(0xFA, () => loadUnit.LoadFromImmediateAddress(ref A, ref PC), "LD A, (nn)");
-            CreateOpCode(0x3E, () => loadUnit.LoadImmediate8(ref A, ref PC), "LD A, n");
+            CreateOpCode(0x3E, () => loadUnit.LoadImmediateByte(ref A, ref PC), "LD A, n");
 
             CreateOpCode(0x47, () => loadUnit.Copy(ref B, ref A), "LD B, A");
             CreateOpCode(0x4F, () => loadUnit.Copy(ref C, ref A), "LD C, A");
@@ -170,7 +170,7 @@ namespace GameBoy.GB
             CreateOpCode(0x02, () => loadUnit.WriteToAddress(B, C, ref A), "LD (BC), A");
             CreateOpCode(0x12, () => loadUnit.WriteToAddress(D, E, ref A), "LD (DE), A");
             CreateOpCode(0x77, () => loadUnit.WriteToAddress(H, L, ref A), "LD (HL), A");
-            CreateOpCode(0xEA, () => loadUnit.WriteImmediateAddress(ref A, ref PC), "LD (nn), A");
+            CreateOpCode(0xEA, () => loadUnit.WriteToImmediateAddress(A, ref PC), "LD (nn), A");
         }
 
         private void CreateOpCode(byte command, Func<int> action, string name)
