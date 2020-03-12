@@ -45,7 +45,7 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte to = 0x00;
             memory.WriteByte(0xABBA, 0x10);
 
-            var cycles = loadUnit.LoadFromAddress(ref to, 0xABBA);
+            var cycles = loadUnit.LoadFromAddress(ref to, 0xAB, 0xBA);
 
             Assert.Equal(0x10, to);
             Assert.Equal(8, cycles);
@@ -58,7 +58,7 @@ namespace GameBoy.GB.CpuUnits.Tests
             var loadUnit = new LoadUnit(memory);
             byte source = 0x66;
 
-            var cycles = loadUnit.WriteToAddress(0xABBA, ref source);
+            var cycles = loadUnit.WriteToAddress(0xAB, 0xBA, ref source);
 
             Assert.Equal(0x66, memory.ReadByte(0xABBA));
             Assert.Equal(8, cycles);
@@ -93,7 +93,7 @@ namespace GameBoy.GB.CpuUnits.Tests
             var loadUnit = new LoadUnit(memory);
             ushort PC = 0x00;
 
-            var cycles = loadUnit.LoadImmediate8ToAddress(0xCCDD, ref PC);
+            var cycles = loadUnit.LoadImmediate8ToAddress(0xCC, 0xDD, ref PC);
 
             Assert.Equal(0xAA, memory.ReadByte(0xCCDD));
             Assert.Equal(0x01, PC);

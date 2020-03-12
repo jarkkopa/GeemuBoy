@@ -38,6 +38,14 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0x1E, () => _loadUnit.LoadImmediate8(ref _cpu.E, ref _cpu.PC));
             AssertSingleCall(0x26, () => _loadUnit.LoadImmediate8(ref _cpu.H, ref _cpu.PC));
             AssertSingleCall(0x2E, () => _loadUnit.LoadImmediate8(ref _cpu.L, ref _cpu.PC));
+
+            AssertSingleCall(0x7F, () => _loadUnit.Copy(ref _cpu.A, ref _cpu.A));
+            AssertSingleCall(0x78, () => _loadUnit.Copy(ref _cpu.A, ref _cpu.B));
+            AssertSingleCall(0x79, () => _loadUnit.Copy(ref _cpu.A, ref _cpu.C));
+            AssertSingleCall(0x7A, () => _loadUnit.Copy(ref _cpu.A, ref _cpu.D));
+            AssertSingleCall(0x7B, () => _loadUnit.Copy(ref _cpu.A, ref _cpu.E));
+            AssertSingleCall(0x7C, () => _loadUnit.Copy(ref _cpu.A, ref _cpu.H));
+            AssertSingleCall(0x7D, () => _loadUnit.Copy(ref _cpu.A, ref _cpu.L));
         }
 
         private void AssertSingleCall(byte opcode, Expression<Func<int>> expectedCall)
