@@ -1,8 +1,4 @@
 ﻿using Xunit;
-using GameBoy.GB;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace GameBoy.GB.Tests
 {

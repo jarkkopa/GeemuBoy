@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GameBoy.GB
+﻿namespace GameBoy.GB
 {
     public static class BitUtils
     {

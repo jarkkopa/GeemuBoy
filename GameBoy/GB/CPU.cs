@@ -6,7 +6,7 @@ namespace GameBoy.GB
 {
     public class CPU
     {
-        private readonly LoadUnit loadUnit;
+        private readonly ILoadUnit loadUnit;
 
         public byte A;
         public byte B;
@@ -25,17 +25,21 @@ namespace GameBoy.GB
 
         public Memory Memory { get; private set; }
 
-        private readonly Dictionary<byte, Func<int>> _opCodes = new Dictionary<byte, Func<int>>();
+        public Dictionary<byte, Func<int>> OpCodes { get; private set; } = new Dictionary<byte, Func<int>>();
+
         private readonly Dictionary<byte, string> _opCodeNames = new Dictionary<byte, string>();
 
-
-        public CPU(Memory memory)
+        public CPU(Memory memory, ILoadUnit loadUnit)
         {
-            loadUnit = new LoadUnit(memory);
+            this.loadUnit = loadUnit;
 
             CreateOpCodes();
 
-            this.Memory = memory;
+            Memory = memory;
+        }
+
+        public CPU(Memory memory) : this(memory, new LoadUnit(memory))
+        {
         }
 
         public void Reset()
@@ -57,9 +61,9 @@ namespace GameBoy.GB
         {
             var code = Memory.ReadByte(PC);
             PC++;
-            if (_opCodes.ContainsKey(code))
+            if (OpCodes.ContainsKey(code))
             {
-                Cycles = _opCodes[code]();
+                Cycles = OpCodes[code]();
             }
             else
             {
@@ -171,7 +175,7 @@ namespace GameBoy.GB
 
         private void CreateOpCode(byte command, Func<int> action, string name)
         {
-            _opCodes.Add(command, action);
+            OpCodes.Add(command, action);
             _opCodeNames.Add(command, name);
         }
     }

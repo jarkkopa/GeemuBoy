@@ -1,6 +1,17 @@
 ﻿namespace GameBoy.GB.CpuUnits
 {
-    public class LoadUnit
+    public interface ILoadUnit
+    {
+        public int Copy(ref byte dest, ref byte source);
+        public int LoadImmediate8(ref byte dest, ref ushort PC);
+        public int LoadFromAddress(ref byte dest, ushort address);
+        public int LoadImmediate8ToAddress(ushort address, ref ushort PC);
+        public int LoadFromImmediateAddress(ref byte dest, ref ushort PC);
+        public int WriteToAddress(ushort address, ref byte source);
+        public int WriteImmediateAddress(ref byte source, ref ushort PC);
+    }
+
+    public class LoadUnit : ILoadUnit
     {
         private readonly Memory _memory;
 

@@ -1,8 +1,4 @@
 ﻿using Xunit;
-using GameBoy.GB.CpuUnits;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace GameBoy.GB.CpuUnits.Tests
 {
