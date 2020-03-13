@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using GameBoy.GB.CpuUnits;
+using Xunit;
 
 namespace GameBoy.GB.CpuUnits.Tests
 {
@@ -12,7 +13,7 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte to = 0x00;
             byte from = 0xFF;
 
-            var cycles = loadUnit.Copy(ref to, ref from);
+            var cycles = loadUnit.Copy(ref to, from);
 
             Assert.Equal(0xFF, to);
             Assert.Equal(4, cycles);
@@ -38,7 +39,7 @@ namespace GameBoy.GB.CpuUnits.Tests
         }
 
         [Fact()]
-        public void LoadFromAddressTest()
+        public void LoadFromCombinedAddressTest()
         {
             var memory = new Memory(new byte[0]);
             var loadUnit = new LoadUnit(memory);
@@ -52,35 +53,17 @@ namespace GameBoy.GB.CpuUnits.Tests
         }
 
         [Fact()]
-        public void WriteToAddressTest()
+        public void LoadFromAddressTest()
         {
             var memory = new Memory(new byte[0]);
             var loadUnit = new LoadUnit(memory);
-            byte source = 0x66;
+            byte to = 0x00;
+            memory.WriteByte(0xABBA, 0x10);
 
-            var cycles = loadUnit.WriteToAddress(0xAB, 0xBA, ref source);
+            var cycles = loadUnit.LoadFromAddress(ref to, 0xAB, 0xBA);
 
-            Assert.Equal(0x66, memory.ReadByte(0xABBA));
+            Assert.Equal(0x10, to);
             Assert.Equal(8, cycles);
-        }
-
-        [Fact()]
-        public void WriteImmediateAddressTest()
-        {
-            var memory = new Memory(new byte[]
-            {
-                0xAB,
-                0xBA
-            });
-            var loadUnit = new LoadUnit(memory);
-            byte source = 0xDD;
-            ushort PC = 0x00;
-
-            var cycles = loadUnit.WriteToImmediateAddress(source, ref PC);
-
-            Assert.Equal(0xDD, memory.ReadByte(0xABBA));
-            Assert.Equal(0x02, PC);
-            Assert.Equal(16, cycles);
         }
 
         [Fact()]
@@ -119,5 +102,52 @@ namespace GameBoy.GB.CpuUnits.Tests
             Assert.Equal(0x02, PC);
             Assert.Equal(16, cycles);
         }
+
+        [Fact()]
+        public void WriteToCombinedAddressTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var loadUnit = new LoadUnit(memory);
+            byte source = 0x66;
+
+            var cycles = loadUnit.WriteToAddress(0xAB, 0xBA, source);
+
+            Assert.Equal(0x66, memory.ReadByte(0xABBA));
+            Assert.Equal(8, cycles);
+        }
+
+        [Fact()]
+        public void WriteToAddressTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var loadUnit = new LoadUnit(memory);
+            byte source = 0x66;
+
+            var cycles = loadUnit.WriteToAddress(0xABBA, source);
+
+            Assert.Equal(0x66, memory.ReadByte(0xABBA));
+            Assert.Equal(8, cycles);
+        }
+
+        [Fact()]
+        public void WriteImmediateAddressTest()
+        {
+            var memory = new Memory(new byte[]
+            {
+                0xAB,
+                0xBA
+            });
+            var loadUnit = new LoadUnit(memory);
+            byte source = 0xDD;
+            ushort PC = 0x00;
+
+            var cycles = loadUnit.WriteToImmediateAddress(source, ref PC);
+
+            Assert.Equal(0xDD, memory.ReadByte(0xABBA));
+            Assert.Equal(0x02, PC);
+            Assert.Equal(16, cycles);
+        }
+
+
     }
 }
