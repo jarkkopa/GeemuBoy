@@ -8,15 +8,15 @@ namespace GameBoy.GB.Tests
 {
     public class CPUTests
     {
-        private readonly Memory _memory;
-        private readonly ILoadUnit _loadUnit;
-        private readonly CPU _cpu;
+        private readonly Memory memory;
+        private readonly ILoadUnit loadUnit;
+        private readonly CPU cpu;
 
         public CPUTests()
         {
-            _memory = new Memory(new byte[] { });
-            _loadUnit = A.Fake<ILoadUnit>();
-            _cpu = new CPU(_memory, _loadUnit)
+            memory = new Memory(new byte[] { });
+            loadUnit = A.Fake<ILoadUnit>();
+            cpu = new CPU(memory, loadUnit)
             {
                 A = 0x0A,
                 B = 0x0B,
@@ -32,93 +32,93 @@ namespace GameBoy.GB.Tests
         [Fact()]
         public void RunCommandTest()
         {
-            AssertSingleCall(0x06, () => _loadUnit.LoadImmediateByte(ref _cpu.B, ref _cpu.PC));
-            AssertSingleCall(0x0E, () => _loadUnit.LoadImmediateByte(ref _cpu.C, ref _cpu.PC));
-            AssertSingleCall(0x16, () => _loadUnit.LoadImmediateByte(ref _cpu.D, ref _cpu.PC));
-            AssertSingleCall(0x1E, () => _loadUnit.LoadImmediateByte(ref _cpu.E, ref _cpu.PC));
-            AssertSingleCall(0x26, () => _loadUnit.LoadImmediateByte(ref _cpu.H, ref _cpu.PC));
-            AssertSingleCall(0x2E, () => _loadUnit.LoadImmediateByte(ref _cpu.L, ref _cpu.PC));
+            AssertSingleCall(0x06, () => loadUnit.LoadImmediateByte(ref cpu.B, ref cpu.PC));
+            AssertSingleCall(0x0E, () => loadUnit.LoadImmediateByte(ref cpu.C, ref cpu.PC));
+            AssertSingleCall(0x16, () => loadUnit.LoadImmediateByte(ref cpu.D, ref cpu.PC));
+            AssertSingleCall(0x1E, () => loadUnit.LoadImmediateByte(ref cpu.E, ref cpu.PC));
+            AssertSingleCall(0x26, () => loadUnit.LoadImmediateByte(ref cpu.H, ref cpu.PC));
+            AssertSingleCall(0x2E, () => loadUnit.LoadImmediateByte(ref cpu.L, ref cpu.PC));
 
-            AssertSingleCall(0x7F, () => _loadUnit.Copy(ref _cpu.A, ref _cpu.A));
-            AssertSingleCall(0x78, () => _loadUnit.Copy(ref _cpu.A, ref _cpu.B));
-            AssertSingleCall(0x79, () => _loadUnit.Copy(ref _cpu.A, ref _cpu.C));
-            AssertSingleCall(0x7A, () => _loadUnit.Copy(ref _cpu.A, ref _cpu.D));
-            AssertSingleCall(0x7B, () => _loadUnit.Copy(ref _cpu.A, ref _cpu.E));
-            AssertSingleCall(0x7C, () => _loadUnit.Copy(ref _cpu.A, ref _cpu.H));
-            AssertSingleCall(0x7D, () => _loadUnit.Copy(ref _cpu.A, ref _cpu.L));
-            AssertSingleCall(0x7E, () => _loadUnit.LoadFromAddress(ref _cpu.A, _cpu.H, _cpu.L));
-            AssertSingleCall(0x40, () => _loadUnit.Copy(ref _cpu.B, ref _cpu.B));
-            AssertSingleCall(0x41, () => _loadUnit.Copy(ref _cpu.B, ref _cpu.C));
-            AssertSingleCall(0x42, () => _loadUnit.Copy(ref _cpu.B, ref _cpu.D));
-            AssertSingleCall(0x43, () => _loadUnit.Copy(ref _cpu.B, ref _cpu.E));
-            AssertSingleCall(0x44, () => _loadUnit.Copy(ref _cpu.B, ref _cpu.H));
-            AssertSingleCall(0x45, () => _loadUnit.Copy(ref _cpu.B, ref _cpu.L));
-            AssertSingleCall(0x46, () => _loadUnit.LoadFromAddress(ref _cpu.B, _cpu.H, _cpu.L));
-            AssertSingleCall(0x48, () => _loadUnit.Copy(ref _cpu.C, ref _cpu.B));
-            AssertSingleCall(0x49, () => _loadUnit.Copy(ref _cpu.C, ref _cpu.C));
-            AssertSingleCall(0x4A, () => _loadUnit.Copy(ref _cpu.C, ref _cpu.D));
-            AssertSingleCall(0x4B, () => _loadUnit.Copy(ref _cpu.C, ref _cpu.E));
-            AssertSingleCall(0x4C, () => _loadUnit.Copy(ref _cpu.C, ref _cpu.H));
-            AssertSingleCall(0x4D, () => _loadUnit.Copy(ref _cpu.C, ref _cpu.L));
-            AssertSingleCall(0x4E, () => _loadUnit.LoadFromAddress(ref _cpu.C, _cpu.H, _cpu.L));
-            AssertSingleCall(0x50, () => _loadUnit.Copy(ref _cpu.D, ref _cpu.B));
-            AssertSingleCall(0x51, () => _loadUnit.Copy(ref _cpu.D, ref _cpu.C));
-            AssertSingleCall(0x52, () => _loadUnit.Copy(ref _cpu.D, ref _cpu.D));
-            AssertSingleCall(0x53, () => _loadUnit.Copy(ref _cpu.D, ref _cpu.E));
-            AssertSingleCall(0x54, () => _loadUnit.Copy(ref _cpu.D, ref _cpu.H));
-            AssertSingleCall(0x55, () => _loadUnit.Copy(ref _cpu.D, ref _cpu.L));
-            AssertSingleCall(0x56, () => _loadUnit.LoadFromAddress(ref _cpu.D, _cpu.H, _cpu.L));
-            AssertSingleCall(0x58, () => _loadUnit.Copy(ref _cpu.E, ref _cpu.B));
-            AssertSingleCall(0x59, () => _loadUnit.Copy(ref _cpu.E, ref _cpu.C));
-            AssertSingleCall(0x5A, () => _loadUnit.Copy(ref _cpu.E, ref _cpu.D));
-            AssertSingleCall(0x5B, () => _loadUnit.Copy(ref _cpu.E, ref _cpu.E));
-            AssertSingleCall(0x5C, () => _loadUnit.Copy(ref _cpu.E, ref _cpu.H));
-            AssertSingleCall(0x5D, () => _loadUnit.Copy(ref _cpu.E, ref _cpu.L));
-            AssertSingleCall(0x5E, () => _loadUnit.LoadFromAddress(ref _cpu.E, _cpu.H, _cpu.L));
-            AssertSingleCall(0x60, () => _loadUnit.Copy(ref _cpu.H, ref _cpu.B));
-            AssertSingleCall(0x61, () => _loadUnit.Copy(ref _cpu.H, ref _cpu.C));
-            AssertSingleCall(0x62, () => _loadUnit.Copy(ref _cpu.H, ref _cpu.D));
-            AssertSingleCall(0x63, () => _loadUnit.Copy(ref _cpu.H, ref _cpu.E));
-            AssertSingleCall(0x64, () => _loadUnit.Copy(ref _cpu.H, ref _cpu.H));
-            AssertSingleCall(0x65, () => _loadUnit.Copy(ref _cpu.H, ref _cpu.L));
-            AssertSingleCall(0x66, () => _loadUnit.LoadFromAddress(ref _cpu.H, _cpu.H, _cpu.L));
-            AssertSingleCall(0x68, () => _loadUnit.Copy(ref _cpu.L, ref _cpu.B));
-            AssertSingleCall(0x69, () => _loadUnit.Copy(ref _cpu.L, ref _cpu.C));
-            AssertSingleCall(0x6A, () => _loadUnit.Copy(ref _cpu.L, ref _cpu.D));
-            AssertSingleCall(0x6B, () => _loadUnit.Copy(ref _cpu.L, ref _cpu.E));
-            AssertSingleCall(0x6C, () => _loadUnit.Copy(ref _cpu.L, ref _cpu.H));
-            AssertSingleCall(0x6D, () => _loadUnit.Copy(ref _cpu.L, ref _cpu.L));
-            AssertSingleCall(0x6E, () => _loadUnit.LoadFromAddress(ref _cpu.L, _cpu.H, _cpu.L));
-            AssertSingleCall(0x70, () => _loadUnit.WriteToAddress(_cpu.H, _cpu.L, ref _cpu.B));
-            AssertSingleCall(0x71, () => _loadUnit.WriteToAddress(_cpu.H, _cpu.L, ref _cpu.C));
-            AssertSingleCall(0x72, () => _loadUnit.WriteToAddress(_cpu.H, _cpu.L, ref _cpu.D));
-            AssertSingleCall(0x73, () => _loadUnit.WriteToAddress(_cpu.H, _cpu.L, ref _cpu.E));
-            AssertSingleCall(0x74, () => _loadUnit.WriteToAddress(_cpu.H, _cpu.L, ref _cpu.H));
-            AssertSingleCall(0x75, () => _loadUnit.WriteToAddress(_cpu.H, _cpu.L, ref _cpu.L));
-            AssertSingleCall(0x36, () => _loadUnit.LoadImmediateByteToAddress(_cpu.H, _cpu.L, ref _cpu.PC));
+            AssertSingleCall(0x7F, () => loadUnit.Copy(ref cpu.A, ref cpu.A));
+            AssertSingleCall(0x78, () => loadUnit.Copy(ref cpu.A, ref cpu.B));
+            AssertSingleCall(0x79, () => loadUnit.Copy(ref cpu.A, ref cpu.C));
+            AssertSingleCall(0x7A, () => loadUnit.Copy(ref cpu.A, ref cpu.D));
+            AssertSingleCall(0x7B, () => loadUnit.Copy(ref cpu.A, ref cpu.E));
+            AssertSingleCall(0x7C, () => loadUnit.Copy(ref cpu.A, ref cpu.H));
+            AssertSingleCall(0x7D, () => loadUnit.Copy(ref cpu.A, ref cpu.L));
+            AssertSingleCall(0x7E, () => loadUnit.LoadFromAddress(ref cpu.A, cpu.H, cpu.L));
+            AssertSingleCall(0x40, () => loadUnit.Copy(ref cpu.B, ref cpu.B));
+            AssertSingleCall(0x41, () => loadUnit.Copy(ref cpu.B, ref cpu.C));
+            AssertSingleCall(0x42, () => loadUnit.Copy(ref cpu.B, ref cpu.D));
+            AssertSingleCall(0x43, () => loadUnit.Copy(ref cpu.B, ref cpu.E));
+            AssertSingleCall(0x44, () => loadUnit.Copy(ref cpu.B, ref cpu.H));
+            AssertSingleCall(0x45, () => loadUnit.Copy(ref cpu.B, ref cpu.L));
+            AssertSingleCall(0x46, () => loadUnit.LoadFromAddress(ref cpu.B, cpu.H, cpu.L));
+            AssertSingleCall(0x48, () => loadUnit.Copy(ref cpu.C, ref cpu.B));
+            AssertSingleCall(0x49, () => loadUnit.Copy(ref cpu.C, ref cpu.C));
+            AssertSingleCall(0x4A, () => loadUnit.Copy(ref cpu.C, ref cpu.D));
+            AssertSingleCall(0x4B, () => loadUnit.Copy(ref cpu.C, ref cpu.E));
+            AssertSingleCall(0x4C, () => loadUnit.Copy(ref cpu.C, ref cpu.H));
+            AssertSingleCall(0x4D, () => loadUnit.Copy(ref cpu.C, ref cpu.L));
+            AssertSingleCall(0x4E, () => loadUnit.LoadFromAddress(ref cpu.C, cpu.H, cpu.L));
+            AssertSingleCall(0x50, () => loadUnit.Copy(ref cpu.D, ref cpu.B));
+            AssertSingleCall(0x51, () => loadUnit.Copy(ref cpu.D, ref cpu.C));
+            AssertSingleCall(0x52, () => loadUnit.Copy(ref cpu.D, ref cpu.D));
+            AssertSingleCall(0x53, () => loadUnit.Copy(ref cpu.D, ref cpu.E));
+            AssertSingleCall(0x54, () => loadUnit.Copy(ref cpu.D, ref cpu.H));
+            AssertSingleCall(0x55, () => loadUnit.Copy(ref cpu.D, ref cpu.L));
+            AssertSingleCall(0x56, () => loadUnit.LoadFromAddress(ref cpu.D, cpu.H, cpu.L));
+            AssertSingleCall(0x58, () => loadUnit.Copy(ref cpu.E, ref cpu.B));
+            AssertSingleCall(0x59, () => loadUnit.Copy(ref cpu.E, ref cpu.C));
+            AssertSingleCall(0x5A, () => loadUnit.Copy(ref cpu.E, ref cpu.D));
+            AssertSingleCall(0x5B, () => loadUnit.Copy(ref cpu.E, ref cpu.E));
+            AssertSingleCall(0x5C, () => loadUnit.Copy(ref cpu.E, ref cpu.H));
+            AssertSingleCall(0x5D, () => loadUnit.Copy(ref cpu.E, ref cpu.L));
+            AssertSingleCall(0x5E, () => loadUnit.LoadFromAddress(ref cpu.E, cpu.H, cpu.L));
+            AssertSingleCall(0x60, () => loadUnit.Copy(ref cpu.H, ref cpu.B));
+            AssertSingleCall(0x61, () => loadUnit.Copy(ref cpu.H, ref cpu.C));
+            AssertSingleCall(0x62, () => loadUnit.Copy(ref cpu.H, ref cpu.D));
+            AssertSingleCall(0x63, () => loadUnit.Copy(ref cpu.H, ref cpu.E));
+            AssertSingleCall(0x64, () => loadUnit.Copy(ref cpu.H, ref cpu.H));
+            AssertSingleCall(0x65, () => loadUnit.Copy(ref cpu.H, ref cpu.L));
+            AssertSingleCall(0x66, () => loadUnit.LoadFromAddress(ref cpu.H, cpu.H, cpu.L));
+            AssertSingleCall(0x68, () => loadUnit.Copy(ref cpu.L, ref cpu.B));
+            AssertSingleCall(0x69, () => loadUnit.Copy(ref cpu.L, ref cpu.C));
+            AssertSingleCall(0x6A, () => loadUnit.Copy(ref cpu.L, ref cpu.D));
+            AssertSingleCall(0x6B, () => loadUnit.Copy(ref cpu.L, ref cpu.E));
+            AssertSingleCall(0x6C, () => loadUnit.Copy(ref cpu.L, ref cpu.H));
+            AssertSingleCall(0x6D, () => loadUnit.Copy(ref cpu.L, ref cpu.L));
+            AssertSingleCall(0x6E, () => loadUnit.LoadFromAddress(ref cpu.L, cpu.H, cpu.L));
+            AssertSingleCall(0x70, () => loadUnit.WriteToAddress(cpu.H, cpu.L, ref cpu.B));
+            AssertSingleCall(0x71, () => loadUnit.WriteToAddress(cpu.H, cpu.L, ref cpu.C));
+            AssertSingleCall(0x72, () => loadUnit.WriteToAddress(cpu.H, cpu.L, ref cpu.D));
+            AssertSingleCall(0x73, () => loadUnit.WriteToAddress(cpu.H, cpu.L, ref cpu.E));
+            AssertSingleCall(0x74, () => loadUnit.WriteToAddress(cpu.H, cpu.L, ref cpu.H));
+            AssertSingleCall(0x75, () => loadUnit.WriteToAddress(cpu.H, cpu.L, ref cpu.L));
+            AssertSingleCall(0x36, () => loadUnit.LoadImmediateByteToAddress(cpu.H, cpu.L, ref cpu.PC));
 
-            AssertSingleCall(0x0A, () => _loadUnit.LoadFromAddress(ref _cpu.A, _cpu.B, _cpu.C));
-            AssertSingleCall(0x1A, () => _loadUnit.LoadFromAddress(ref _cpu.A, _cpu.D, _cpu.E));
-            AssertSingleCall(0xFA, () => _loadUnit.LoadFromImmediateAddress(ref _cpu.A, ref _cpu.PC));
-            AssertSingleCall(0x3E, () => _loadUnit.LoadImmediateByte(ref _cpu.A, ref _cpu.PC));
+            AssertSingleCall(0x0A, () => loadUnit.LoadFromAddress(ref cpu.A, cpu.B, cpu.C));
+            AssertSingleCall(0x1A, () => loadUnit.LoadFromAddress(ref cpu.A, cpu.D, cpu.E));
+            AssertSingleCall(0xFA, () => loadUnit.LoadFromImmediateAddress(ref cpu.A, ref cpu.PC));
+            AssertSingleCall(0x3E, () => loadUnit.LoadImmediateByte(ref cpu.A, ref cpu.PC));
 
-            AssertSingleCall(0x47, () => _loadUnit.Copy(ref _cpu.B, ref _cpu.A));
-            AssertSingleCall(0x4F, () => _loadUnit.Copy(ref _cpu.C, ref _cpu.A));
-            AssertSingleCall(0x57, () => _loadUnit.Copy(ref _cpu.D, ref _cpu.A));
-            AssertSingleCall(0x5F, () => _loadUnit.Copy(ref _cpu.E, ref _cpu.A));
-            AssertSingleCall(0x67, () => _loadUnit.Copy(ref _cpu.H, ref _cpu.A));
-            AssertSingleCall(0x6F, () => _loadUnit.Copy(ref _cpu.L, ref _cpu.A));
-            AssertSingleCall(0x02, () => _loadUnit.WriteToAddress(_cpu.B, _cpu.C, ref _cpu.A));
-            AssertSingleCall(0x12, () => _loadUnit.WriteToAddress(_cpu.D, _cpu.E, ref _cpu.A));
-            AssertSingleCall(0x77, () => _loadUnit.WriteToAddress(_cpu.H, _cpu.L, ref _cpu.A));
-            AssertSingleCall(0xEA, () => _loadUnit.WriteToImmediateAddress(_cpu.A, ref _cpu.PC));
+            AssertSingleCall(0x47, () => loadUnit.Copy(ref cpu.B, ref cpu.A));
+            AssertSingleCall(0x4F, () => loadUnit.Copy(ref cpu.C, ref cpu.A));
+            AssertSingleCall(0x57, () => loadUnit.Copy(ref cpu.D, ref cpu.A));
+            AssertSingleCall(0x5F, () => loadUnit.Copy(ref cpu.E, ref cpu.A));
+            AssertSingleCall(0x67, () => loadUnit.Copy(ref cpu.H, ref cpu.A));
+            AssertSingleCall(0x6F, () => loadUnit.Copy(ref cpu.L, ref cpu.A));
+            AssertSingleCall(0x02, () => loadUnit.WriteToAddress(cpu.B, cpu.C, ref cpu.A));
+            AssertSingleCall(0x12, () => loadUnit.WriteToAddress(cpu.D, cpu.E, ref cpu.A));
+            AssertSingleCall(0x77, () => loadUnit.WriteToAddress(cpu.H, cpu.L, ref cpu.A));
+            AssertSingleCall(0xEA, () => loadUnit.WriteToImmediateAddress(cpu.A, ref cpu.PC));
         }
 
         private void AssertSingleCall(byte opcode, Expression<Func<int>> expectedCall)
         {
-            _cpu.OpCodes[opcode]();
+            cpu.OpCodes[opcode]();
             A.CallTo(expectedCall).MustHaveHappenedOnceExactly();
-            Fake.ClearRecordedCalls(_loadUnit);
+            Fake.ClearRecordedCalls(loadUnit);
         }
     }
 }

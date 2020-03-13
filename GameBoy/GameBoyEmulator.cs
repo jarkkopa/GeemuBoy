@@ -13,11 +13,11 @@ namespace GameBoy
             Quit
         }
 
-        private CPU _cpu;
+        private readonly CPU cpu;
 
         private State state = State.Stop;
 
-        private ushort memoryPrintLines = 0;
+        private readonly ushort memoryPrintLines = 0;
 
         public GameBoyEmulator()
         {
@@ -39,7 +39,7 @@ namespace GameBoy
             memoryPrintLines = (ushort)cartridge.Length;
 
             var memory = new Memory(cartridge);
-            _cpu = new CPU(memory);
+            cpu = new CPU(memory);
 
             Console.CursorVisible = false;
             Console.WriteLine("Staring Game Boy Emulator...");
@@ -83,7 +83,7 @@ namespace GameBoy
                     else if (key == ConsoleKey.R)
                     {
                         state = State.Stop;
-                        _cpu.Reset();
+                        cpu.Reset();
                         Console.Clear();
                         PrintCpuDebug();
                     }
@@ -95,7 +95,7 @@ namespace GameBoy
         {
             try
             {
-                _cpu.RunCommand();
+                cpu.RunCommand();
                 PrintCpuDebug();
             }
             catch (Exception e)
@@ -109,22 +109,22 @@ namespace GameBoy
         {
             Console.SetCursorPosition(0, 2);
 
-            Console.WriteLine($"PC: 0x{_cpu.PC:X4}, SP: 0x{_cpu.SP:X4}");
+            Console.WriteLine($"PC: 0x{cpu.PC:X4}, SP: 0x{cpu.SP:X4}");
             Console.WriteLine("----");
             Console.WriteLine($"Registers");
-            Console.WriteLine($"A: 0x{_cpu.A:X2} F: 0x{_cpu.F:X2}");
+            Console.WriteLine($"A: 0x{cpu.A:X2} F: 0x{cpu.F:X2}");
             Console.WriteLine("----");
-            Console.WriteLine($"B: 0x{_cpu.B:X2} C: 0x{_cpu.C:X2}");
-            Console.WriteLine($"D: 0x{_cpu.D:X2} E: 0x{_cpu.E:X2}");
-            Console.WriteLine($"H: 0x{_cpu.H:X2} L: 0x{_cpu.L:X2}");
+            Console.WriteLine($"B: 0x{cpu.B:X2} C: 0x{cpu.C:X2}");
+            Console.WriteLine($"D: 0x{cpu.D:X2} E: 0x{cpu.E:X2}");
+            Console.WriteLine($"H: 0x{cpu.H:X2} L: 0x{cpu.L:X2}");
             Console.WriteLine("----");
 
             Console.WriteLine("Memory");
             for (ushort i = 0; i < Math.Min(memoryPrintLines, Memory.MAX_ADDR); i++)
             {
-                bool isNextOpCode = _cpu.PC == i;
-                var data = _cpu.Memory.ReadByte(i);
-                Console.WriteLine($"{(isNextOpCode ? "->" : "  ")} 0x{ data:X2} {(isNextOpCode ? _cpu.GetOpCodeName(data) : "")}");
+                bool isNextOpCode = cpu.PC == i;
+                var data = cpu.Memory.ReadByte(i);
+                Console.WriteLine($"{(isNextOpCode ? "->" : "  ")} 0x{ data:X2} {(isNextOpCode ? cpu.GetOpCodeName(data) : "")}");
             }
         }
     }

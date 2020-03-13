@@ -27,7 +27,7 @@ namespace GameBoy.GB
 
         public Dictionary<byte, Func<int>> OpCodes { get; private set; } = new Dictionary<byte, Func<int>>();
 
-        private readonly Dictionary<byte, string> _opCodeNames = new Dictionary<byte, string>();
+        private readonly Dictionary<byte, string> opCodeNames = new Dictionary<byte, string>();
 
         public CPU(Memory memory, ILoadUnit loadUnit)
         {
@@ -73,9 +73,9 @@ namespace GameBoy.GB
 
         public string GetOpCodeName(byte code)
         {
-            if (_opCodeNames.ContainsKey(code))
+            if (opCodeNames.ContainsKey(code))
             {
-                return _opCodeNames[code];
+                return opCodeNames[code];
             }
             return $"Unknown opcode: {code:x2}";
         }
@@ -176,7 +176,7 @@ namespace GameBoy.GB
         private void CreateOpCode(byte command, Func<int> action, string name)
         {
             OpCodes.Add(command, action);
-            _opCodeNames.Add(command, name);
+            opCodeNames.Add(command, name);
         }
     }
 }

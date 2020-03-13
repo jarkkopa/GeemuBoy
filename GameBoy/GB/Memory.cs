@@ -12,57 +12,56 @@ namespace GameBoy.GB
 
         public MapMode RomMapMode { get; private set; }
 
-        private byte[]? bootRom;
-        private byte[] cartridge;
+        private readonly byte[]? bootRom;
 
         /// <summary>
         /// ROM bank #0
         /// Address: 0000-3FFF
         /// 16 kB
         /// </summary>
-        private byte[] rom = new byte[0x4000];
+        private readonly byte[] rom = new byte[0x4000];
         /// <summary>
         /// ROM bank 01-0F
         /// Address: 4000-7FFF
         /// 16 kB
         /// </summary>
-        private byte[] romBank = new byte[0x4000];
+        private readonly byte[] romBank = new byte[0x4000];
         /// <summary>
         /// Video RAM
         /// Address: 8000-9FFF
         /// 8 kB
         /// </summary>
-        private byte[] videoRam = new byte[0x2000];
+        private readonly byte[] videoRam = new byte[0x2000];
         /// <summary>
         /// External switchable RAM bank
         /// Address: A000-BFFF
         /// 8 kB
         /// </summary>
-        private byte[] ramBank = new byte[0x2000];
+        private readonly byte[] ramBank = new byte[0x2000];
         /// <summary>
         /// Work RAM bank 0
         /// Address: C000-DFFF
         /// 8 kB
         /// </summary>
-        private byte[] workRam = new byte[0x2000];
+        private readonly byte[] workRam = new byte[0x2000];
         /// <summary>
         /// Sprite attribute table (OAM)
         /// Address: FE00-FE9F
         /// 160 B
         /// </summary>
-        private byte[] oam = new byte[0xA0];
+        private readonly byte[] oam = new byte[0xA0];
         /// <summary>
         /// I/O Registers
         /// Address: FF00-FF4B
         /// 128 B
         /// </summary>
-        private byte[] ioRegisters = new byte[0x80];
+        private readonly byte[] ioRegisters = new byte[0x80];
         /// <summary>
         /// High RAM
         /// Address: FF80-FFFE
         /// 127 B
         /// </summary>
-        private byte[] highRam = new byte[0x7F];
+        private readonly byte[] highRam = new byte[0x7F];
         /// <summary>
         /// Interrupts Enable register
         /// Address: FFFF-FFFF
@@ -70,10 +69,9 @@ namespace GameBoy.GB
         /// </summary>
         private byte interruptEnableRegister;
 
-        public Memory( byte[] cartridge, MapMode initialMapMode = MapMode.Cartridge, byte[]? bootRom = null)
+        public Memory(byte[] cartridge, MapMode initialMapMode = MapMode.Cartridge, byte[]? bootRom = null)
         {
             this.bootRom = bootRom;
-            this.cartridge = cartridge;
 
             RomMapMode = initialMapMode;
 
