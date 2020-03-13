@@ -174,6 +174,8 @@ namespace GameBoy.GB
 
             CreateOpCode(0xF2, () => loadUnit.LoadFromAddress(ref A, (ushort)(0xFF00 + C)), "LD A, (C)");
             CreateOpCode(0xE2, () => loadUnit.WriteToAddress((ushort)(0xFF00 + C), A), "LD (C), A");
+
+            CreateOpCode(0x3A, () => loadUnit.LoadFromAddressAndDecrement(ref A, ref H, ref L), "LD A, (HL-)");
         }
 
         private void CreateOpCode(byte command, Func<int> action, string name)

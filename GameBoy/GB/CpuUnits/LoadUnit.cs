@@ -6,6 +6,7 @@
         public int LoadImmediateByte(ref byte dest, ref ushort PC);
         public int LoadFromAddress(ref byte dest, byte addrHigh, byte addrLow);
         public int LoadFromAddress(ref byte dest, ushort address);
+        public int LoadFromAddressAndDecrement(ref byte dest, ref byte addrHigh, ref byte addrLow);
         public int LoadImmediateByteToAddress(byte addrHigh, byte addrLow, ref ushort PC);
         public int LoadFromImmediateAddress(ref byte dest, ref ushort PC);
         public int WriteToAddress(byte addrHigh, byte addrLow, byte source);
@@ -43,6 +44,16 @@
         public int LoadFromAddress(ref byte dest, ushort address)
         {
             dest = memory.ReadByte(address);
+            return 8;
+        }
+
+        public int LoadFromAddressAndDecrement(ref byte dest, ref byte addrHigh, ref byte addrLow)
+        {
+            ushort address = BitUtils.BytesToUshort(addrHigh, addrLow);
+            dest = memory.ReadByte(address);
+            address -= 1;
+            addrHigh = BitUtils.MostSignificantByte(address);
+            addrLow = BitUtils.LeastSignificantByte(address);
             return 8;
         }
 

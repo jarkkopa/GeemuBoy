@@ -115,6 +115,8 @@ namespace GameBoy.GB.Tests
 
             AssertSingleCall(0xF2, () => loadUnit.LoadFromAddress(ref cpu.A, (ushort)(0xFF00 + cpu.C)));
             AssertSingleCall(0xE2, () => loadUnit.WriteToAddress((ushort)(0xFF00 + cpu.C), cpu.A));
+
+            AssertSingleCall(0x3A, () => loadUnit.LoadFromAddressAndDecrement(ref cpu.A, ref cpu.H, ref cpu.L));
         }
 
         private void AssertSingleCall(byte opcode, Expression<Func<int>> expectedCall)

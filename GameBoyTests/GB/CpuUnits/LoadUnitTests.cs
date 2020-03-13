@@ -148,6 +148,23 @@ namespace GameBoy.GB.CpuUnits.Tests
             Assert.Equal(16, cycles);
         }
 
+        [Fact()]
+        public void LoadFromAddressAndDecrementTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var loadUnit = new LoadUnit(memory);
 
+            byte dest = 0x00;
+            byte regH = 0xAB;
+            byte regL = 0x00;
+            memory.WriteByte(0xAB00, 0xEE);
+
+            var cycles = loadUnit.LoadFromAddressAndDecrement(ref dest, ref regH, ref regL);
+
+            Assert.Equal(0xEE, dest);
+            Assert.Equal(0xAA, regH);
+            Assert.Equal(0xFF, regL);
+            Assert.Equal(8, cycles);
+        }
     }
 }
