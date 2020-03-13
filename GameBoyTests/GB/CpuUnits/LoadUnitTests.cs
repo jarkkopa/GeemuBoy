@@ -155,15 +155,68 @@ namespace GameBoy.GB.CpuUnits.Tests
             var loadUnit = new LoadUnit(memory);
 
             byte dest = 0x00;
-            byte regH = 0xAB;
-            byte regL = 0x00;
+            byte addrHigh = 0xAB;
+            byte addrLow = 0x00;
             memory.WriteByte(0xAB00, 0xEE);
 
-            var cycles = loadUnit.LoadFromAddressAndDecrement(ref dest, ref regH, ref regL);
+            var cycles = loadUnit.LoadFromAddressAndIncrement(ref dest, ref addrHigh, ref addrLow, -1);
 
             Assert.Equal(0xEE, dest);
-            Assert.Equal(0xAA, regH);
-            Assert.Equal(0xFF, regL);
+            Assert.Equal(0xAA, addrHigh);
+            Assert.Equal(0xFF, addrLow);
+            Assert.Equal(8, cycles);
+        }
+
+        [Fact()]
+        public void LoadFromAddressAndIncrementTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var loadUnit = new LoadUnit(memory);
+
+            byte dest = 0x00;
+            byte addrHigh = 0xAA;
+            byte addrLow = 0xFF;
+            memory.WriteByte(0xAAFF, 0xEE);
+
+            var cycles = loadUnit.LoadFromAddressAndIncrement(ref dest, ref addrHigh, ref addrLow, 1);
+
+            Assert.Equal(0xEE, dest);
+            Assert.Equal(0xAB, addrHigh);
+            Assert.Equal(0x00, addrLow);
+            Assert.Equal(8, cycles);
+        }
+
+        [Fact()]
+        public void WriteToAddressAndDecrementTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var loadUnit = new LoadUnit(memory);
+
+            byte source = 0xDD;
+            byte addrHigh = 0xAB;
+            byte addrLow = 0x00;
+            var cycles = loadUnit.WriteToAddressAndIncrement(ref addrHigh, ref addrLow, source, -1);
+
+            Assert.Equal(0xDD, memory.ReadByte(0xAB00));
+            Assert.Equal(0xAA, addrHigh);
+            Assert.Equal(0xFF, addrLow);
+            Assert.Equal(8, cycles);
+        }
+
+        [Fact()]
+        public void WriteToAddressAndIncrementTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var loadUnit = new LoadUnit(memory);
+
+            byte source = 0xDD;
+            byte addrHigh = 0xAA;
+            byte addrLow = 0xFF;
+            var cycles = loadUnit.WriteToAddressAndIncrement(ref addrHigh, ref addrLow, source, 1);
+
+            Assert.Equal(0xDD, memory.ReadByte(0xAAFF));
+            Assert.Equal(0xAB, addrHigh);
+            Assert.Equal(0x00, addrLow);
             Assert.Equal(8, cycles);
         }
     }
