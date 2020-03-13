@@ -101,6 +101,17 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0x1A, () => _loadUnit.LoadFromAddress(ref _cpu.A, _cpu.D, _cpu.E));
             AssertSingleCall(0xFA, () => _loadUnit.LoadFromImmediateAddress(ref _cpu.A, ref _cpu.PC));
             AssertSingleCall(0x3E, () => _loadUnit.LoadImmediateByte(ref _cpu.A, ref _cpu.PC));
+
+            AssertSingleCall(0x47, () => _loadUnit.Copy(ref _cpu.B, ref _cpu.A));
+            AssertSingleCall(0x4F, () => _loadUnit.Copy(ref _cpu.C, ref _cpu.A));
+            AssertSingleCall(0x57, () => _loadUnit.Copy(ref _cpu.D, ref _cpu.A));
+            AssertSingleCall(0x5F, () => _loadUnit.Copy(ref _cpu.E, ref _cpu.A));
+            AssertSingleCall(0x67, () => _loadUnit.Copy(ref _cpu.H, ref _cpu.A));
+            AssertSingleCall(0x6F, () => _loadUnit.Copy(ref _cpu.L, ref _cpu.A));
+            AssertSingleCall(0x02, () => _loadUnit.WriteToAddress(_cpu.B, _cpu.C, ref _cpu.A));
+            AssertSingleCall(0x12, () => _loadUnit.WriteToAddress(_cpu.D, _cpu.E, ref _cpu.A));
+            AssertSingleCall(0x77, () => _loadUnit.WriteToAddress(_cpu.H, _cpu.L, ref _cpu.A));
+            AssertSingleCall(0xEA, () => _loadUnit.WriteToImmediateAddress(_cpu.A, ref _cpu.PC));
         }
 
         private void AssertSingleCall(byte opcode, Expression<Func<int>> expectedCall)
