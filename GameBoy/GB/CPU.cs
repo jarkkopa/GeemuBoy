@@ -203,6 +203,15 @@ namespace GameBoy.GB
             CreateOpCode(0xF9, () => loadUnit.Load(ref SP, H, L), "LD SP, HL");
             CreateOpCode(0xF8, () => ReadImmediateByte(out var immediate) + loadUnit.LoadAdjusted(ref H, ref L, SP, immediate), "LD HL, SP+n");
             CreateOpCode(0x08, () => ReadImmediateWord(out var immediate) + loadUnit.WriteToAddress(immediate, SP), "LD (nn), SP");
+
+            CreateOpCode(0xF5, () => loadUnit.Push(ref SP, A, F), "PUSH AF");
+            CreateOpCode(0xC5, () => loadUnit.Push(ref SP, B, C), "PUSH BC");
+            CreateOpCode(0xD5, () => loadUnit.Push(ref SP, D, E), "PUSH DE");
+            CreateOpCode(0xE5, () => loadUnit.Push(ref SP, H, L), "PUSH HL");
+            CreateOpCode(0xF1, () => loadUnit.Pop(ref A, ref F, ref SP), "POP AF");
+            CreateOpCode(0xC1, () => loadUnit.Pop(ref B, ref C, ref SP), "POP BC");
+            CreateOpCode(0xD1, () => loadUnit.Pop(ref D, ref E, ref SP), "POP DE");
+            CreateOpCode(0xE1, () => loadUnit.Pop(ref H, ref L, ref SP), "POP HL");
         }
 
         private void CreateOpCode(byte command, Func<int> action, string name)

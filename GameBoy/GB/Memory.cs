@@ -81,6 +81,13 @@ namespace GameBoy.GB
             }
         }
 
+        public ushort ReadWord(ushort addr)
+        {
+            var lsb = ReadByte(addr);
+            var msb = ReadByte((ushort)(addr + 1));
+            return BitUtils.BytesToUshort(msb, lsb);
+        }
+
         public byte ReadByte(ushort addr)
         {
             if (addr < 0x4000)

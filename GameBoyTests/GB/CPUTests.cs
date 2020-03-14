@@ -139,6 +139,15 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0xF9, () => loadUnit.Load(ref cpu.SP, cpu.H, cpu.L));
             AssertSingleCall(0xF8, () => loadUnit.LoadAdjusted(ref cpu.H, ref cpu.L, cpu.SP, IMMEDIATE_BYTE));
             AssertSingleCall(0x08, () => loadUnit.WriteToAddress(IMMEDIATE_WORD, cpu.SP));
+
+            AssertSingleCall(0xF5, () => loadUnit.Push(ref cpu.SP, cpu.A, cpu.F));
+            AssertSingleCall(0xC5, () => loadUnit.Push(ref cpu.SP, cpu.B, cpu.C));
+            AssertSingleCall(0xD5, () => loadUnit.Push(ref cpu.SP, cpu.D, cpu.E));
+            AssertSingleCall(0xE5, () => loadUnit.Push(ref cpu.SP, cpu.H, cpu.L));
+            AssertSingleCall(0xF1, () => loadUnit.Pop(ref cpu.A, ref cpu.F, ref cpu.SP));
+            AssertSingleCall(0xC1, () => loadUnit.Pop(ref cpu.B, ref cpu.C, ref cpu.SP));
+            AssertSingleCall(0xD1, () => loadUnit.Pop(ref cpu.D, ref cpu.E, ref cpu.SP));
+            AssertSingleCall(0xE1, () => loadUnit.Pop(ref cpu.H, ref cpu.L, ref cpu.SP));
         }
 
         [Fact()]

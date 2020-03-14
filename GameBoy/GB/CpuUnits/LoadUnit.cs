@@ -2,19 +2,21 @@
 {
     public interface ILoadUnit
     {
-        public int Load(ref byte dest, byte source);
-        public int Load(ref byte destHigh, ref byte destLow, ushort source);
-        public int Load(ref ushort dest, ushort source);
-        public int Load(ref ushort dest, byte sourceHigh, byte sourceLow);
-        public int LoadAdjusted(ref byte destHigh, ref byte destLow, ushort source, byte signedValue);
+        public int Load(ref byte dest, byte value);
+        public int Load(ref byte destHigh, ref byte destLow, ushort value);
+        public int Load(ref ushort dest, ushort value);
+        public int Load(ref ushort dest, byte valueHigh, byte valueLow);
+        public int LoadAdjusted(ref byte destHigh, ref byte destLow, ushort value, byte signedValue);
         public int LoadFromAddress(ref byte dest, byte addrHigh, byte addrLow);
         public int LoadFromAddress(ref byte dest, ushort address);
         public int LoadFromAddressAndIncrement(ref byte dest, ref byte addrHigh, ref byte addrLow, short value);
-        public int WriteToAddress(byte addrHigh, byte addrLow, byte source);
-        public int WriteToAddress(ushort address, byte source);
+        public int WriteToAddress(byte addrHigh, byte addrLow, byte value);
+        public int WriteToAddress(ushort address, byte value);
         public int WriteToAddress(ushort address, ushort value);
-        public int WriteToAddressAndIncrement(ref byte addrHigh, ref byte addrLow, byte source, short value);
-        public int WriteToImmediateAddress(byte source, ref ushort PC);
+        public int WriteToAddressAndIncrement(ref byte addrHigh, ref byte addrLow, byte value, short addValue);
+        public int WriteToImmediateAddress(byte value, ref ushort PC);
+        public int Push(ref ushort pointer, byte valueHigh, byte valueLow);
+        public int Pop(ref byte valueHigh, ref byte valuelow, ref ushort pointer);
     }
 
     public class LoadUnit : ILoadUnit
@@ -26,35 +28,35 @@
             this.memory = memory;
         }
 
-        public int Load(ref byte dest, byte source)
+        public int Load(ref byte dest, byte value)
         {
-            dest = source;
+            dest = value;
             return 4;
         }
 
-        public int Load(ref byte destHigh, ref byte destLow, ushort source)
+        public int Load(ref byte destHigh, ref byte destLow, ushort value)
         {
-            destHigh = BitUtils.MostSignificantByte(source);
-            destLow = BitUtils.LeastSignificantByte(source);
+            destHigh = BitUtils.MostSignificantByte(value);
+            destLow = BitUtils.LeastSignificantByte(value);
             return 4;
         }
 
-        public int Load(ref ushort dest, ushort source)
+        public int Load(ref ushort dest, ushort value)
         {
-            dest = source;
+            dest = value;
             return 4;
         }
 
-        public int Load(ref ushort dest, byte sourceHigh, byte sourceLow)
+        public int Load(ref ushort dest, byte valueHigh, byte valueLow)
         {
-            dest = BitUtils.BytesToUshort(sourceHigh, sourceLow);
+            dest = BitUtils.BytesToUshort(valueHigh, valueLow);
             return 8;
         }
 
-        public int LoadAdjusted(ref byte destHigh, ref byte destLow, ushort source, byte addValue)
+        public int LoadAdjusted(ref byte destHigh, ref byte destLow, ushort value, byte addValue)
         {
             sbyte signed = unchecked((sbyte)(addValue));
-            ushort result = (ushort)(source + signed);
+            ushort result = (ushort)(value + signed);
             destHigh = BitUtils.MostSignificantByte(result);
             destLow = BitUtils.LeastSignificantByte(result);
             // TODO: Set flags
@@ -82,14 +84,14 @@
             return 8;
         }
 
-        public int WriteToAddress(byte addrHigh, byte addrLow, byte source)
+        public int WriteToAddress(byte addrHigh, byte addrLow, byte value)
         {
-            return WriteToAddress(BitUtils.BytesToUshort(addrHigh, addrLow), source);
+            return WriteToAddress(BitUtils.BytesToUshort(addrHigh, addrLow), value);
         }
 
-        public int WriteToAddress(ushort address, byte source)
+        public int WriteToAddress(ushort address, byte value)
         {
-            memory.WriteByte(address, source);
+            memory.WriteByte(address, value);
             return 8;
         }
 
@@ -99,24 +101,40 @@
             return 16;
         }
 
-        public int WriteToAddressAndIncrement(ref byte addrHigh, ref byte addrLow, byte source, short value)
+        public int WriteToAddressAndIncrement(ref byte addrHigh, ref byte addrLow, byte value, short addValue)
         {
             ushort address = BitUtils.BytesToUshort(addrHigh, addrLow);
-            memory.WriteByte(address, source);
-            address = (ushort)(address + value);
+            memory.WriteByte(address, value);
+            address = (ushort)(address + addValue);
             addrHigh = BitUtils.MostSignificantByte(address);
             addrLow = BitUtils.LeastSignificantByte(address);
             return 8;
         }
 
-        public int WriteToImmediateAddress(byte source, ref ushort PC)
+        public int WriteToImmediateAddress(byte value, ref ushort PC)
         {
             byte addrHigh = memory.ReadByte(PC);
             PC++;
             byte addrLow = memory.ReadByte(PC);
             PC++;
-            memory.WriteByte(BitUtils.BytesToUshort(addrHigh, addrLow), source);
+            memory.WriteByte(BitUtils.BytesToUshort(addrHigh, addrLow), value);
             return 16;
+        }
+
+        public int Push(ref ushort pointer, byte valueHigh, byte valueLow)
+        {
+            pointer -= 2;
+            memory.WriteWord(pointer, BitUtils.BytesToUshort(valueHigh, valueLow));
+            return 16;
+        }
+
+        public int Pop(ref byte valueHigh, ref byte valueLow, ref ushort pointer)
+        {
+            ushort value = memory.ReadWord(pointer);
+            pointer += 2;
+            valueHigh = BitUtils.MostSignificantByte(value);
+            valueLow = BitUtils.LeastSignificantByte(value);
+            return 12;
         }
     }
 }
