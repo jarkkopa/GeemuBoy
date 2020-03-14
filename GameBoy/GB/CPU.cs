@@ -194,6 +194,8 @@ namespace GameBoy.GB
             CreateOpCode(0x32, () => loadUnit.WriteToAddressAndIncrement(ref H, ref L, A, -1), "LD (HL-), A");
             CreateOpCode(0x2A, () => loadUnit.LoadFromAddressAndIncrement(ref A, ref H, ref L, 1), "LD A, (HL+)");
             CreateOpCode(0x22, () => loadUnit.WriteToAddressAndIncrement(ref H, ref L, A, 1), "LD (HL+), A");
+            CreateOpCode(0xE0, () => ReadImmediateByte(out var immediate) + loadUnit.WriteToAddress((ushort)(0xFF00 + immediate), A), "LDH (n), A");
+            CreateOpCode(0xF0, () => ReadImmediateByte(out var immediate) + loadUnit.LoadFromAddress(ref A, (ushort)(0xFF00 + immediate)), "LDH A, (n)");
         }
 
         private void CreateOpCode(byte command, Func<int> action, string name)
