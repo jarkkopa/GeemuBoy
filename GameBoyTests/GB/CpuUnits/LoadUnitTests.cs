@@ -64,6 +64,42 @@ namespace GameBoy.GB.CpuUnits.Tests
         }
 
         [Fact()]
+        public void LoadAdjustedPositiveTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var loadUnit = new LoadUnit(memory);
+            byte toHigh = 0xF0;
+            byte toLow = 0xF0;
+            ushort from = 0xABFF;
+            byte addValue = 0x01;
+
+            var cycles = loadUnit.LoadAdjusted(ref toHigh, ref toLow, from, addValue);
+
+            Assert.Equal(0xAC, toHigh);
+            Assert.Equal(0x00, toLow);
+            Assert.Equal(8, cycles);
+            // TODO: Assert flags
+        }
+
+        [Fact()]
+        public void LoadAdjustedNegativeTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var loadUnit = new LoadUnit(memory);
+            byte toHigh = 0xF0;
+            byte toLow = 0xF0;
+            ushort from = 0xAC00;
+            byte addValue = 0xFF; // signed -1
+
+            var cycles = loadUnit.LoadAdjusted(ref toHigh, ref toLow, from, addValue);
+
+            Assert.Equal(0xAB, toHigh);
+            Assert.Equal(0xFF, toLow);
+            Assert.Equal(8, cycles);
+            // TODO: Assert flags
+        }
+
+        [Fact()]
         public void LoadFromCombinedAddressTest()
         {
             var memory = new Memory(new byte[0]);

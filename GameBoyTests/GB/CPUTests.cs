@@ -137,6 +137,7 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0x31, () => loadUnit.Load(ref cpu.SP, IMMEDIATE_WORD));
 
             AssertSingleCall(0xF9, () => loadUnit.Load(ref cpu.SP, cpu.H, cpu.L));
+            AssertSingleCall(0xF8, () => loadUnit.LoadAdjusted(ref cpu.H, ref cpu.L, cpu.SP, IMMEDIATE_BYTE));
         }
 
         [Fact()]

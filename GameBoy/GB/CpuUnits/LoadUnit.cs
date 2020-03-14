@@ -6,6 +6,7 @@
         public int Load(ref byte destHigh, ref byte destLow, ushort source);
         public int Load(ref ushort dest, ushort source);
         public int Load(ref ushort dest, byte sourceHigh, byte sourceLow);
+        public int LoadAdjusted(ref byte destHigh, ref byte destLow, ushort source, byte signedValue);
         public int LoadFromAddress(ref byte dest, byte addrHigh, byte addrLow);
         public int LoadFromAddress(ref byte dest, ushort address);
         public int LoadFromAddressAndIncrement(ref byte dest, ref byte addrHigh, ref byte addrLow, short value);
@@ -46,6 +47,16 @@
         public int Load(ref ushort dest, byte sourceHigh, byte sourceLow)
         {
             dest = BitUtils.BytesToUshort(sourceHigh, sourceLow);
+            return 8;
+        }
+
+        public int LoadAdjusted(ref byte destHigh, ref byte destLow, ushort source, byte addValue)
+        {
+            sbyte signed = unchecked((sbyte)(addValue));
+            ushort result = (ushort)(source + signed);
+            destHigh = BitUtils.MostSignificantByte(result);
+            destLow = BitUtils.LeastSignificantByte(result);
+            // TODO: Set flags
             return 8;
         }
 
