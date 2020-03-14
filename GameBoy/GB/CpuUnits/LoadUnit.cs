@@ -3,12 +3,9 @@
     public interface ILoadUnit
     {
         public int Copy(ref byte dest, byte source);
-        public int LoadImmediateByte(ref byte dest, ref ushort PC);
         public int LoadFromAddress(ref byte dest, byte addrHigh, byte addrLow);
         public int LoadFromAddress(ref byte dest, ushort address);
         public int LoadFromAddressAndIncrement(ref byte dest, ref byte addrHigh, ref byte addrLow, short value);
-        public int LoadImmediateByteToAddress(byte addrHigh, byte addrLow, ref ushort PC);
-        public int LoadFromImmediateAddress(ref byte dest, ref ushort PC);
         public int WriteToAddress(byte addrHigh, byte addrLow, byte source);
         public int WriteToAddress(ushort address, byte source);
         public int WriteToAddressAndIncrement(ref byte addrHigh, ref byte addrLow, byte source, short value);
@@ -30,13 +27,6 @@
             return 4;
         }
 
-        public int LoadImmediateByte(ref byte dest, ref ushort PC)
-        {
-            dest = memory.ReadByte(PC);
-            PC++;
-            return 8;
-        }
-
         public int LoadFromAddress(ref byte dest, byte addrHigh, byte addrLow)
         {
             return LoadFromAddress(ref dest, BitUtils.BytesToUshort(addrHigh, addrLow));
@@ -56,24 +46,6 @@
             addrHigh = BitUtils.MostSignificantByte(address);
             addrLow = BitUtils.LeastSignificantByte(address);
             return 8;
-        }
-
-        public int LoadImmediateByteToAddress(byte addrHigh, byte addrLow, ref ushort PC)
-        {
-            byte data = memory.ReadByte(PC);
-            PC++;
-            memory.WriteByte(BitUtils.BytesToUshort(addrHigh, addrLow), data);
-            return 12;
-        }
-
-        public int LoadFromImmediateAddress(ref byte dest, ref ushort PC)
-        {
-            byte addressHigh = memory.ReadByte(PC);
-            PC++;
-            byte addressLow = memory.ReadByte(PC);
-            PC++;
-            dest = memory.ReadByte(BitUtils.BytesToUshort(addressHigh, addressLow));
-            return 16;
         }
 
         public int WriteToAddress(byte addrHigh, byte addrLow, byte source)

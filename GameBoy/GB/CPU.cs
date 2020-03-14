@@ -80,17 +80,32 @@ namespace GameBoy.GB
             return $"Unknown opcode: {code:x2}";
         }
 
+        public int ReadImmediateByte(out byte value)
+        {
+            value = Memory.ReadByte(PC);
+            PC++;
+            return 4;
+        }
+
+        public int ReadImmediateWord(out ushort value)
+        {
+            var msb = Memory.ReadByte(PC);
+            PC++;
+            var lsb = Memory.ReadByte(PC);
+            PC++;
+            value = BitUtils.BytesToUshort(msb, lsb);
+            return 8;
+        }
+
         private void CreateOpCodes()
         {
-            // LD nn, n
-            CreateOpCode(0x06, () => loadUnit.LoadImmediateByte(ref B, ref PC), "LD B, n");
-            CreateOpCode(0x0E, () => loadUnit.LoadImmediateByte(ref C, ref PC), "LD C, n");
-            CreateOpCode(0x16, () => loadUnit.LoadImmediateByte(ref D, ref PC), "LD D, n");
-            CreateOpCode(0x1E, () => loadUnit.LoadImmediateByte(ref E, ref PC), "LD E, n");
-            CreateOpCode(0x26, () => loadUnit.LoadImmediateByte(ref H, ref PC), "LD H, n");
-            CreateOpCode(0x2E, () => loadUnit.LoadImmediateByte(ref L, ref PC), "LD L, n");
+            CreateOpCode(0x06, () => ReadImmediateByte(out var immediate) + loadUnit.Copy(ref B, immediate), "LD B, n");
+            CreateOpCode(0x0E, () => ReadImmediateByte(out var immediate) + loadUnit.Copy(ref C, immediate), "LD C, n");
+            CreateOpCode(0x16, () => ReadImmediateByte(out var immediate) + loadUnit.Copy(ref D, immediate), "LD D, n");
+            CreateOpCode(0x1E, () => ReadImmediateByte(out var immediate) + loadUnit.Copy(ref E, immediate), "LD E, n");
+            CreateOpCode(0x26, () => ReadImmediateByte(out var immediate) + loadUnit.Copy(ref H, immediate), "LD H, n");
+            CreateOpCode(0x2E, () => ReadImmediateByte(out var immediate) + loadUnit.Copy(ref L, immediate), "LD L, n");
 
-            //LD r1, r2
             CreateOpCode(0x7F, () => loadUnit.Copy(ref A, A), "LD A, A");
             CreateOpCode(0x78, () => loadUnit.Copy(ref A, B), "LD A, B");
             CreateOpCode(0x79, () => loadUnit.Copy(ref A, C), "LD A, C");
@@ -154,12 +169,12 @@ namespace GameBoy.GB
             CreateOpCode(0x73, () => loadUnit.WriteToAddress(H, L, E), "LD (HL), E");
             CreateOpCode(0x74, () => loadUnit.WriteToAddress(H, L, H), "LD (HL), H");
             CreateOpCode(0x75, () => loadUnit.WriteToAddress(H, L, L), "LD (HL), L");
-            CreateOpCode(0x36, () => loadUnit.LoadImmediateByteToAddress(H, L, ref PC), "LD (HL), n");
+            CreateOpCode(0x36, () => ReadImmediateByte(out var immediate) + loadUnit.WriteToAddress(H, L, immediate), "LD (HL), n");
 
             CreateOpCode(0x0A, () => loadUnit.LoadFromAddress(ref A, B, C), "LD A, (BC)");
             CreateOpCode(0x1A, () => loadUnit.LoadFromAddress(ref A, D, E), "LD A, (DE)");
-            CreateOpCode(0xFA, () => loadUnit.LoadFromImmediateAddress(ref A, ref PC), "LD A, (nn)");
-            CreateOpCode(0x3E, () => loadUnit.LoadImmediateByte(ref A, ref PC), "LD A, n");
+            CreateOpCode(0xFA, () => ReadImmediateWord(out var immediate) + loadUnit.LoadFromAddress(ref A, immediate), "LD A, (nn)");
+            CreateOpCode(0x3E, () => ReadImmediateByte(out var immediate) + loadUnit.Copy(ref A, immediate), "LO A, n");
 
             CreateOpCode(0x47, () => loadUnit.Copy(ref B, A), "LD B, A");
             CreateOpCode(0x4F, () => loadUnit.Copy(ref C, A), "LD C, A");
@@ -170,7 +185,7 @@ namespace GameBoy.GB
             CreateOpCode(0x02, () => loadUnit.WriteToAddress(B, C, A), "LD (BC), A");
             CreateOpCode(0x12, () => loadUnit.WriteToAddress(D, E, A), "LD (DE), A");
             CreateOpCode(0x77, () => loadUnit.WriteToAddress(H, L, A), "LD (HL), A");
-            CreateOpCode(0xEA, () => loadUnit.WriteToImmediateAddress(A, ref PC), "LD (nn), A");
+            CreateOpCode(0xEA, () => ReadImmediateWord(out var immediate) + loadUnit.WriteToAddress(immediate, A), "LD (nn), A");
 
             CreateOpCode(0xF2, () => loadUnit.LoadFromAddress(ref A, (ushort)(0xFF00 + C)), "LD A, (C)");
             CreateOpCode(0xE2, () => loadUnit.WriteToAddress((ushort)(0xFF00 + C), A), "LD (C), A");

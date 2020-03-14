@@ -1,5 +1,4 @@
-﻿using GameBoy.GB.CpuUnits;
-using Xunit;
+﻿using Xunit;
 
 namespace GameBoy.GB.CpuUnits.Tests
 {
@@ -17,25 +16,6 @@ namespace GameBoy.GB.CpuUnits.Tests
 
             Assert.Equal(0xFF, to);
             Assert.Equal(4, cycles);
-        }
-
-        [Fact()]
-        public void LoadImmediate8Test()
-        {
-            var memory = new Memory(new byte[]
-            {
-                0xFF
-            });
-            var loadUnit = new LoadUnit(memory);
-
-            byte to = 0x00;
-            ushort PC = 0;
-
-            var cycles = loadUnit.LoadImmediateByte(ref to, ref PC);
-
-            Assert.Equal(0xFF, to);
-            Assert.Equal(1, PC);
-            Assert.Equal(8, cycles);
         }
 
         [Fact()]
@@ -64,43 +44,6 @@ namespace GameBoy.GB.CpuUnits.Tests
 
             Assert.Equal(0x10, to);
             Assert.Equal(8, cycles);
-        }
-
-        [Fact()]
-        public void LoadImmediate8ToAddressTest()
-        {
-            var memory = new Memory(new byte[]
-            {
-                0xAA
-            });
-            var loadUnit = new LoadUnit(memory);
-            ushort PC = 0x00;
-
-            var cycles = loadUnit.LoadImmediateByteToAddress(0xCC, 0xDD, ref PC);
-
-            Assert.Equal(0xAA, memory.ReadByte(0xCCDD));
-            Assert.Equal(0x01, PC);
-            Assert.Equal(12, cycles);
-        }
-
-        [Fact()]
-        public void LoadFromImmediateAddressTest()
-        {
-            var memory = new Memory(new byte[]
-            {
-                0xCC,
-                0xDD
-            });
-            var loadUnit = new LoadUnit(memory);
-            ushort PC = 0x00;
-            byte to = 0x00;
-            memory.WriteByte(0xCCDD, 0xAA);
-
-            var cycles = loadUnit.LoadFromImmediateAddress(ref to, ref PC);
-
-            Assert.Equal(0xAA, to);
-            Assert.Equal(0x02, PC);
-            Assert.Equal(16, cycles);
         }
 
         [Fact()]

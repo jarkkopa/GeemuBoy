@@ -8,13 +8,20 @@ namespace GameBoy.GB.Tests
 {
     public class CPUTests
     {
+        private const byte IMMEDIATE_BYTE = 0x01;
+        private const ushort IMMEDIATE_WORD = 0x0123;
+
         private readonly Memory memory;
         private readonly ILoadUnit loadUnit;
         private readonly CPU cpu;
 
         public CPUTests()
         {
-            memory = new Memory(new byte[] { });
+            memory = new Memory(new byte[]
+            {
+                IMMEDIATE_BYTE,
+                IMMEDIATE_WORD & 0x00FF
+            });
             loadUnit = A.Fake<ILoadUnit>();
             cpu = new CPU(memory, loadUnit)
             {
@@ -32,12 +39,12 @@ namespace GameBoy.GB.Tests
         [Fact()]
         public void LoadByteInstructionMappingTest()
         {
-            AssertSingleCall(0x06, () => loadUnit.LoadImmediateByte(ref cpu.B, ref cpu.PC));
-            AssertSingleCall(0x0E, () => loadUnit.LoadImmediateByte(ref cpu.C, ref cpu.PC));
-            AssertSingleCall(0x16, () => loadUnit.LoadImmediateByte(ref cpu.D, ref cpu.PC));
-            AssertSingleCall(0x1E, () => loadUnit.LoadImmediateByte(ref cpu.E, ref cpu.PC));
-            AssertSingleCall(0x26, () => loadUnit.LoadImmediateByte(ref cpu.H, ref cpu.PC));
-            AssertSingleCall(0x2E, () => loadUnit.LoadImmediateByte(ref cpu.L, ref cpu.PC));
+            AssertSingleCall(0x06, () => loadUnit.Copy(ref cpu.B, IMMEDIATE_BYTE));
+            AssertSingleCall(0x0E, () => loadUnit.Copy(ref cpu.C, IMMEDIATE_BYTE));
+            AssertSingleCall(0x16, () => loadUnit.Copy(ref cpu.D, IMMEDIATE_BYTE));
+            AssertSingleCall(0x1E, () => loadUnit.Copy(ref cpu.E, IMMEDIATE_BYTE));
+            AssertSingleCall(0x26, () => loadUnit.Copy(ref cpu.H, IMMEDIATE_BYTE));
+            AssertSingleCall(0x2E, () => loadUnit.Copy(ref cpu.L, IMMEDIATE_BYTE));
 
             AssertSingleCall(0x7F, () => loadUnit.Copy(ref cpu.A, cpu.A));
             AssertSingleCall(0x78, () => loadUnit.Copy(ref cpu.A, cpu.B));
@@ -95,12 +102,12 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0x73, () => loadUnit.WriteToAddress(cpu.H, cpu.L, cpu.E));
             AssertSingleCall(0x74, () => loadUnit.WriteToAddress(cpu.H, cpu.L, cpu.H));
             AssertSingleCall(0x75, () => loadUnit.WriteToAddress(cpu.H, cpu.L, cpu.L));
-            AssertSingleCall(0x36, () => loadUnit.LoadImmediateByteToAddress(cpu.H, cpu.L, ref cpu.PC));
+            AssertSingleCall(0x36, () => loadUnit.WriteToAddress(cpu.H, cpu.L, IMMEDIATE_BYTE));
 
             AssertSingleCall(0x0A, () => loadUnit.LoadFromAddress(ref cpu.A, cpu.B, cpu.C));
             AssertSingleCall(0x1A, () => loadUnit.LoadFromAddress(ref cpu.A, cpu.D, cpu.E));
-            AssertSingleCall(0xFA, () => loadUnit.LoadFromImmediateAddress(ref cpu.A, ref cpu.PC));
-            AssertSingleCall(0x3E, () => loadUnit.LoadImmediateByte(ref cpu.A, ref cpu.PC));
+            AssertSingleCall(0xFA, () => loadUnit.LoadFromAddress(ref cpu.A, IMMEDIATE_WORD));
+            AssertSingleCall(0x3E, () => loadUnit.Copy(ref cpu.A, IMMEDIATE_BYTE));
 
             AssertSingleCall(0x47, () => loadUnit.Copy(ref cpu.B, cpu.A));
             AssertSingleCall(0x4F, () => loadUnit.Copy(ref cpu.C, cpu.A));
@@ -111,7 +118,7 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0x02, () => loadUnit.WriteToAddress(cpu.B, cpu.C, cpu.A));
             AssertSingleCall(0x12, () => loadUnit.WriteToAddress(cpu.D, cpu.E, cpu.A));
             AssertSingleCall(0x77, () => loadUnit.WriteToAddress(cpu.H, cpu.L, cpu.A));
-            AssertSingleCall(0xEA, () => loadUnit.WriteToImmediateAddress(cpu.A, ref cpu.PC));
+            AssertSingleCall(0xEA, () => loadUnit.WriteToAddress(IMMEDIATE_WORD, cpu.A));
 
             AssertSingleCall(0xF2, () => loadUnit.LoadFromAddress(ref cpu.A, (ushort)(0xFF00 + cpu.C)));
             AssertSingleCall(0xE2, () => loadUnit.WriteToAddress((ushort)(0xFF00 + cpu.C), cpu.A));
@@ -122,11 +129,34 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0x22, () => loadUnit.WriteToAddressAndIncrement(ref cpu.H, ref cpu.L, cpu.A, 1));
         }
 
+        [Fact()]
+        public void ReadImmediateByteTest()
+        {
+            var cycles = cpu.ReadImmediateByte(out var immediate);
+
+            Assert.Equal(IMMEDIATE_BYTE, immediate);
+            Assert.Equal(1, cpu.PC);
+            Assert.Equal(4, cycles);
+        }
+
+        [Fact()]
+        public void ReadImmediateWordTest()
+        {
+            var cycles = cpu.ReadImmediateWord(out var immediate);
+
+            Assert.Equal(IMMEDIATE_WORD, immediate);
+            Assert.Equal(2, cpu.PC);
+            Assert.Equal(8, cycles);
+        }
+
         private void AssertSingleCall(byte opcode, Expression<Func<int>> expectedCall)
         {
             cpu.OpCodes[opcode]();
             A.CallTo(expectedCall).MustHaveHappenedOnceExactly();
             Fake.ClearRecordedCalls(loadUnit);
+
+            // Reset PC between calls because some instructions rely on immediate values at the beginning of the rom.
+            cpu.PC = 0;
         }
     }
 }

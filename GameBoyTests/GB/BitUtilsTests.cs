@@ -1,5 +1,4 @@
-﻿using GameBoy.GB;
-using Xunit;
+﻿using Xunit;
 
 namespace GameBoy.GB.Tests
 {
