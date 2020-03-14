@@ -154,6 +154,20 @@ namespace GameBoy.GB.CpuUnits.Tests
         }
 
         [Fact()]
+        public void WriteWordToAddressTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var loadUnit = new LoadUnit(memory);
+            ushort value = 0xABCD;
+
+            var cycles = loadUnit.WriteToAddress(0xABBA, value);
+
+            Assert.Equal(0xCD, memory.ReadByte(0xABBA));
+            Assert.Equal(0xAB, memory.ReadByte(0xABBB));
+            Assert.Equal(16, cycles);
+        }
+
+        [Fact()]
         public void WriteImmediateAddressTest()
         {
             var memory = new Memory(new byte[]

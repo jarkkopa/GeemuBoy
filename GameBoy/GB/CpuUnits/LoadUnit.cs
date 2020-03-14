@@ -12,6 +12,7 @@
         public int LoadFromAddressAndIncrement(ref byte dest, ref byte addrHigh, ref byte addrLow, short value);
         public int WriteToAddress(byte addrHigh, byte addrLow, byte source);
         public int WriteToAddress(ushort address, byte source);
+        public int WriteToAddress(ushort address, ushort value);
         public int WriteToAddressAndIncrement(ref byte addrHigh, ref byte addrLow, byte source, short value);
         public int WriteToImmediateAddress(byte source, ref ushort PC);
     }
@@ -90,6 +91,12 @@
         {
             memory.WriteByte(address, source);
             return 8;
+        }
+
+        public int WriteToAddress(ushort address, ushort value)
+        {
+            memory.WriteWord(address, value);
+            return 16;
         }
 
         public int WriteToAddressAndIncrement(ref byte addrHigh, ref byte addrLow, byte source, short value)

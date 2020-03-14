@@ -147,10 +147,13 @@ namespace GameBoy.GB
             }
         }
 
-        //public void WriteByte(ushort addr, byte data)
-        //{
-        //    WriteByte(addr, data, false);
-        //}
+        public void WriteWord(ushort addr, ushort data)
+        {
+            byte msb = BitUtils.MostSignificantByte(data);
+            byte lsb = BitUtils.LeastSignificantByte(data);
+            WriteByte(addr, lsb);
+            WriteByte((ushort)(addr + 1), msb);
+        }
 
         public void WriteByte(ushort addr, byte data, bool overwriteRom = false)
         {
