@@ -2,7 +2,10 @@
 {
     public interface ILoadUnit
     {
-        public int Copy(ref byte dest, byte source);
+        public int Load(ref byte dest, byte source);
+        public int Load(ref byte destHigh, ref byte destLow, ushort source);
+        public int Load(ref ushort dest, ushort source);
+        public int Load(ref ushort dest, byte sourceHigh, byte sourceLow);
         public int LoadFromAddress(ref byte dest, byte addrHigh, byte addrLow);
         public int LoadFromAddress(ref byte dest, ushort address);
         public int LoadFromAddressAndIncrement(ref byte dest, ref byte addrHigh, ref byte addrLow, short value);
@@ -21,10 +24,29 @@
             this.memory = memory;
         }
 
-        public int Copy(ref byte dest, byte source)
+        public int Load(ref byte dest, byte source)
         {
             dest = source;
             return 4;
+        }
+
+        public int Load(ref byte destHigh, ref byte destLow, ushort source)
+        {
+            destHigh = BitUtils.MostSignificantByte(source);
+            destLow = BitUtils.LeastSignificantByte(source);
+            return 4;
+        }
+
+        public int Load(ref ushort dest, ushort source)
+        {
+            dest = source;
+            return 4;
+        }
+
+        public int Load(ref ushort dest, byte sourceHigh, byte sourceLow)
+        {
+            dest = BitUtils.BytesToUshort(sourceHigh, sourceLow);
+            return 8;
         }
 
         public int LoadFromAddress(ref byte dest, byte addrHigh, byte addrLow)

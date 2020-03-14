@@ -5,17 +5,62 @@ namespace GameBoy.GB.CpuUnits.Tests
     public class LoadUnitTests
     {
         [Fact()]
-        public void CopyTest()
+        public void LoadTest()
         {
             var memory = new Memory(new byte[0]);
             var loadUnit = new LoadUnit(memory);
             byte to = 0x00;
             byte from = 0xFF;
 
-            var cycles = loadUnit.Copy(ref to, from);
+            var cycles = loadUnit.Load(ref to, from);
 
             Assert.Equal(0xFF, to);
             Assert.Equal(4, cycles);
+        }
+
+        [Fact()]
+        public void LoadWordTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var loadUnit = new LoadUnit(memory);
+            byte high = 0x00;
+            byte low = 0x00;
+            ushort from = 0xABCD;
+
+            var cycles = loadUnit.Load(ref high, ref low, from);
+
+            Assert.Equal(0xAB, high);
+            Assert.Equal(0xCD, low);
+            Assert.Equal(4, cycles);
+        }
+
+        [Fact()]
+        public void LoadWordToWord()
+        {
+            var memory = new Memory(new byte[0]);
+            var loadUnit = new LoadUnit(memory);
+            ushort to = 0x00;
+            ushort from = 0xABCD;
+
+            var cycles = loadUnit.Load(ref to, from);
+
+            Assert.Equal(0xABCD, to);
+            Assert.Equal(4, cycles);
+        }
+
+        [Fact()]
+        public void LoadBytesToWord()
+        {
+            var memory = new Memory(new byte[0]);
+            var loadUnit = new LoadUnit(memory);
+            ushort to = 0x00;
+            byte fromHigh = 0xAB;
+            byte fromLow = 0xCD;
+
+            var cycles = loadUnit.Load(ref to, fromHigh, fromLow);
+
+            Assert.Equal(0xABCD, to);
+            Assert.Equal(8, cycles);
         }
 
         [Fact()]
