@@ -7,6 +7,7 @@ namespace GameBoy.GB
     public class CPU
     {
         private readonly ILoadUnit loadUnit;
+        private readonly IALU alu;
 
         public byte A;
         public byte B;
@@ -28,16 +29,18 @@ namespace GameBoy.GB
 
         private readonly Dictionary<byte, string> opCodeNames = new Dictionary<byte, string>();
 
-        public CPU(Memory memory, ILoadUnit loadUnit)
+        public CPU(Memory memory, ILoadUnit loadUnit, IALU alu)
         {
             this.loadUnit = loadUnit;
+            this.alu = alu;
 
-            CreateOpCodes();
+            CreateLoadUnitOpCodes();
+            CreateALUOpCodes();
 
             Memory = memory;
         }
 
-        public CPU(Memory memory) : this(memory, new LoadUnit(memory))
+        public CPU(Memory memory) : this(memory, new LoadUnit(memory), new ALU(memory))
         {
         }
 
@@ -96,7 +99,7 @@ namespace GameBoy.GB
             return 8;
         }
 
-        private void CreateOpCodes()
+        private void CreateLoadUnitOpCodes()
         {
             CreateOpCode(0x06, () => ReadImmediateByte(out var immediate) + loadUnit.Load(ref B, immediate), "LD B, n");
             CreateOpCode(0x0E, () => ReadImmediateByte(out var immediate) + loadUnit.Load(ref C, immediate), "LD C, n");
@@ -212,6 +215,19 @@ namespace GameBoy.GB
             CreateOpCode(0xC1, () => loadUnit.Pop(ref B, ref C, ref SP), "POP BC");
             CreateOpCode(0xD1, () => loadUnit.Pop(ref D, ref E, ref SP), "POP DE");
             CreateOpCode(0xE1, () => loadUnit.Pop(ref H, ref L, ref SP), "POP HL");
+        }
+
+        private void CreateALUOpCodes()
+        {
+            CreateOpCode(0x87, () => alu.Add(ref A, A, ref F), "ADD A, A");
+            CreateOpCode(0x80, () => alu.Add(ref A, B, ref F), "ADD A, B");
+            CreateOpCode(0x81, () => alu.Add(ref A, C, ref F), "ADD A, C");
+            CreateOpCode(0x82, () => alu.Add(ref A, D, ref F), "ADD A, D");
+            CreateOpCode(0x83, () => alu.Add(ref A, E, ref F), "ADD A, E");
+            CreateOpCode(0x84, () => alu.Add(ref A, H, ref F), "ADD A, H");
+            CreateOpCode(0x85, () => alu.Add(ref A, L, ref F), "ADD A, L");
+            CreateOpCode(0x86, () => alu.AddFromMemory(ref A, H, L, ref F), "ADD A, (HL)");
+            CreateOpCode(0xC6, () => ReadImmediateByte(out var immediate) + alu.Add(ref A, immediate, ref F), "ADD A, n");
         }
 
         private void CreateOpCode(byte command, Func<int> action, string name)

@@ -12,8 +12,9 @@ namespace GameBoy.GB.Tests
         private const ushort IMMEDIATE_WORD = 0x0123;
 
         private readonly Memory memory;
-        private readonly ILoadUnit loadUnit;
         private readonly CPU cpu;
+        private readonly ILoadUnit loadUnit;
+        private readonly IALU alu;
 
         public CPUTests()
         {
@@ -23,7 +24,8 @@ namespace GameBoy.GB.Tests
                 IMMEDIATE_WORD & 0x00FF
             });
             loadUnit = A.Fake<ILoadUnit>();
-            cpu = new CPU(memory, loadUnit)
+            alu = A.Fake<IALU>();
+            cpu = new CPU(memory, loadUnit, alu)
             {
                 A = 0x0A,
                 B = 0x0B,
@@ -148,6 +150,20 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0xC1, () => loadUnit.Pop(ref cpu.B, ref cpu.C, ref cpu.SP));
             AssertSingleCall(0xD1, () => loadUnit.Pop(ref cpu.D, ref cpu.E, ref cpu.SP));
             AssertSingleCall(0xE1, () => loadUnit.Pop(ref cpu.H, ref cpu.L, ref cpu.SP));
+        }
+
+        [Fact()]
+        public void ALUInstructionMappingTest()
+        {
+            AssertSingleCall(0x87, () => alu.Add(ref cpu.A, cpu.A, ref cpu.F));
+            AssertSingleCall(0x80, () => alu.Add(ref cpu.A, cpu.B, ref cpu.F));
+            AssertSingleCall(0x81, () => alu.Add(ref cpu.A, cpu.C, ref cpu.F));
+            AssertSingleCall(0x82, () => alu.Add(ref cpu.A, cpu.D, ref cpu.F));
+            AssertSingleCall(0x83, () => alu.Add(ref cpu.A, cpu.E, ref cpu.F));
+            AssertSingleCall(0x84, () => alu.Add(ref cpu.A, cpu.H, ref cpu.F));
+            AssertSingleCall(0x85, () => alu.Add(ref cpu.A, cpu.L, ref cpu.F));
+            AssertSingleCall(0x86, () => alu.AddFromMemory(ref cpu.A, cpu.H, cpu.L, ref cpu.F));
+            AssertSingleCall(0xC6, () => alu.Add(ref cpu.A, IMMEDIATE_BYTE, ref cpu.F));
         }
 
         [Fact()]
