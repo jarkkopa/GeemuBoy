@@ -155,15 +155,25 @@ namespace GameBoy.GB.Tests
         [Fact()]
         public void ALUInstructionMappingTest()
         {
-            AssertSingleCall(0x87, () => alu.Add(ref cpu.A, cpu.A, ref cpu.F));
-            AssertSingleCall(0x80, () => alu.Add(ref cpu.A, cpu.B, ref cpu.F));
-            AssertSingleCall(0x81, () => alu.Add(ref cpu.A, cpu.C, ref cpu.F));
-            AssertSingleCall(0x82, () => alu.Add(ref cpu.A, cpu.D, ref cpu.F));
-            AssertSingleCall(0x83, () => alu.Add(ref cpu.A, cpu.E, ref cpu.F));
-            AssertSingleCall(0x84, () => alu.Add(ref cpu.A, cpu.H, ref cpu.F));
-            AssertSingleCall(0x85, () => alu.Add(ref cpu.A, cpu.L, ref cpu.F));
-            AssertSingleCall(0x86, () => alu.AddFromMemory(ref cpu.A, cpu.H, cpu.L, ref cpu.F));
-            AssertSingleCall(0xC6, () => alu.Add(ref cpu.A, IMMEDIATE_BYTE, ref cpu.F));
+            AssertSingleCall(0x87, () => alu.Add(ref cpu.A, cpu.A, ref cpu.F, false));
+            AssertSingleCall(0x80, () => alu.Add(ref cpu.A, cpu.B, ref cpu.F, false));
+            AssertSingleCall(0x81, () => alu.Add(ref cpu.A, cpu.C, ref cpu.F, false));
+            AssertSingleCall(0x82, () => alu.Add(ref cpu.A, cpu.D, ref cpu.F, false));
+            AssertSingleCall(0x83, () => alu.Add(ref cpu.A, cpu.E, ref cpu.F, false));
+            AssertSingleCall(0x84, () => alu.Add(ref cpu.A, cpu.H, ref cpu.F, false));
+            AssertSingleCall(0x85, () => alu.Add(ref cpu.A, cpu.L, ref cpu.F, false));
+            AssertSingleCall(0x86, () => alu.AddFromMemory(ref cpu.A, cpu.H, cpu.L, ref cpu.F, false));
+            AssertSingleCall(0xC6, () => alu.Add(ref cpu.A, IMMEDIATE_BYTE, ref cpu.F, false));
+
+            AssertSingleCall(0x8F, () => alu.Add(ref cpu.A, cpu.A, ref cpu.F, true));
+            AssertSingleCall(0x88, () => alu.Add(ref cpu.A, cpu.B, ref cpu.F, true));
+            AssertSingleCall(0x89, () => alu.Add(ref cpu.A, cpu.C, ref cpu.F, true));
+            AssertSingleCall(0x8A, () => alu.Add(ref cpu.A, cpu.D, ref cpu.F, true));
+            AssertSingleCall(0x8B, () => alu.Add(ref cpu.A, cpu.E, ref cpu.F, true));
+            AssertSingleCall(0x8C, () => alu.Add(ref cpu.A, cpu.H, ref cpu.F, true));
+            AssertSingleCall(0x8D, () => alu.Add(ref cpu.A, cpu.L, ref cpu.F, true));
+            AssertSingleCall(0x8E, () => alu.AddFromMemory(ref cpu.A, cpu.H, cpu.L, ref cpu.F, true));
+            AssertSingleCall(0xCE, () => alu.Add(ref cpu.A, IMMEDIATE_BYTE, ref cpu.F, true));
         }
 
         [Fact()]

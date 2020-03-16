@@ -228,6 +228,16 @@ namespace GameBoy.GB
             CreateOpCode(0x85, () => alu.Add(ref A, L, ref F), "ADD A, L");
             CreateOpCode(0x86, () => alu.AddFromMemory(ref A, H, L, ref F), "ADD A, (HL)");
             CreateOpCode(0xC6, () => ReadImmediateByte(out var immediate) + alu.Add(ref A, immediate, ref F), "ADD A, n");
+
+            CreateOpCode(0x8F, () => alu.Add(ref A, A, ref F, true), "ADC A,A");
+            CreateOpCode(0x88, () => alu.Add(ref A, B, ref F, true), "ADC A,B");
+            CreateOpCode(0x89, () => alu.Add(ref A, C, ref F, true), "ADC A,C");
+            CreateOpCode(0x8A, () => alu.Add(ref A, D, ref F, true), "ADC A,D");
+            CreateOpCode(0x8B, () => alu.Add(ref A, E, ref F, true), "ADC A,E");
+            CreateOpCode(0x8C, () => alu.Add(ref A, H, ref F, true), "ADC A,H");
+            CreateOpCode(0x8D, () => alu.Add(ref A, L, ref F, true), "ADC A,L");
+            CreateOpCode(0x8E, () => alu.AddFromMemory(ref A, H, L, ref F, true), "ADC A, (HL)");
+            CreateOpCode(0xCE, () => ReadImmediateByte(out var immediate) + alu.Add(ref A, immediate, ref F, true), "ADC A, n");
         }
 
         private void CreateOpCode(byte command, Func<int> action, string name)

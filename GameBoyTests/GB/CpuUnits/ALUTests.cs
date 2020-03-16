@@ -67,5 +67,54 @@ namespace GameBoy.GB.CpuUnits.Tests
             Assert.Equal(0b00110000, flags);
             Assert.Equal(8, cycles);
         }
+
+        ///////
+        [Fact()]
+        public void AddWithCarrySetsHalfCarryTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte flags = 0b11010000;
+            byte to = 0xAA;
+
+            var cycles = alu.Add(ref to, 0x0F, ref flags, true);
+
+            Assert.Equal(0xBA, to);
+            Assert.Equal(0b00100000, flags);
+            Assert.Equal(4, cycles);
+        }
+
+        [Fact()]
+        public void AddWithCarrySetsCarryTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte flags = 0b11010000;
+            byte to = 0xFE;
+
+            var cycles = alu.Add(ref to, 0x03, ref flags, true);
+
+            Assert.Equal(0x02, to);
+            Assert.Equal(0b00110000, flags);
+            Assert.Equal(4, cycles);
+        }
+
+        [Fact()]
+        public void AddFromMemoryWithCarryTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte flags = 0b11010000;
+            byte to = 0xFE;
+            byte addrHigh = 0xAB;
+            byte addrLow = 0xCD;
+            memory.WriteByte(0xABCD, 0x03);
+
+            var cycles = alu.AddFromMemory(ref to, addrHigh, addrLow, ref flags, true);
+
+            Assert.Equal(0x02, to);
+            Assert.Equal(0b00110000, flags);
+            Assert.Equal(8, cycles);
+        }
     }
 }
