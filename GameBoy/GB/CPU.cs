@@ -238,6 +238,26 @@ namespace GameBoy.GB
             CreateOpCode(0x8D, () => alu.Add(ref A, L, ref F, true), "ADC A,L");
             CreateOpCode(0x8E, () => alu.AddFromMemory(ref A, H, L, ref F, true), "ADC A, (HL)");
             CreateOpCode(0xCE, () => ReadImmediateByte(out var immediate) + alu.Add(ref A, immediate, ref F, true), "ADC A, n");
+
+            CreateOpCode(0x97, () => alu.Subtract(ref A, A, ref F), "SUB A");
+            CreateOpCode(0x90, () => alu.Subtract(ref A, B, ref F), "SUB B");
+            CreateOpCode(0x91, () => alu.Subtract(ref A, C, ref F), "SUB C");
+            CreateOpCode(0x92, () => alu.Subtract(ref A, D, ref F), "SUB D");
+            CreateOpCode(0x93, () => alu.Subtract(ref A, E, ref F), "SUB E");
+            CreateOpCode(0x94, () => alu.Subtract(ref A, H, ref F), "SUB H");
+            CreateOpCode(0x95, () => alu.Subtract(ref A, L, ref F), "SUB L");
+            CreateOpCode(0x96, () => alu.SubtractFromMemory(ref A, H, L, ref F), "SUB (HL)");
+            CreateOpCode(0xD6, () => ReadImmediateByte(out var immediate) + alu.Subtract(ref A, immediate, ref F), "SUB n");
+
+            CreateOpCode(0x9F, () => alu.Subtract(ref A, A, ref F, true), "SBC A, A");
+            CreateOpCode(0x98, () => alu.Subtract(ref A, B, ref F, true), "SBC A, B");
+            CreateOpCode(0x99, () => alu.Subtract(ref A, C, ref F, true), "SBC A, C");
+            CreateOpCode(0x9A, () => alu.Subtract(ref A, D, ref F, true), "SBC A, D");
+            CreateOpCode(0x9B, () => alu.Subtract(ref A, E, ref F, true), "SBC A, E");
+            CreateOpCode(0x9C, () => alu.Subtract(ref A, H, ref F, true), "SBC A, H");
+            CreateOpCode(0x9D, () => alu.Subtract(ref A, L, ref F, true), "SBC A, L");
+            CreateOpCode(0x9E, () => alu.SubtractFromMemory(ref A, H, L, ref F, true), "SBC A, (HL)");
+            CreateOpCode(0xDE, () => ReadImmediateByte(out var immediate) + alu.Subtract(ref A, immediate, ref F, true), "SBC A, n");
         }
 
         private void CreateOpCode(byte command, Func<int> action, string name)

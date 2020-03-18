@@ -13,6 +13,7 @@ namespace GameBoy.GB
         public MapMode RomMapMode { get; private set; }
 
         private readonly byte[]? bootRom;
+        private readonly byte[] cartridge;
 
         /// <summary>
         /// ROM bank #0
@@ -71,6 +72,7 @@ namespace GameBoy.GB
 
         public Memory(byte[] cartridge, MapMode initialMapMode = MapMode.Cartridge, byte[]? bootRom = null)
         {
+            this.cartridge = cartridge;
             this.bootRom = bootRom;
 
             RomMapMode = initialMapMode;

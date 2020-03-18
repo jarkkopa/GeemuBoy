@@ -1,5 +1,4 @@
-﻿using GameBoy.GB.CpuUnits;
-using Xunit;
+﻿using Xunit;
 
 namespace GameBoy.GB.CpuUnits.Tests
 {
@@ -114,6 +113,162 @@ namespace GameBoy.GB.CpuUnits.Tests
 
             Assert.Equal(0x02, to);
             Assert.Equal(0b00110000, flags);
+            Assert.Equal(8, cycles);
+        }
+
+        [Fact()]
+        public void SubtractTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte from = 0x11;
+            byte flags = 0b00000000;
+
+            var cycles = alu.Subtract(ref from, 0x01, ref flags);
+
+            Assert.Equal(0x10, from);
+            Assert.Equal(0b01000000, flags);
+            Assert.Equal(4, cycles);
+        }
+
+        [Fact()]
+        public void SubtractSetsCarryTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte from = 0xE0;
+            byte flags = 0b00000000;
+
+            var cycles = alu.Subtract(ref from, 0xF0, ref flags);
+
+            Assert.Equal(0xF0, from);
+            Assert.Equal(0b01010000, flags);
+            Assert.Equal(4, cycles);
+        }
+
+        [Fact()]
+        public void SubtractSetsHalfCarryTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte from = 0x11;
+            byte flags = 0b00000000;
+
+            var cycles = alu.Subtract(ref from, 0x02, ref flags);
+
+            Assert.Equal(0xF, from);
+            Assert.Equal(0b01100000, flags);
+            Assert.Equal(4, cycles);
+        }
+
+        [Fact()]
+        public void SubtractSetsZeroFlagTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte from = 0xFF;
+            byte flags = 0b00000000;
+
+            var cycles = alu.Subtract(ref from, 0xFF, ref flags);
+
+            Assert.Equal(0x0, from);
+            Assert.Equal(0b11000000, flags);
+            Assert.Equal(4, cycles);
+        }
+
+        [Fact()]
+        public void SubtractWithCarryTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte from = 0xF;
+            byte flags = 0b00010000;
+
+            var cycles = alu.Subtract(ref from, 0x01, ref flags, true);
+
+            Assert.Equal(0xD, from);
+            Assert.Equal(0b01000000, flags);
+            Assert.Equal(4, cycles);
+        }
+
+        [Fact()]
+        public void SubtractWithCarrySetsCarryTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte from = 0xE1;
+            byte flags = 0b00010000;
+
+            var cycles = alu.Subtract(ref from, 0xF0, ref flags, true);
+
+            Assert.Equal(0xF0, from);
+            Assert.Equal(0b01010000, flags);
+            Assert.Equal(4, cycles);
+        }
+
+        [Fact()]
+        public void SubtractWithCarrySetsHalfCarryTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte from = 0x11;
+            byte flags = 0b00010000;
+
+            var cycles = alu.Subtract(ref from, 0x02, ref flags, true);
+
+            Assert.Equal(0xE, from);
+            Assert.Equal(0b01100000, flags);
+            Assert.Equal(4, cycles);
+        }
+
+        [Fact()]
+        public void SubtractWithCarrySetsZeroFlagTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte from = 0xFF;
+            byte flags = 0b00010000;
+
+            var cycles = alu.Subtract(ref from, 0xFE, ref flags, true);
+
+            Assert.Equal(0x0, from);
+            Assert.Equal(0b11000000, flags);
+            Assert.Equal(4, cycles);
+        }
+
+        [Fact()]
+        public void SubtractFromMemoryTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte from = 0xFF;
+            byte addrHigh = 0xAC;
+            byte addrLow = 0xDC;
+            byte flags = 0b00000000;
+            memory.WriteByte(0xACDC, 0xF0);
+
+            var cycles = alu.SubtractFromMemory(ref from, addrHigh, addrLow, ref flags);
+
+            Assert.Equal(0x0F, from);
+            Assert.Equal(0b01000000, flags);
+            Assert.Equal(8, cycles);
+        }
+
+        [Fact()]
+        public void SubtractWithCarryFromMemoryTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte from = 0x11;
+            byte addrHigh = 0xAC;
+            byte addrLow = 0xDC;
+            byte flags = 0b00010000;
+            memory.WriteByte(0xACDC, 0xF1);
+
+            var cycles = alu.SubtractFromMemory(ref from, addrHigh, addrLow, ref flags, true);
+
+            Assert.Equal(0x1F, from);
+            Assert.Equal(0b01110000, flags);
             Assert.Equal(8, cycles);
         }
     }

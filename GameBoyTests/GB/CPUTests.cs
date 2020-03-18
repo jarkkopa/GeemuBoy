@@ -174,6 +174,26 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0x8D, () => alu.Add(ref cpu.A, cpu.L, ref cpu.F, true));
             AssertSingleCall(0x8E, () => alu.AddFromMemory(ref cpu.A, cpu.H, cpu.L, ref cpu.F, true));
             AssertSingleCall(0xCE, () => alu.Add(ref cpu.A, IMMEDIATE_BYTE, ref cpu.F, true));
+
+            AssertSingleCall(0x97, () => alu.Subtract(ref cpu.A, cpu.A, ref cpu.F, false));
+            AssertSingleCall(0x90, () => alu.Subtract(ref cpu.A, cpu.B, ref cpu.F, false));
+            AssertSingleCall(0x91, () => alu.Subtract(ref cpu.A, cpu.C, ref cpu.F, false));
+            AssertSingleCall(0x92, () => alu.Subtract(ref cpu.A, cpu.D, ref cpu.F, false));
+            AssertSingleCall(0x93, () => alu.Subtract(ref cpu.A, cpu.E, ref cpu.F, false));
+            AssertSingleCall(0x94, () => alu.Subtract(ref cpu.A, cpu.H, ref cpu.F, false));
+            AssertSingleCall(0x95, () => alu.Subtract(ref cpu.A, cpu.L, ref cpu.F, false));
+            AssertSingleCall(0x96, () => alu.SubtractFromMemory(ref cpu.A, cpu.H, cpu.L, ref cpu.F, false));
+            AssertSingleCall(0xD6, () => alu.Subtract(ref cpu.A, IMMEDIATE_BYTE, ref cpu.F, false));
+
+            AssertSingleCall(0x9F, () => alu.Subtract(ref cpu.A, cpu.A, ref cpu.F, true));
+            AssertSingleCall(0x98, () => alu.Subtract(ref cpu.A, cpu.B, ref cpu.F, true));
+            AssertSingleCall(0x99, () => alu.Subtract(ref cpu.A, cpu.C, ref cpu.F, true));
+            AssertSingleCall(0x9A, () => alu.Subtract(ref cpu.A, cpu.D, ref cpu.F, true));
+            AssertSingleCall(0x9B, () => alu.Subtract(ref cpu.A, cpu.E, ref cpu.F, true));
+            AssertSingleCall(0x9C, () => alu.Subtract(ref cpu.A, cpu.H, ref cpu.F, true));
+            AssertSingleCall(0x9D, () => alu.Subtract(ref cpu.A, cpu.L, ref cpu.F, true));
+            AssertSingleCall(0x9E, () => alu.SubtractFromMemory(ref cpu.A, cpu.H, cpu.L, ref cpu.F, true));
+            AssertSingleCall(0xDE, () => alu.Subtract(ref cpu.A, IMMEDIATE_BYTE, ref cpu.F, true));
         }
 
         [Fact()]
