@@ -204,7 +204,7 @@ namespace GameBoy.GB
             CreateOpCode(0x21, () => ReadImmediateWord(out var immediate) + loadUnit.Load(ref H, ref L, immediate), "LD HL, nn");
             CreateOpCode(0x31, () => ReadImmediateWord(out var immediate) + loadUnit.Load(ref SP, immediate), "LD SP, nn");
             CreateOpCode(0xF9, () => loadUnit.Load(ref SP, H, L), "LD SP, HL");
-            CreateOpCode(0xF8, () => ReadImmediateByte(out var immediate) + loadUnit.LoadAdjusted(ref H, ref L, SP, immediate), "LD HL, SP+n");
+            CreateOpCode(0xF8, () => ReadImmediateByte(out var immediate) + loadUnit.LoadAdjusted(ref H, ref L, SP, immediate, ref F), "LD HL, SP+n");
             CreateOpCode(0x08, () => ReadImmediateWord(out var immediate) + loadUnit.WriteToAddress(immediate, SP), "LD (nn), SP");
 
             CreateOpCode(0xF5, () => loadUnit.Push(ref SP, A, F), "PUSH AF");

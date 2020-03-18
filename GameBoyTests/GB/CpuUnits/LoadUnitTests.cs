@@ -1,5 +1,4 @@
-﻿using GameBoy.GB.CpuUnits;
-using Xunit;
+﻿using Xunit;
 
 namespace GameBoy.GB.CpuUnits.Tests
 {
@@ -73,13 +72,14 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte toLow = 0xF0;
             ushort from = 0xABFF;
             byte addValue = 0x01;
+            byte flags = 0b11000000;
 
-            var cycles = loadUnit.LoadAdjusted(ref toHigh, ref toLow, from, addValue);
+            var cycles = loadUnit.LoadAdjusted(ref toHigh, ref toLow, from, addValue, ref flags);
 
             Assert.Equal(0xAC, toHigh);
             Assert.Equal(0x00, toLow);
+            Assert.Equal(0b00110000, flags);
             Assert.Equal(8, cycles);
-            // TODO: Assert flags
         }
 
         [Fact()]
@@ -91,13 +91,14 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte toLow = 0xF0;
             ushort from = 0xAC00;
             byte addValue = 0xFF; // signed -1
+            byte flags = 0b11000000;
 
-            var cycles = loadUnit.LoadAdjusted(ref toHigh, ref toLow, from, addValue);
+            var cycles = loadUnit.LoadAdjusted(ref toHigh, ref toLow, from, addValue, ref flags);
 
             Assert.Equal(0xAB, toHigh);
             Assert.Equal(0xFF, toLow);
+            Assert.Equal(0b00100000, flags);
             Assert.Equal(8, cycles);
-            // TODO: Assert flags
         }
 
         [Fact()]

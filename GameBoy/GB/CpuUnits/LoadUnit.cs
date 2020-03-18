@@ -6,7 +6,7 @@
         public int Load(ref byte destHigh, ref byte destLow, ushort value);
         public int Load(ref ushort dest, ushort value);
         public int Load(ref ushort dest, byte valueHigh, byte valueLow);
-        public int LoadAdjusted(ref byte destHigh, ref byte destLow, ushort value, byte signedValue);
+        public int LoadAdjusted(ref byte destHigh, ref byte destLow, ushort value, byte signedValue, ref byte flags);
         public int LoadFromAddress(ref byte dest, byte addrHigh, byte addrLow);
         public int LoadFromAddress(ref byte dest, ushort address);
         public int LoadFromAddressAndIncrement(ref byte dest, ref byte addrHigh, ref byte addrLow, short value);
@@ -53,13 +53,25 @@
             return 8;
         }
 
-        public int LoadAdjusted(ref byte destHigh, ref byte destLow, ushort value, byte addValue)
+        public int LoadAdjusted(ref byte destHigh, ref byte destLow, ushort value, byte addValue, ref byte flags)
         {
+            ushort originalValue = value;
             sbyte signed = unchecked((sbyte)(addValue));
+            if (signed > 0)
+            {
+                FlagUtils.SetFlag(Flag.C, (originalValue + signed) > 0xFF, ref flags);
+                FlagUtils.SetFlag(Flag.H, (originalValue & 0x0F) + (signed & 0x0F) > 0xF, ref flags);
+            }
+            else
+            {
+                FlagUtils.SetFlag(Flag.C, originalValue < addValue, ref flags);
+                FlagUtils.SetFlag(Flag.H, (originalValue & 0x0F) < (addValue & 0x0F), ref flags);
+            }
             ushort result = (ushort)(value + signed);
             destHigh = BitUtils.MostSignificantByte(result);
             destLow = BitUtils.LeastSignificantByte(result);
-            // TODO: Set flags
+            FlagUtils.SetFlag(Flag.Z, false, ref flags);
+            FlagUtils.SetFlag(Flag.N, false, ref flags);
             return 8;
         }
 
