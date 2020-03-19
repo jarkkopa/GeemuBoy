@@ -6,6 +6,8 @@
         public int AddFromMemory(ref byte to, byte addrHigh, byte addrLow, ref byte flags, bool addCarryFlag = false);
         public int Subtract(ref byte from, byte value, ref byte flags, bool subtractCarryFlag = false);
         public int SubtractFromMemory(ref byte from, byte addrHigh, byte addrLow, ref byte flags, bool subtractCarryFlag = false);
+        public int And(ref byte to, byte value, ref byte flags);
+        public int AndWithMemory(ref byte to, byte addrHigh, byte addrLow, ref byte flags);
     }
 
     public class ALU : IALU
@@ -54,6 +56,27 @@
         {
             ushort address = BitUtils.BytesToUshort(addrHigh, addrLow);
             Subtract(ref from, memory.ReadByte(address), ref flags, subtractCarryFlag);
+            return 8;
+        }
+
+        public int And(ref byte to, byte value, ref byte flags)
+        {
+            to = (byte)(to & value);
+            FlagUtils.SetFlag(Flag.Z, to == 0, ref flags);
+            FlagUtils.SetFlag(Flag.N, false, ref flags);
+            FlagUtils.SetFlag(Flag.H, true, ref flags);
+            FlagUtils.SetFlag(Flag.C, false, ref flags);
+            return 4;
+        }
+
+        public int AndWithMemory(ref byte to, byte addrHigh, byte addrLow, ref byte flags)
+        {
+            ushort address = BitUtils.BytesToUshort(addrHigh, addrLow);
+            to = (byte)(to & memory.ReadByte(address));
+            FlagUtils.SetFlag(Flag.Z, to == 0, ref flags);
+            FlagUtils.SetFlag(Flag.N, false, ref flags);
+            FlagUtils.SetFlag(Flag.H, true, ref flags);
+            FlagUtils.SetFlag(Flag.C, false, ref flags);
             return 8;
         }
     }

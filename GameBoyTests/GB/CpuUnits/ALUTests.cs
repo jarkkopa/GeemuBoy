@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using GameBoy.GB.CpuUnits;
+using Xunit;
 
 namespace GameBoy.GB.CpuUnits.Tests
 {
@@ -269,6 +270,40 @@ namespace GameBoy.GB.CpuUnits.Tests
 
             Assert.Equal(0x1F, from);
             Assert.Equal(0b01110000, flags);
+            Assert.Equal(8, cycles);
+        }
+
+        [Fact()]
+        public void AndTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte to = 0xAA;
+            byte flags = 0b00000000;
+
+            var cycles = alu.And(ref to, 0xF2, ref flags);
+
+            Assert.Equal(0xA2, to);
+            Assert.Equal(0b00100000, flags);
+            Assert.Equal(4, cycles);
+        }
+
+        [Fact()]
+        public void AndWithMemoryTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte to = 0x0F;
+            byte addrHigh = 0xAC;
+            byte addrLow = 0xDC;
+            byte flags = 0b01010000;
+
+            memory.WriteByte(0xACDC, 0xF0);
+
+            var cycles = alu.AndWithMemory(ref to, addrHigh, addrLow, ref flags);
+
+            Assert.Equal(0x0, to);
+            Assert.Equal(0b10100000, flags);
             Assert.Equal(8, cycles);
         }
     }

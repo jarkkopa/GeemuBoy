@@ -194,6 +194,16 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0x9D, () => alu.Subtract(ref cpu.A, cpu.L, ref cpu.F, true));
             AssertSingleCall(0x9E, () => alu.SubtractFromMemory(ref cpu.A, cpu.H, cpu.L, ref cpu.F, true));
             AssertSingleCall(0xDE, () => alu.Subtract(ref cpu.A, IMMEDIATE_BYTE, ref cpu.F, true));
+
+            AssertSingleCall(0xA7, () => alu.And(ref cpu.A, cpu.A, ref cpu.F));
+            AssertSingleCall(0xA0, () => alu.And(ref cpu.A, cpu.B, ref cpu.F));
+            AssertSingleCall(0xA1, () => alu.And(ref cpu.A, cpu.C, ref cpu.F));
+            AssertSingleCall(0xA2, () => alu.And(ref cpu.A, cpu.D, ref cpu.F));
+            AssertSingleCall(0xA3, () => alu.And(ref cpu.A, cpu.E, ref cpu.F));
+            AssertSingleCall(0xA4, () => alu.And(ref cpu.A, cpu.H, ref cpu.F));
+            AssertSingleCall(0xA5, () => alu.And(ref cpu.A, cpu.L, ref cpu.F));
+            AssertSingleCall(0xA6, () => alu.AndWithMemory(ref cpu.A, cpu.H, cpu.L, ref cpu.F));
+            AssertSingleCall(0xE6, () => alu.And(ref cpu.A, IMMEDIATE_BYTE, ref cpu.F));
         }
 
         [Fact()]

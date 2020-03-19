@@ -258,6 +258,16 @@ namespace GameBoy.GB
             CreateOpCode(0x9D, () => alu.Subtract(ref A, L, ref F, true), "SBC A, L");
             CreateOpCode(0x9E, () => alu.SubtractFromMemory(ref A, H, L, ref F, true), "SBC A, (HL)");
             CreateOpCode(0xDE, () => ReadImmediateByte(out var immediate) + alu.Subtract(ref A, immediate, ref F, true), "SBC A, n");
+
+            CreateOpCode(0xA7, () => alu.And(ref A, A, ref F), "AND A");
+            CreateOpCode(0xA0, () => alu.And(ref A, B, ref F), "AND B");
+            CreateOpCode(0xA1, () => alu.And(ref A, C, ref F), "AND C");
+            CreateOpCode(0xA2, () => alu.And(ref A, D, ref F), "AND D");
+            CreateOpCode(0xA3, () => alu.And(ref A, E, ref F), "AND E");
+            CreateOpCode(0xA4, () => alu.And(ref A, H, ref F), "AND H");
+            CreateOpCode(0xA5, () => alu.And(ref A, L, ref F), "AND L");
+            CreateOpCode(0xA6, () => alu.AndWithMemory(ref A, H, L, ref F), "AND (HL)");
+            CreateOpCode(0xE6, () => ReadImmediateByte(out var immediate) + alu.And(ref A, immediate, ref F), "AND n");
         }
 
         private void CreateOpCode(byte command, Func<int> action, string name)
