@@ -274,6 +274,26 @@ namespace GameBoy.GB
             CreateOpCode(0xA5, () => alu.And(ref A, L, ref F), "AND L");
             CreateOpCode(0xA6, () => ReadFromMemory(H, L, out var memValue) + alu.And(ref A, memValue, ref F), "AND (HL)");
             CreateOpCode(0xE6, () => ReadImmediateByte(out var immediate) + alu.And(ref A, immediate, ref F), "AND n");
+
+            CreateOpCode(0xB7, () => alu.Or(ref A, A, ref F), "OR A");
+            CreateOpCode(0xB0, () => alu.Or(ref A, B, ref F), "OR B");
+            CreateOpCode(0xB1, () => alu.Or(ref A, C, ref F), "OR C");
+            CreateOpCode(0xB2, () => alu.Or(ref A, D, ref F), "OR D");
+            CreateOpCode(0xB3, () => alu.Or(ref A, E, ref F), "OR E");
+            CreateOpCode(0xB4, () => alu.Or(ref A, H, ref F), "OR H");
+            CreateOpCode(0xB5, () => alu.Or(ref A, L, ref F), "OR L");
+            CreateOpCode(0xB6, () => ReadFromMemory(H, L, out var memValue) + alu.Or(ref A, memValue, ref F), "OR (HL)");
+            CreateOpCode(0xF6, () => ReadImmediateByte(out var immediate) + alu.Or(ref A, immediate, ref F), "OR n");
+
+            CreateOpCode(0xAF, () => alu.Xor(ref A, A, ref F), "XOR A");
+            CreateOpCode(0xA8, () => alu.Xor(ref A, B, ref F), "XOR B");
+            CreateOpCode(0xA9, () => alu.Xor(ref A, C, ref F), "XOR C");
+            CreateOpCode(0xAA, () => alu.Xor(ref A, D, ref F), "XOR D");
+            CreateOpCode(0xAB, () => alu.Xor(ref A, E, ref F), "XOR E");
+            CreateOpCode(0xAC, () => alu.Xor(ref A, H, ref F), "XOR H");
+            CreateOpCode(0xAD, () => alu.Xor(ref A, L, ref F), "XOR L");
+            CreateOpCode(0xAE, () => ReadFromMemory(H, L, out var memValue) + alu.Xor(ref A, memValue, ref F), "XOR (HL)");
+            CreateOpCode(0xEE, () => ReadImmediateByte(out var immediate) + alu.Xor(ref A, immediate, ref F), "XOR n");
         }
 
         private void CreateOpCode(byte command, Func<int> action, string name)

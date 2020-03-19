@@ -214,5 +214,35 @@ namespace GameBoy.GB.CpuUnits.Tests
             Assert.Equal(0b00100000, flags);
             Assert.Equal(4, cycles);
         }
+
+        [Fact()]
+        public void OrTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte to = 0xF0;
+            byte flags = 0b11110000;
+
+            var cycles = alu.Or(ref to, 0x0F, ref flags);
+
+            Assert.Equal(0xFF, to);
+            Assert.Equal(0x00, flags);
+            Assert.Equal(4, cycles);
+        }
+
+        [Fact()]
+        public void XorTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte to = 0xAF;
+            byte flags = 0b11110000;
+
+            var cycles = alu.Xor(ref to, 0xF3, ref flags);
+
+            Assert.Equal(0x5C, to);
+            Assert.Equal(0x00, flags);
+            Assert.Equal(4, cycles);
+        }
     }
 }

@@ -207,6 +207,26 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0xA5, () => alu.And(ref cpu.A, cpu.L, ref cpu.F));
             AssertSingleCall(0xA6, () => alu.And(ref cpu.A, MEM_HL_BYTE, ref cpu.F));
             AssertSingleCall(0xE6, () => alu.And(ref cpu.A, IMMEDIATE_BYTE, ref cpu.F));
+
+            AssertSingleCall(0xB7, () => alu.Or(ref cpu.A, cpu.A, ref cpu.F));
+            AssertSingleCall(0xB0, () => alu.Or(ref cpu.A, cpu.B, ref cpu.F));
+            AssertSingleCall(0xB1, () => alu.Or(ref cpu.A, cpu.C, ref cpu.F));
+            AssertSingleCall(0xB2, () => alu.Or(ref cpu.A, cpu.D, ref cpu.F));
+            AssertSingleCall(0xB3, () => alu.Or(ref cpu.A, cpu.E, ref cpu.F));
+            AssertSingleCall(0xB4, () => alu.Or(ref cpu.A, cpu.H, ref cpu.F));
+            AssertSingleCall(0xB5, () => alu.Or(ref cpu.A, cpu.L, ref cpu.F));
+            AssertSingleCall(0xB6, () => alu.Or(ref cpu.A, MEM_HL_BYTE, ref cpu.F));
+            AssertSingleCall(0xF6, () => alu.Or(ref cpu.A, IMMEDIATE_BYTE, ref cpu.F));
+
+            AssertSingleCall(0xAF, () => alu.Xor(ref cpu.A, cpu.A, ref cpu.F));
+            AssertSingleCall(0xA8, () => alu.Xor(ref cpu.A, cpu.B, ref cpu.F));
+            AssertSingleCall(0xA9, () => alu.Xor(ref cpu.A, cpu.C, ref cpu.F));
+            AssertSingleCall(0xAA, () => alu.Xor(ref cpu.A, cpu.D, ref cpu.F));
+            AssertSingleCall(0xAB, () => alu.Xor(ref cpu.A, cpu.E, ref cpu.F));
+            AssertSingleCall(0xAC, () => alu.Xor(ref cpu.A, cpu.H, ref cpu.F));
+            AssertSingleCall(0xAD, () => alu.Xor(ref cpu.A, cpu.L, ref cpu.F));
+            AssertSingleCall(0xAE, () => alu.Xor(ref cpu.A, MEM_HL_BYTE, ref cpu.F));
+            AssertSingleCall(0xEE, () => alu.Xor(ref cpu.A, IMMEDIATE_BYTE, ref cpu.F));
         }
 
         [Fact()]

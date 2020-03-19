@@ -5,6 +5,8 @@
         public int Add(ref byte to, byte value, ref byte flags, bool addCarryFlag = false);
         public int Subtract(ref byte from, byte value, ref byte flags, bool subtractCarryFlag = false);
         public int And(ref byte to, byte value, ref byte flags);
+        public int Or(ref byte to, byte value, ref byte flags);
+        public int Xor(ref byte to, byte value, ref byte flags);
     }
 
     public class ALU : IALU
@@ -22,19 +24,12 @@
             byte origValue = to;
             int newValue = to + value + additionalValue;
             to = (byte)(newValue & 0xFF);
-            FlagUtils.SetFlag(Flag.Z, newValue == 0, ref flags);
-            FlagUtils.SetFlag(Flag.N, false, ref flags);
-            FlagUtils.SetFlag(Flag.H, (origValue & 0x0F) + (value & 0xF) > 0xF, ref flags);
-            FlagUtils.SetFlag(Flag.C, newValue > 0xFF, ref flags);
+            FlagUtils.SetFlags(ref flags,
+                newValue == 0, false,
+                (origValue & 0x0F) + (value & 0xF) > 0xF,
+                newValue > 0xFF);
             return 4;
         }
-
-        //public int AddFromMemory(ref byte to, byte addrHigh, byte addrLow, ref byte flags, bool addCarryFlag = false)
-        //{
-        //    ushort address = BitUtils.BytesToUshort(addrHigh, addrLow);
-        //    Add(ref to, memory.ReadByte(address), ref flags, addCarryFlag);
-        //    return 8;
-        //}
 
         public int Subtract(ref byte from, byte value, ref byte flags, bool subtractCarryFlag = false)
         {
@@ -42,39 +37,46 @@
             byte origValue = from;
             int newValue = from - value - additionalValue;
             from = (byte)(newValue & 0xFF);
-            FlagUtils.SetFlag(Flag.Z, from == 0, ref flags);
-            FlagUtils.SetFlag(Flag.N, true, ref flags);
-            FlagUtils.SetFlag(Flag.H, (origValue & 0x0F) < ((value + additionalValue) & 0xF), ref flags);
-            FlagUtils.SetFlag(Flag.C, origValue < (value+additionalValue), ref flags);
+            FlagUtils.SetFlags(ref flags,
+                from == 0,
+                true,
+                (origValue & 0x0F) < ((value + additionalValue) & 0xF),
+                origValue < (value + additionalValue));
             return 4;
         }
-
-        //public int SubtractFromMemory(ref byte from, byte addrHigh, byte addrLow, ref byte flags, bool subtractCarryFlag = false)
-        //{
-        //    ushort address = BitUtils.BytesToUshort(addrHigh, addrLow);
-        //    Subtract(ref from, memory.ReadByte(address), ref flags, subtractCarryFlag);
-        //    return 8;
-        //}
 
         public int And(ref byte to, byte value, ref byte flags)
         {
             to = (byte)(to & value);
-            FlagUtils.SetFlag(Flag.Z, to == 0, ref flags);
-            FlagUtils.SetFlag(Flag.N, false, ref flags);
-            FlagUtils.SetFlag(Flag.H, true, ref flags);
-            FlagUtils.SetFlag(Flag.C, false, ref flags);
+            FlagUtils.SetFlags(ref flags,
+                to == 0,
+                false,
+                true,
+                false);
             return 4;
         }
 
-        //public int AndWithMemory(ref byte to, byte addrHigh, byte addrLow, ref byte flags)
-        //{
-        //    ushort address = BitUtils.BytesToUshort(addrHigh, addrLow);
-        //    to = (byte)(to & memory.ReadByte(address));
-        //    FlagUtils.SetFlag(Flag.Z, to == 0, ref flags);
-        //    FlagUtils.SetFlag(Flag.N, false, ref flags);
-        //    FlagUtils.SetFlag(Flag.H, true, ref flags);
-        //    FlagUtils.SetFlag(Flag.C, false, ref flags);
-        //    return 8;
-        //}
+        public int Or(ref byte to, byte value, ref byte flags)
+        {
+            to = (byte)(to | value);
+            FlagUtils.SetFlags(
+                ref flags,
+                to == 0,
+                false,
+                false,
+                false);
+            return 4;
+        }
+
+        public int Xor(ref byte to, byte value, ref byte flags)
+        {
+            to = (byte)(to ^ value);
+            FlagUtils.SetFlags(ref flags,
+                to == 0,
+                false,
+                false,
+                false);
+            return 4;
+        }
     }
 }

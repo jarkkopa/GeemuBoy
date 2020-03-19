@@ -15,27 +15,27 @@ namespace GameBoy.GB.Tests
         }
 
         [Fact()]
-        public void SetZeroFlagTest()
+        public void SetFlagTest()
         {
             byte flags = 0b01110000;
-
-            FlagUtils.SetFlag(Flag.Z, true, ref flags);
-            FlagUtils.SetFlag(Flag.N, true, ref flags);
-            FlagUtils.SetFlag(Flag.H, true, ref flags);
-            FlagUtils.SetFlag(Flag.C, true, ref flags);
+            FlagUtils.SetFlags(ref flags,
+                true,
+                true,
+                true,
+                true);
 
             Assert.Equal(0b11110000, flags);
         }
 
         [Fact()]
-        public void ClearZeroFlagTest()
+        public void ResetFlagsTest()
         {
             byte flags = 0b01010000;
-
-            FlagUtils.SetFlag(Flag.Z, false, ref flags);
-            FlagUtils.SetFlag(Flag.N, false, ref flags);
-            FlagUtils.SetFlag(Flag.H, false, ref flags);
-            FlagUtils.SetFlag(Flag.C, false, ref flags);
+            FlagUtils.SetFlags(ref flags,
+                false,
+                false,
+                false,
+                false);
 
             Assert.Equal(0b00000000, flags);
         }

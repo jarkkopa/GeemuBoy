@@ -32,5 +32,13 @@ namespace GameBoy.GB
                 flags = (byte)(flags & ~(byte)(flagIndex));
             }
         }
+
+        public static void SetFlags(ref byte flags, bool zero, bool subtract, bool halfCarry, bool carry)
+        {
+            SetFlag(Flag.Z, zero, ref flags);
+            SetFlag(Flag.N, subtract, ref flags);
+            SetFlag(Flag.H, halfCarry, ref flags);
+            SetFlag(Flag.C, carry, ref flags);
+        }
     }
 }
