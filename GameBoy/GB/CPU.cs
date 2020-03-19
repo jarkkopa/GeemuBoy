@@ -99,6 +99,12 @@ namespace GameBoy.GB
             return 8;
         }
 
+        public int ReadFromMemory(byte addrHigh, byte addrLow, out byte value)
+        {
+            value = Memory.ReadByte(BitUtils.BytesToUshort(addrHigh, addrLow));
+            return 4;
+        }
+
         private void CreateLoadUnitOpCodes()
         {
             CreateOpCode(0x06, () => ReadImmediateByte(out var immediate) + loadUnit.Load(ref B, immediate), "LD B, n");
@@ -226,7 +232,7 @@ namespace GameBoy.GB
             CreateOpCode(0x83, () => alu.Add(ref A, E, ref F), "ADD A, E");
             CreateOpCode(0x84, () => alu.Add(ref A, H, ref F), "ADD A, H");
             CreateOpCode(0x85, () => alu.Add(ref A, L, ref F), "ADD A, L");
-            CreateOpCode(0x86, () => alu.AddFromMemory(ref A, H, L, ref F), "ADD A, (HL)");
+            CreateOpCode(0x86, () => ReadFromMemory(H, L, out var memValue) + alu.Add(ref A, memValue, ref F), "ADD A, (HL)");
             CreateOpCode(0xC6, () => ReadImmediateByte(out var immediate) + alu.Add(ref A, immediate, ref F), "ADD A, n");
 
             CreateOpCode(0x8F, () => alu.Add(ref A, A, ref F, true), "ADC A,A");
@@ -236,7 +242,7 @@ namespace GameBoy.GB
             CreateOpCode(0x8B, () => alu.Add(ref A, E, ref F, true), "ADC A,E");
             CreateOpCode(0x8C, () => alu.Add(ref A, H, ref F, true), "ADC A,H");
             CreateOpCode(0x8D, () => alu.Add(ref A, L, ref F, true), "ADC A,L");
-            CreateOpCode(0x8E, () => alu.AddFromMemory(ref A, H, L, ref F, true), "ADC A, (HL)");
+            CreateOpCode(0x8E, () => ReadFromMemory(H, L, out var memValue) + alu.Add(ref A, memValue, ref F, true), "ADC A, (HL)");
             CreateOpCode(0xCE, () => ReadImmediateByte(out var immediate) + alu.Add(ref A, immediate, ref F, true), "ADC A, n");
 
             CreateOpCode(0x97, () => alu.Subtract(ref A, A, ref F), "SUB A");
@@ -246,7 +252,7 @@ namespace GameBoy.GB
             CreateOpCode(0x93, () => alu.Subtract(ref A, E, ref F), "SUB E");
             CreateOpCode(0x94, () => alu.Subtract(ref A, H, ref F), "SUB H");
             CreateOpCode(0x95, () => alu.Subtract(ref A, L, ref F), "SUB L");
-            CreateOpCode(0x96, () => alu.SubtractFromMemory(ref A, H, L, ref F), "SUB (HL)");
+            CreateOpCode(0x96, () => ReadFromMemory(H, L, out var memValue) + alu.Subtract(ref A, memValue, ref F), "SUB (HL)");
             CreateOpCode(0xD6, () => ReadImmediateByte(out var immediate) + alu.Subtract(ref A, immediate, ref F), "SUB n");
 
             CreateOpCode(0x9F, () => alu.Subtract(ref A, A, ref F, true), "SBC A, A");
@@ -256,7 +262,7 @@ namespace GameBoy.GB
             CreateOpCode(0x9B, () => alu.Subtract(ref A, E, ref F, true), "SBC A, E");
             CreateOpCode(0x9C, () => alu.Subtract(ref A, H, ref F, true), "SBC A, H");
             CreateOpCode(0x9D, () => alu.Subtract(ref A, L, ref F, true), "SBC A, L");
-            CreateOpCode(0x9E, () => alu.SubtractFromMemory(ref A, H, L, ref F, true), "SBC A, (HL)");
+            CreateOpCode(0x9E, () => ReadFromMemory(H, L, out var memValue) + alu.Subtract(ref A, memValue, ref F, true), "SBC A, (HL)");
             CreateOpCode(0xDE, () => ReadImmediateByte(out var immediate) + alu.Subtract(ref A, immediate, ref F, true), "SBC A, n");
 
             CreateOpCode(0xA7, () => alu.And(ref A, A, ref F), "AND A");
@@ -266,7 +272,7 @@ namespace GameBoy.GB
             CreateOpCode(0xA3, () => alu.And(ref A, E, ref F), "AND E");
             CreateOpCode(0xA4, () => alu.And(ref A, H, ref F), "AND H");
             CreateOpCode(0xA5, () => alu.And(ref A, L, ref F), "AND L");
-            CreateOpCode(0xA6, () => alu.AndWithMemory(ref A, H, L, ref F), "AND (HL)");
+            CreateOpCode(0xA6, () => ReadFromMemory(H, L, out var memValue) + alu.And(ref A, memValue, ref F), "AND (HL)");
             CreateOpCode(0xE6, () => ReadImmediateByte(out var immediate) + alu.And(ref A, immediate, ref F), "AND n");
         }
 

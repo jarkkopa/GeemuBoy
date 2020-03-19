@@ -1,4 +1,5 @@
-﻿using FakeItEasy;
+﻿using GameBoy.GB;
+using FakeItEasy;
 using GameBoy.GB.CpuUnits;
 using System;
 using System.Linq.Expressions;
@@ -10,6 +11,7 @@ namespace GameBoy.GB.Tests
     {
         private const byte IMMEDIATE_BYTE = 0x01;
         private const ushort IMMEDIATE_WORD = 0x0123;
+        private const byte MEM_HL_BYTE = 0x45;
 
         private readonly Memory memory;
         private readonly CPU cpu;
@@ -37,6 +39,7 @@ namespace GameBoy.GB.Tests
                 PC = 0x00,
                 SP = 0xFF
             };
+            memory.WriteByte(0xAABB, MEM_HL_BYTE);
         }
 
         [Fact()]
@@ -162,7 +165,7 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0x83, () => alu.Add(ref cpu.A, cpu.E, ref cpu.F, false));
             AssertSingleCall(0x84, () => alu.Add(ref cpu.A, cpu.H, ref cpu.F, false));
             AssertSingleCall(0x85, () => alu.Add(ref cpu.A, cpu.L, ref cpu.F, false));
-            AssertSingleCall(0x86, () => alu.AddFromMemory(ref cpu.A, cpu.H, cpu.L, ref cpu.F, false));
+            AssertSingleCall(0x86, () => alu.Add(ref cpu.A, MEM_HL_BYTE, ref cpu.F, false));
             AssertSingleCall(0xC6, () => alu.Add(ref cpu.A, IMMEDIATE_BYTE, ref cpu.F, false));
 
             AssertSingleCall(0x8F, () => alu.Add(ref cpu.A, cpu.A, ref cpu.F, true));
@@ -172,7 +175,7 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0x8B, () => alu.Add(ref cpu.A, cpu.E, ref cpu.F, true));
             AssertSingleCall(0x8C, () => alu.Add(ref cpu.A, cpu.H, ref cpu.F, true));
             AssertSingleCall(0x8D, () => alu.Add(ref cpu.A, cpu.L, ref cpu.F, true));
-            AssertSingleCall(0x8E, () => alu.AddFromMemory(ref cpu.A, cpu.H, cpu.L, ref cpu.F, true));
+            AssertSingleCall(0x8E, () => alu.Add(ref cpu.A, MEM_HL_BYTE, ref cpu.F, true));
             AssertSingleCall(0xCE, () => alu.Add(ref cpu.A, IMMEDIATE_BYTE, ref cpu.F, true));
 
             AssertSingleCall(0x97, () => alu.Subtract(ref cpu.A, cpu.A, ref cpu.F, false));
@@ -182,7 +185,7 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0x93, () => alu.Subtract(ref cpu.A, cpu.E, ref cpu.F, false));
             AssertSingleCall(0x94, () => alu.Subtract(ref cpu.A, cpu.H, ref cpu.F, false));
             AssertSingleCall(0x95, () => alu.Subtract(ref cpu.A, cpu.L, ref cpu.F, false));
-            AssertSingleCall(0x96, () => alu.SubtractFromMemory(ref cpu.A, cpu.H, cpu.L, ref cpu.F, false));
+            AssertSingleCall(0x96, () => alu.Subtract(ref cpu.A, MEM_HL_BYTE, ref cpu.F, false));
             AssertSingleCall(0xD6, () => alu.Subtract(ref cpu.A, IMMEDIATE_BYTE, ref cpu.F, false));
 
             AssertSingleCall(0x9F, () => alu.Subtract(ref cpu.A, cpu.A, ref cpu.F, true));
@@ -192,7 +195,7 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0x9B, () => alu.Subtract(ref cpu.A, cpu.E, ref cpu.F, true));
             AssertSingleCall(0x9C, () => alu.Subtract(ref cpu.A, cpu.H, ref cpu.F, true));
             AssertSingleCall(0x9D, () => alu.Subtract(ref cpu.A, cpu.L, ref cpu.F, true));
-            AssertSingleCall(0x9E, () => alu.SubtractFromMemory(ref cpu.A, cpu.H, cpu.L, ref cpu.F, true));
+            AssertSingleCall(0x9E, () => alu.Subtract(ref cpu.A, MEM_HL_BYTE, ref cpu.F, true));
             AssertSingleCall(0xDE, () => alu.Subtract(ref cpu.A, IMMEDIATE_BYTE, ref cpu.F, true));
 
             AssertSingleCall(0xA7, () => alu.And(ref cpu.A, cpu.A, ref cpu.F));
@@ -202,7 +205,7 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0xA3, () => alu.And(ref cpu.A, cpu.E, ref cpu.F));
             AssertSingleCall(0xA4, () => alu.And(ref cpu.A, cpu.H, ref cpu.F));
             AssertSingleCall(0xA5, () => alu.And(ref cpu.A, cpu.L, ref cpu.F));
-            AssertSingleCall(0xA6, () => alu.AndWithMemory(ref cpu.A, cpu.H, cpu.L, ref cpu.F));
+            AssertSingleCall(0xA6, () => alu.And(ref cpu.A, MEM_HL_BYTE, ref cpu.F));
             AssertSingleCall(0xE6, () => alu.And(ref cpu.A, IMMEDIATE_BYTE, ref cpu.F));
         }
 
@@ -224,6 +227,17 @@ namespace GameBoy.GB.Tests
             Assert.Equal(IMMEDIATE_WORD, immediate);
             Assert.Equal(2, cpu.PC);
             Assert.Equal(8, cycles);
+        }
+
+        [Fact()]
+        public void ReadFromMemoryTest()
+        {
+            memory.WriteByte(0xABCD, 0x99);
+
+            int cycles = cpu.ReadFromMemory(0xAB, 0xCD, out var value);
+
+            Assert.Equal(0x99, value);
+            Assert.Equal(4, cycles);
         }
 
         private void AssertSingleCall(byte opcode, Expression<Func<int>> expectedCall)

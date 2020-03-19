@@ -51,25 +51,6 @@ namespace GameBoy.GB.CpuUnits.Tests
         }
 
         [Fact()]
-        public void AddFromMemoryTest()
-        {
-            var memory = new Memory(new byte[0]);
-            var alu = new ALU(memory);
-            byte flags = 0b11000000;
-            byte to = 0xFE;
-            byte addrHigh = 0xAB;
-            byte addrLow = 0xCD;
-            memory.WriteByte(0xABCD, 0x03);
-
-            var cycles = alu.AddFromMemory(ref to, addrHigh, addrLow, ref flags);
-
-            Assert.Equal(0x01, to);
-            Assert.Equal(0b00110000, flags);
-            Assert.Equal(8, cycles);
-        }
-
-        ///////
-        [Fact()]
         public void AddWithCarrySetsHalfCarryTest()
         {
             var memory = new Memory(new byte[0]);
@@ -97,24 +78,6 @@ namespace GameBoy.GB.CpuUnits.Tests
             Assert.Equal(0x02, to);
             Assert.Equal(0b00110000, flags);
             Assert.Equal(4, cycles);
-        }
-
-        [Fact()]
-        public void AddFromMemoryWithCarryTest()
-        {
-            var memory = new Memory(new byte[0]);
-            var alu = new ALU(memory);
-            byte flags = 0b11010000;
-            byte to = 0xFE;
-            byte addrHigh = 0xAB;
-            byte addrLow = 0xCD;
-            memory.WriteByte(0xABCD, 0x03);
-
-            var cycles = alu.AddFromMemory(ref to, addrHigh, addrLow, ref flags, true);
-
-            Assert.Equal(0x02, to);
-            Assert.Equal(0b00110000, flags);
-            Assert.Equal(8, cycles);
         }
 
         [Fact()]
@@ -238,42 +201,6 @@ namespace GameBoy.GB.CpuUnits.Tests
         }
 
         [Fact()]
-        public void SubtractFromMemoryTest()
-        {
-            var memory = new Memory(new byte[0]);
-            var alu = new ALU(memory);
-            byte from = 0xFF;
-            byte addrHigh = 0xAC;
-            byte addrLow = 0xDC;
-            byte flags = 0b00000000;
-            memory.WriteByte(0xACDC, 0xF0);
-
-            var cycles = alu.SubtractFromMemory(ref from, addrHigh, addrLow, ref flags);
-
-            Assert.Equal(0x0F, from);
-            Assert.Equal(0b01000000, flags);
-            Assert.Equal(8, cycles);
-        }
-
-        [Fact()]
-        public void SubtractWithCarryFromMemoryTest()
-        {
-            var memory = new Memory(new byte[0]);
-            var alu = new ALU(memory);
-            byte from = 0x11;
-            byte addrHigh = 0xAC;
-            byte addrLow = 0xDC;
-            byte flags = 0b00010000;
-            memory.WriteByte(0xACDC, 0xF1);
-
-            var cycles = alu.SubtractFromMemory(ref from, addrHigh, addrLow, ref flags, true);
-
-            Assert.Equal(0x1F, from);
-            Assert.Equal(0b01110000, flags);
-            Assert.Equal(8, cycles);
-        }
-
-        [Fact()]
         public void AndTest()
         {
             var memory = new Memory(new byte[0]);
@@ -286,25 +213,6 @@ namespace GameBoy.GB.CpuUnits.Tests
             Assert.Equal(0xA2, to);
             Assert.Equal(0b00100000, flags);
             Assert.Equal(4, cycles);
-        }
-
-        [Fact()]
-        public void AndWithMemoryTest()
-        {
-            var memory = new Memory(new byte[0]);
-            var alu = new ALU(memory);
-            byte to = 0x0F;
-            byte addrHigh = 0xAC;
-            byte addrLow = 0xDC;
-            byte flags = 0b01010000;
-
-            memory.WriteByte(0xACDC, 0xF0);
-
-            var cycles = alu.AndWithMemory(ref to, addrHigh, addrLow, ref flags);
-
-            Assert.Equal(0x0, to);
-            Assert.Equal(0b10100000, flags);
-            Assert.Equal(8, cycles);
         }
     }
 }
