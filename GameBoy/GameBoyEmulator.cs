@@ -124,7 +124,12 @@ namespace GameBoy
             {
                 bool isNextOpCode = cpu.PC == i;
                 var data = cpu.Memory.ReadByte(i);
-                Console.WriteLine($"{(isNextOpCode ? "->" : "  ")} 0x{ data:X2} {(isNextOpCode ? cpu.GetOpCodeName(data) : "")}");
+
+                cpu.OpCodes.TryGetValue(data, out OpCode? opCode);
+                if (opCode != null)
+                {
+                    Console.WriteLine($"{(isNextOpCode ? "->" : "  ")} 0x{ data:X2} {(isNextOpCode ? opCode.Name : "")}");
+                }
             }
         }
     }
