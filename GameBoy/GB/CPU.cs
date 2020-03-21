@@ -315,6 +315,11 @@ namespace GameBoy.GB
             CreateOpCode(0x35, () => alu.DecrementInMemory(H, L, ref F), 12, "DEC (HL)");
 
             CreateOpCode(0xE8, () => { ReadImmediateByte(out var data); alu.AddSigned(ref SP, data, ref F); }, 16, "ADD SP, r8");
+
+            CreateOpCode(0x03, () => alu.IncrementWord(ref B, ref C), 8, "INC BC");
+            CreateOpCode(0x13, () => alu.IncrementWord(ref D, ref E), 8, "INC DE");
+            CreateOpCode(0x23, () => alu.IncrementWord(ref H, ref L), 8, "INC HL");
+            CreateOpCode(0x33, () => alu.IncrementWord(ref SP), 8, "INC SP");
         }
 
         private void CreateOpCode(byte command, Action instruction, int cycles, string name)

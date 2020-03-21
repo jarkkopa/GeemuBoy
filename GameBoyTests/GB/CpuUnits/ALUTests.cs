@@ -336,6 +336,32 @@ namespace GameBoy.GB.CpuUnits.Tests
         }
 
         [Fact()]
+        public void IncrementCombinedWordTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte high = 0x10;
+            byte low = 0xFF;
+
+            alu.IncrementWord(ref high, ref low);
+
+            Assert.Equal(0x11, high);
+            Assert.Equal(0x00, low);
+        }
+
+        [Fact()]
+        public void IncrementWordTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            ushort value = 0x0123;
+
+            alu.IncrementWord(ref value);
+
+            Assert.Equal(0x0124, value);
+        }
+
+        [Fact()]
         public void DecrementSetsZeroTest()
         {
             var memory = new Memory(new byte[0]);
