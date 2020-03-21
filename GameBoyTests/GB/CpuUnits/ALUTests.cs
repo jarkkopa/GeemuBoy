@@ -76,6 +76,34 @@ namespace GameBoy.GB.CpuUnits.Tests
         }
 
         [Fact()]
+        public void AddSignedPositiveTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            ushort to = 0x0123;
+            byte flags = 0b00000000;
+
+            alu.AddSigned(ref to, 0x7F, ref flags);
+
+            Assert.Equal(0x01A2, to);
+            Assert.Equal(0b00110000, flags);
+        }
+
+        [Fact()]
+        public void AddSignedNegativeTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            ushort to = 0x0123;
+            byte flags = 0b00000000;
+
+            alu.AddSigned(ref to, 0x80, ref flags);
+
+            Assert.Equal(0x00A3, to);
+            Assert.Equal(0b00000000, flags);
+        }
+
+        [Fact()]
         public void SubtractTest()
         {
             var memory = new Memory(new byte[0]);

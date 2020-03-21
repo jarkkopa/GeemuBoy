@@ -3,6 +3,8 @@
     public interface IALU
     {
         public void Add(ref byte to, byte value, ref byte flags, bool addCarryFlag = false);
+        public void Add(ref byte toHigh, ref byte toLow, byte valueHigh, byte valueLow, ref byte flags);
+        public void AddSigned(ref ushort to, byte value, ref byte flags);
         public void Subtract(ref byte from, byte value, ref byte flags, bool subtractCarryFlag = false);
         public void And(ref byte to, byte value, ref byte flags);
         public void Or(ref byte to, byte value, ref byte flags);
@@ -33,6 +35,38 @@
                 newValue == 0, false,
                 (origValue & 0x0F) + (value & 0x0F) > 0x0F,
                 newValue > 0xFF);
+        }
+
+        public void Add(ref byte toHigh, ref byte toLow, byte valueHigh, byte valueLow, ref byte flags)
+        {
+            ushort to = BitUtils.BytesToUshort(toHigh, toLow);
+            ushort value = BitUtils.BytesToUshort(valueHigh, valueLow);
+            ushort result = (ushort)((to + value) & 0xFFFF);
+            toHigh = BitUtils.MostSignificantByte(result);
+            toLow = BitUtils.LeastSignificantByte(result);
+            // Zero flag is not affected
+            FlagUtils.SetFlag(Flag.N, false, ref flags);
+            FlagUtils.SetFlag(Flag.H, (to & 0xFFF) + (value & 0xFFF) > 0xFFF, ref flags);
+            FlagUtils.SetFlag(Flag.C, to + value > 0xFFFF, ref flags);
+        }
+
+        public void AddSigned(ref ushort to, byte value, ref byte flags)
+        {
+            ushort originalValue = to;
+            sbyte valueSigned = unchecked((sbyte)value);
+            to = (ushort)(to + valueSigned);
+            FlagUtils.SetFlag(Flag.Z, false, ref flags);
+            FlagUtils.SetFlag(Flag.N, false, ref flags);
+            if (valueSigned > 0)
+            {
+                FlagUtils.SetFlag(Flag.H, (originalValue & 0x0F) + (valueSigned & 0x0F) > 0x0F, ref flags);
+                FlagUtils.SetFlag(Flag.C, originalValue + valueSigned > 0xFF, ref flags);
+            }
+            else
+            {
+                FlagUtils.SetFlag(Flag.H, (originalValue & 0x0F) < (valueSigned & 0x0F), ref flags);
+                FlagUtils.SetFlag(Flag.C, originalValue < valueSigned, ref flags);
+            }
         }
 
         public void Subtract(ref byte from, byte value, ref byte flags, bool subtractCarryFlag = false)

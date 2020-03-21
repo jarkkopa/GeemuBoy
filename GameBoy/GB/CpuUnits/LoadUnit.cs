@@ -52,7 +52,7 @@
         public void LoadAdjusted(ref byte destHigh, ref byte destLow, ushort value, byte addValue, ref byte flags)
         {
             ushort originalValue = value;
-            sbyte signed = unchecked((sbyte)(addValue));
+            sbyte signed = unchecked((sbyte)addValue);
             if (signed > 0)
             {
                 FlagUtils.SetFlag(Flag.C, (originalValue + signed) > 0xFF, ref flags);
