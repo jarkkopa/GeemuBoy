@@ -402,5 +402,31 @@ namespace GameBoy.GB.CpuUnits.Tests
             Assert.Equal(0x0, memory.ReadByte(0xACDC));
             Assert.Equal(0b11000000, flags);
         }
+
+        [Fact()]
+        public void DecrementCombinedWordTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte high = 0x01;
+            byte low = 0x23;
+
+            alu.DecrementWord(ref high, ref low);
+
+            Assert.Equal(0x01, high);
+            Assert.Equal(0x22, low);
+        }
+
+        [Fact()]
+        public void DecrementWordTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            ushort target = 0xFFFF;
+
+            alu.DecrementWord(ref target);
+
+            Assert.Equal(0xFFFE, target);
+        }
     }
 }

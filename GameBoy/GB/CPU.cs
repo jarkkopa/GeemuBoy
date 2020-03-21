@@ -320,6 +320,11 @@ namespace GameBoy.GB
             CreateOpCode(0x13, () => alu.IncrementWord(ref D, ref E), 8, "INC DE");
             CreateOpCode(0x23, () => alu.IncrementWord(ref H, ref L), 8, "INC HL");
             CreateOpCode(0x33, () => alu.IncrementWord(ref SP), 8, "INC SP");
+
+            CreateOpCode(0x0B, () => alu.DecrementWord(ref B, ref C), 8, "DEC BC");
+            CreateOpCode(0x1B, () => alu.DecrementWord(ref D, ref E), 8, "DEC DE");
+            CreateOpCode(0x2B, () => alu.DecrementWord(ref H, ref L), 8, "DEC HL");
+            CreateOpCode(0x3B, () => alu.DecrementWord(ref SP), 8, "DEC SP");
         }
 
         private void CreateOpCode(byte command, Action instruction, int cycles, string name)

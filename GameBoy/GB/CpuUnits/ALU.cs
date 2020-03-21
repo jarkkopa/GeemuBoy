@@ -16,6 +16,8 @@
         public void IncrementWord(ref ushort target);
         public void Decrement(ref byte target, ref byte flags);
         public void DecrementInMemory(byte addrHigh, byte addrLow, ref byte flags);
+        public void DecrementWord(ref byte targetHigh, ref byte targetLow);
+        public void DecrementWord(ref ushort target);
     }
 
     public class ALU : IALU
@@ -177,6 +179,22 @@
             FlagUtils.SetFlag(Flag.Z, (byte)(origValue - 1) == 0, ref flags);
             FlagUtils.SetFlag(Flag.N, true, ref flags);
             FlagUtils.SetFlag(Flag.H, (origValue & 0x0F) > 1, ref flags);
+        }
+
+        public void DecrementWord(ref byte targetHigh, ref byte targetLow)
+        {
+            ushort target = BitUtils.BytesToUshort(targetHigh, targetLow);
+            target = (ushort)(target - 1);
+            targetHigh = BitUtils.MostSignificantByte(target);
+            targetLow = BitUtils.LeastSignificantByte(target);
+        }
+
+        public void DecrementWord(ref ushort target)
+        {
+            byte high = BitUtils.MostSignificantByte(target);
+            byte low = BitUtils.LeastSignificantByte(target);
+            DecrementWord(ref high, ref low);
+            target = BitUtils.BytesToUshort(high, low);
         }
     }
 }
