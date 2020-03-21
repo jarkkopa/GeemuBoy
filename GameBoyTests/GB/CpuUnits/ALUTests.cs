@@ -13,11 +13,10 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte flags = 0b11010000;
             byte to = 0xAA;
 
-            var cycles = alu.Add(ref to, 0x0F, ref flags);
+            alu.Add(ref to, 0x0F, ref flags);
 
             Assert.Equal(0xB9, to);
             Assert.Equal(0b00100000, flags);
-            Assert.Equal(4, cycles);
         }
 
         [Fact()]
@@ -28,11 +27,10 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte flags = 0b11000000;
             byte to = 0xFE;
 
-            var cycles = alu.Add(ref to, 0x03, ref flags);
+            alu.Add(ref to, 0x03, ref flags);
 
             Assert.Equal(0x01, to);
             Assert.Equal(0b00110000, flags);
-            Assert.Equal(4, cycles);
         }
 
         [Fact()]
@@ -43,11 +41,10 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte flags = 0x0;
             byte to = 0x0;
 
-            var cycles = alu.Add(ref to, 0x0, ref flags);
+            alu.Add(ref to, 0x0, ref flags);
 
             Assert.Equal(0x0, to);
             Assert.Equal(0b10000000, flags);
-            Assert.Equal(4, cycles);
         }
 
         [Fact()]
@@ -58,11 +55,10 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte flags = 0b11010000;
             byte to = 0xAA;
 
-            var cycles = alu.Add(ref to, 0x0F, ref flags, true);
+            alu.Add(ref to, 0x0F, ref flags, true);
 
             Assert.Equal(0xBA, to);
             Assert.Equal(0b00100000, flags);
-            Assert.Equal(4, cycles);
         }
 
         [Fact()]
@@ -73,11 +69,10 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte flags = 0b11010000;
             byte to = 0xFE;
 
-            var cycles = alu.Add(ref to, 0x03, ref flags, true);
+            alu.Add(ref to, 0x03, ref flags, true);
 
             Assert.Equal(0x02, to);
             Assert.Equal(0b00110000, flags);
-            Assert.Equal(4, cycles);
         }
 
         [Fact()]
@@ -88,11 +83,10 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte from = 0x11;
             byte flags = 0b00000000;
 
-            var cycles = alu.Subtract(ref from, 0x01, ref flags);
+            alu.Subtract(ref from, 0x01, ref flags);
 
             Assert.Equal(0x10, from);
             Assert.Equal(0b01000000, flags);
-            Assert.Equal(4, cycles);
         }
 
         [Fact()]
@@ -103,11 +97,10 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte from = 0xE0;
             byte flags = 0b00000000;
 
-            var cycles = alu.Subtract(ref from, 0xF0, ref flags);
+            alu.Subtract(ref from, 0xF0, ref flags);
 
             Assert.Equal(0xF0, from);
             Assert.Equal(0b01010000, flags);
-            Assert.Equal(4, cycles);
         }
 
         [Fact()]
@@ -118,11 +111,10 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte from = 0x11;
             byte flags = 0b00000000;
 
-            var cycles = alu.Subtract(ref from, 0x02, ref flags);
+            alu.Subtract(ref from, 0x02, ref flags);
 
             Assert.Equal(0xF, from);
             Assert.Equal(0b01100000, flags);
-            Assert.Equal(4, cycles);
         }
 
         [Fact()]
@@ -133,11 +125,10 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte from = 0xFF;
             byte flags = 0b00000000;
 
-            var cycles = alu.Subtract(ref from, 0xFF, ref flags);
+            alu.Subtract(ref from, 0xFF, ref flags);
 
             Assert.Equal(0x0, from);
             Assert.Equal(0b11000000, flags);
-            Assert.Equal(4, cycles);
         }
 
         [Fact()]
@@ -148,11 +139,10 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte from = 0xF;
             byte flags = 0b00010000;
 
-            var cycles = alu.Subtract(ref from, 0x01, ref flags, true);
+            alu.Subtract(ref from, 0x01, ref flags, true);
 
             Assert.Equal(0xD, from);
             Assert.Equal(0b01000000, flags);
-            Assert.Equal(4, cycles);
         }
 
         [Fact()]
@@ -163,11 +153,10 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte from = 0xE1;
             byte flags = 0b00010000;
 
-            var cycles = alu.Subtract(ref from, 0xF0, ref flags, true);
+            alu.Subtract(ref from, 0xF0, ref flags, true);
 
             Assert.Equal(0xF0, from);
             Assert.Equal(0b01010000, flags);
-            Assert.Equal(4, cycles);
         }
 
         [Fact()]
@@ -178,11 +167,10 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte from = 0x11;
             byte flags = 0b00010000;
 
-            var cycles = alu.Subtract(ref from, 0x02, ref flags, true);
+            alu.Subtract(ref from, 0x02, ref flags, true);
 
             Assert.Equal(0xE, from);
             Assert.Equal(0b01100000, flags);
-            Assert.Equal(4, cycles);
         }
 
         [Fact()]
@@ -193,11 +181,10 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte from = 0xFF;
             byte flags = 0b00010000;
 
-            var cycles = alu.Subtract(ref from, 0xFE, ref flags, true);
+            alu.Subtract(ref from, 0xFE, ref flags, true);
 
             Assert.Equal(0x0, from);
             Assert.Equal(0b11000000, flags);
-            Assert.Equal(4, cycles);
         }
 
         [Fact()]
@@ -208,11 +195,10 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte to = 0xAA;
             byte flags = 0b00000000;
 
-            var cycles = alu.And(ref to, 0xF2, ref flags);
+            alu.And(ref to, 0xF2, ref flags);
 
             Assert.Equal(0xA2, to);
             Assert.Equal(0b00100000, flags);
-            Assert.Equal(4, cycles);
         }
 
         [Fact()]
@@ -223,11 +209,10 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte to = 0xF0;
             byte flags = 0b11110000;
 
-            var cycles = alu.Or(ref to, 0x0F, ref flags);
+            alu.Or(ref to, 0x0F, ref flags);
 
             Assert.Equal(0xFF, to);
             Assert.Equal(0x00, flags);
-            Assert.Equal(4, cycles);
         }
 
         [Fact()]
@@ -238,11 +223,10 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte to = 0xAF;
             byte flags = 0b11110000;
 
-            var cycles = alu.Xor(ref to, 0xF3, ref flags);
+            alu.Xor(ref to, 0xF3, ref flags);
 
             Assert.Equal(0x5C, to);
             Assert.Equal(0x00, flags);
-            Assert.Equal(4, cycles);
         }
     }
 }

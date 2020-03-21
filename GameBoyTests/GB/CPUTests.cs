@@ -259,7 +259,7 @@ namespace GameBoy.GB.Tests
             Assert.Equal(4, cycles);
         }
 
-        private void AssertSingleCall(byte opcode, Expression<Func<int>> expectedCall, int expectedCycles = 0)
+        private void AssertSingleCall(byte opcode, Expression<Action> expectedCall, int expectedCycles = 0)
         {
             OpCode opCode = cpu.OpCodes[opcode];
             opCode.Instruction();

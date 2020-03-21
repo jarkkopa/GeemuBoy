@@ -2,11 +2,11 @@
 {
     public interface IALU
     {
-        public int Add(ref byte to, byte value, ref byte flags, bool addCarryFlag = false);
-        public int Subtract(ref byte from, byte value, ref byte flags, bool subtractCarryFlag = false);
-        public int And(ref byte to, byte value, ref byte flags);
-        public int Or(ref byte to, byte value, ref byte flags);
-        public int Xor(ref byte to, byte value, ref byte flags);
+        public void Add(ref byte to, byte value, ref byte flags, bool addCarryFlag = false);
+        public void Subtract(ref byte from, byte value, ref byte flags, bool subtractCarryFlag = false);
+        public void And(ref byte to, byte value, ref byte flags);
+        public void Or(ref byte to, byte value, ref byte flags);
+        public void Xor(ref byte to, byte value, ref byte flags);
     }
 
     public class ALU : IALU
@@ -18,7 +18,7 @@
             this.memory = memory;
         }
 
-        public int Add(ref byte to, byte value, ref byte flags, bool addCarryFlag = false)
+        public void Add(ref byte to, byte value, ref byte flags, bool addCarryFlag = false)
         {
             int additionalValue = addCarryFlag && FlagUtils.GetFlag(Flag.C, flags) ? 1 : 0;
             byte origValue = to;
@@ -28,10 +28,9 @@
                 newValue == 0, false,
                 (origValue & 0x0F) + (value & 0xF) > 0xF,
                 newValue > 0xFF);
-            return 4;
         }
 
-        public int Subtract(ref byte from, byte value, ref byte flags, bool subtractCarryFlag = false)
+        public void Subtract(ref byte from, byte value, ref byte flags, bool subtractCarryFlag = false)
         {
             int additionalValue = subtractCarryFlag && FlagUtils.GetFlag(Flag.C, flags) ? 1 : 0;
             byte origValue = from;
@@ -42,10 +41,9 @@
                 true,
                 (origValue & 0x0F) < ((value + additionalValue) & 0xF),
                 origValue < (value + additionalValue));
-            return 4;
         }
 
-        public int And(ref byte to, byte value, ref byte flags)
+        public void And(ref byte to, byte value, ref byte flags)
         {
             to = (byte)(to & value);
             FlagUtils.SetFlags(ref flags,
@@ -53,10 +51,9 @@
                 false,
                 true,
                 false);
-            return 4;
         }
 
-        public int Or(ref byte to, byte value, ref byte flags)
+        public void Or(ref byte to, byte value, ref byte flags)
         {
             to = (byte)(to | value);
             FlagUtils.SetFlags(
@@ -65,10 +62,9 @@
                 false,
                 false,
                 false);
-            return 4;
         }
 
-        public int Xor(ref byte to, byte value, ref byte flags)
+        public void Xor(ref byte to, byte value, ref byte flags)
         {
             to = (byte)(to ^ value);
             FlagUtils.SetFlags(ref flags,
@@ -76,7 +72,6 @@
                 false,
                 false,
                 false);
-            return 4;
         }
     }
 }

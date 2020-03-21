@@ -12,10 +12,9 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte to = 0x00;
             byte from = 0xFF;
 
-            var cycles = loadUnit.Load(ref to, from);
+            loadUnit.Load(ref to, from);
 
             Assert.Equal(0xFF, to);
-            Assert.Equal(4, cycles);
         }
 
         [Fact()]
@@ -27,11 +26,10 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte low = 0x00;
             ushort from = 0xABCD;
 
-            var cycles = loadUnit.Load(ref high, ref low, from);
+            loadUnit.Load(ref high, ref low, from);
 
             Assert.Equal(0xAB, high);
             Assert.Equal(0xCD, low);
-            Assert.Equal(4, cycles);
         }
 
         [Fact()]
@@ -42,10 +40,9 @@ namespace GameBoy.GB.CpuUnits.Tests
             ushort to = 0x00;
             ushort from = 0xABCD;
 
-            var cycles = loadUnit.Load(ref to, from);
+            loadUnit.Load(ref to, from);
 
             Assert.Equal(0xABCD, to);
-            Assert.Equal(4, cycles);
         }
 
         [Fact()]
@@ -57,10 +54,9 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte fromHigh = 0xAB;
             byte fromLow = 0xCD;
 
-            var cycles = loadUnit.Load(ref to, fromHigh, fromLow);
+            loadUnit.Load(ref to, fromHigh, fromLow);
 
             Assert.Equal(0xABCD, to);
-            Assert.Equal(8, cycles);
         }
 
         [Fact()]
@@ -74,12 +70,11 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte addValue = 0x01;
             byte flags = 0b11000000;
 
-            var cycles = loadUnit.LoadAdjusted(ref toHigh, ref toLow, from, addValue, ref flags);
+            loadUnit.LoadAdjusted(ref toHigh, ref toLow, from, addValue, ref flags);
 
             Assert.Equal(0xAC, toHigh);
             Assert.Equal(0x00, toLow);
             Assert.Equal(0b00110000, flags);
-            Assert.Equal(8, cycles);
         }
 
         [Fact()]
@@ -93,12 +88,11 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte addValue = 0xFF; // signed -1
             byte flags = 0b11000000;
 
-            var cycles = loadUnit.LoadAdjusted(ref toHigh, ref toLow, from, addValue, ref flags);
+            loadUnit.LoadAdjusted(ref toHigh, ref toLow, from, addValue, ref flags);
 
             Assert.Equal(0xAB, toHigh);
             Assert.Equal(0xFF, toLow);
             Assert.Equal(0b00100000, flags);
-            Assert.Equal(8, cycles);
         }
 
         [Fact()]
@@ -109,10 +103,9 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte to = 0x00;
             memory.WriteByte(0xABBA, 0x10);
 
-            var cycles = loadUnit.LoadFromAddress(ref to, 0xAB, 0xBA);
+            loadUnit.LoadFromAddress(ref to, 0xAB, 0xBA);
 
             Assert.Equal(0x10, to);
-            Assert.Equal(8, cycles);
         }
 
         [Fact()]
@@ -123,10 +116,9 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte to = 0x00;
             memory.WriteByte(0xABBA, 0x10);
 
-            var cycles = loadUnit.LoadFromAddress(ref to, 0xAB, 0xBA);
+            loadUnit.LoadFromAddress(ref to, 0xAB, 0xBA);
 
             Assert.Equal(0x10, to);
-            Assert.Equal(8, cycles);
         }
 
         [Fact()]
@@ -136,10 +128,9 @@ namespace GameBoy.GB.CpuUnits.Tests
             var loadUnit = new LoadUnit(memory);
             byte source = 0x66;
 
-            var cycles = loadUnit.WriteToAddress(0xAB, 0xBA, source);
+            loadUnit.WriteToAddress(0xAB, 0xBA, source);
 
             Assert.Equal(0x66, memory.ReadByte(0xABBA));
-            Assert.Equal(8, cycles);
         }
 
         [Fact()]
@@ -149,10 +140,9 @@ namespace GameBoy.GB.CpuUnits.Tests
             var loadUnit = new LoadUnit(memory);
             byte source = 0x66;
 
-            var cycles = loadUnit.WriteToAddress(0xABBA, source);
+            loadUnit.WriteToAddress(0xABBA, source);
 
             Assert.Equal(0x66, memory.ReadByte(0xABBA));
-            Assert.Equal(8, cycles);
         }
 
         [Fact()]
@@ -162,11 +152,10 @@ namespace GameBoy.GB.CpuUnits.Tests
             var loadUnit = new LoadUnit(memory);
             ushort value = 0xABCD;
 
-            var cycles = loadUnit.WriteToAddress(0xABBA, value);
+            loadUnit.WriteToAddress(0xABBA, value);
 
             Assert.Equal(0xCD, memory.ReadByte(0xABBA));
             Assert.Equal(0xAB, memory.ReadByte(0xABBB));
-            Assert.Equal(16, cycles);
         }
 
         [Fact()]
@@ -181,11 +170,10 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte source = 0xDD;
             ushort PC = 0x00;
 
-            var cycles = loadUnit.WriteToImmediateAddress(source, ref PC);
+            loadUnit.WriteToImmediateAddress(source, ref PC);
 
             Assert.Equal(0xDD, memory.ReadByte(0xABBA));
             Assert.Equal(0x02, PC);
-            Assert.Equal(16, cycles);
         }
 
         [Fact()]
@@ -199,12 +187,11 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte addrLow = 0x00;
             memory.WriteByte(0xAB00, 0xEE);
 
-            var cycles = loadUnit.LoadFromAddressAndIncrement(ref dest, ref addrHigh, ref addrLow, -1);
+            loadUnit.LoadFromAddressAndIncrement(ref dest, ref addrHigh, ref addrLow, -1);
 
             Assert.Equal(0xEE, dest);
             Assert.Equal(0xAA, addrHigh);
             Assert.Equal(0xFF, addrLow);
-            Assert.Equal(8, cycles);
         }
 
         [Fact()]
@@ -218,12 +205,11 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte addrLow = 0xFF;
             memory.WriteByte(0xAAFF, 0xEE);
 
-            var cycles = loadUnit.LoadFromAddressAndIncrement(ref dest, ref addrHigh, ref addrLow, 1);
+            loadUnit.LoadFromAddressAndIncrement(ref dest, ref addrHigh, ref addrLow, 1);
 
             Assert.Equal(0xEE, dest);
             Assert.Equal(0xAB, addrHigh);
             Assert.Equal(0x00, addrLow);
-            Assert.Equal(8, cycles);
         }
 
         [Fact()]
@@ -235,12 +221,11 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte source = 0xDD;
             byte addrHigh = 0xAB;
             byte addrLow = 0x00;
-            var cycles = loadUnit.WriteToAddressAndIncrement(ref addrHigh, ref addrLow, source, -1);
+            loadUnit.WriteToAddressAndIncrement(ref addrHigh, ref addrLow, source, -1);
 
             Assert.Equal(0xDD, memory.ReadByte(0xAB00));
             Assert.Equal(0xAA, addrHigh);
             Assert.Equal(0xFF, addrLow);
-            Assert.Equal(8, cycles);
         }
 
         [Fact()]
@@ -252,12 +237,11 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte source = 0xDD;
             byte addrHigh = 0xAA;
             byte addrLow = 0xFF;
-            var cycles = loadUnit.WriteToAddressAndIncrement(ref addrHigh, ref addrLow, source, 1);
+            loadUnit.WriteToAddressAndIncrement(ref addrHigh, ref addrLow, source, 1);
 
             Assert.Equal(0xDD, memory.ReadByte(0xAAFF));
             Assert.Equal(0xAB, addrHigh);
             Assert.Equal(0x00, addrLow);
-            Assert.Equal(8, cycles);
         }
 
         [Fact()]
@@ -269,11 +253,10 @@ namespace GameBoy.GB.CpuUnits.Tests
             byte valueHigh = 0xAB;
             byte valueLow = 0xCD;
 
-            var cycles = loadUnit.Push(ref pointer, valueHigh, valueLow);
+            loadUnit.Push(ref pointer, valueHigh, valueLow);
 
             Assert.Equal(0xABCD, memory.ReadWord(pointer));
             Assert.Equal(0xDFFD, pointer);
-            Assert.Equal(16, cycles);
         }
 
         [Fact()]
@@ -286,12 +269,11 @@ namespace GameBoy.GB.CpuUnits.Tests
             ushort value = 0xC000;
             memory.WriteWord(0xC000, 0x1234);
 
-            var cycles = loadUnit.Pop(ref destHigh, ref destLow, ref value);
+            loadUnit.Pop(ref destHigh, ref destLow, ref value);
 
             Assert.Equal(0x12, destHigh);
             Assert.Equal(0x34, destLow);
             Assert.Equal(0xC002, value);
-            Assert.Equal(12, cycles);
         }
     }
 }
