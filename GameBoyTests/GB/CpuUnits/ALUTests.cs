@@ -228,5 +228,41 @@ namespace GameBoy.GB.CpuUnits.Tests
             Assert.Equal(0x5C, to);
             Assert.Equal(0x00, flags);
         }
+
+        [Fact()]
+        public void CompareSetZeroFlagTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte flags = 0b00000000;
+
+            alu.Compare(0xFF, 0xFF, ref flags);
+
+            Assert.Equal(0b11000000, flags);
+        }
+
+        [Fact()]
+        public void CompareSetHalfCarryFlagTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte flags = 0b00000000;
+
+            alu.Compare(0xA2, 0x03, ref flags);
+
+            Assert.Equal(0b01100000, flags);
+        }
+
+        [Fact()]
+        public void CompareSetCarryFlagTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte flags = 0b00000000;
+
+            alu.Compare(0x12, 0x21, ref flags);
+
+            Assert.Equal(0b01010000, flags);
+        }
     }
 }

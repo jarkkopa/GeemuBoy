@@ -226,6 +226,16 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0xAD, () => alu.Xor(ref cpu.A, cpu.L, ref cpu.F), 4);
             AssertSingleCall(0xAE, () => alu.Xor(ref cpu.A, MEM_HL_BYTE, ref cpu.F), 8);
             AssertSingleCall(0xEE, () => alu.Xor(ref cpu.A, IMMEDIATE_BYTE, ref cpu.F), 8);
+
+            AssertSingleCall(0xBF, () => alu.Compare(cpu.A, cpu.A, ref cpu.F), 4);
+            AssertSingleCall(0xB8, () => alu.Compare(cpu.A, cpu.B, ref cpu.F), 4);
+            AssertSingleCall(0xB9, () => alu.Compare(cpu.A, cpu.C, ref cpu.F), 4);
+            AssertSingleCall(0xBA, () => alu.Compare(cpu.A, cpu.D, ref cpu.F), 4);
+            AssertSingleCall(0xBB, () => alu.Compare(cpu.A, cpu.E, ref cpu.F), 4);
+            AssertSingleCall(0xBC, () => alu.Compare(cpu.A, cpu.H, ref cpu.F), 4);
+            AssertSingleCall(0xBD, () => alu.Compare(cpu.A, cpu.L, ref cpu.F), 4);
+            AssertSingleCall(0xBE, () => alu.Compare(cpu.A, MEM_HL_BYTE, ref cpu.F), 8);
+            AssertSingleCall(0xFE, () => alu.Compare(cpu.A, IMMEDIATE_BYTE, ref cpu.F), 8);
         }
 
         [Fact()]

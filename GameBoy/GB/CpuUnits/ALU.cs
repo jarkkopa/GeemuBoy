@@ -7,6 +7,7 @@
         public void And(ref byte to, byte value, ref byte flags);
         public void Or(ref byte to, byte value, ref byte flags);
         public void Xor(ref byte to, byte value, ref byte flags);
+        public void Compare(byte to, byte value, ref byte flags);
     }
 
     public class ALU : IALU
@@ -26,7 +27,7 @@
             to = (byte)(newValue & 0xFF);
             FlagUtils.SetFlags(ref flags,
                 newValue == 0, false,
-                (origValue & 0x0F) + (value & 0xF) > 0xF,
+                (origValue & 0x0F) + (value & 0x0F) > 0x0F,
                 newValue > 0xFF);
         }
 
@@ -39,7 +40,7 @@
             FlagUtils.SetFlags(ref flags,
                 from == 0,
                 true,
-                (origValue & 0x0F) < ((value + additionalValue) & 0xF),
+                (origValue & 0x0F) < ((value + additionalValue) & 0x0F),
                 origValue < (value + additionalValue));
         }
 
@@ -72,6 +73,16 @@
                 false,
                 false,
                 false);
+        }
+
+        public void Compare(byte to, byte value, ref byte flags)
+        {
+            byte result = (byte)((to - value) & 0xFF);
+            FlagUtils.SetFlags(ref flags,
+                result == 0,
+                true,
+                (to & 0x0F) < (value & 0x0F),
+                to < value);
         }
     }
 }
