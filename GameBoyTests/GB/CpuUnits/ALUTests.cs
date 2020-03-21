@@ -230,7 +230,7 @@ namespace GameBoy.GB.CpuUnits.Tests
         }
 
         [Fact()]
-        public void CompareSetZeroFlagTest()
+        public void CompareSetsZeroFlagTest()
         {
             var memory = new Memory(new byte[0]);
             var alu = new ALU(memory);
@@ -242,7 +242,7 @@ namespace GameBoy.GB.CpuUnits.Tests
         }
 
         [Fact()]
-        public void CompareSetHalfCarryFlagTest()
+        public void CompareSetsHalfCarryFlagTest()
         {
             var memory = new Memory(new byte[0]);
             var alu = new ALU(memory);
@@ -254,7 +254,7 @@ namespace GameBoy.GB.CpuUnits.Tests
         }
 
         [Fact()]
-        public void CompareSetCarryFlagTest()
+        public void CompareSetsCarryFlagTest()
         {
             var memory = new Memory(new byte[0]);
             var alu = new ALU(memory);
@@ -263,6 +263,90 @@ namespace GameBoy.GB.CpuUnits.Tests
             alu.Compare(0x12, 0x21, ref flags);
 
             Assert.Equal(0b01010000, flags);
+        }
+
+        [Fact()]
+        public void IncrementSetsZeroTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte value = 0xFF;
+            byte flags = 0b01010000;
+
+            alu.Increment(ref value, ref flags);
+
+            Assert.Equal(0, value);
+            Assert.Equal(0b10110000, flags);
+        }
+
+        [Fact()]
+        public void IncrementSetsHalfCarryTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte value = 0x0F;
+            byte flags = 0b11000000;
+
+            alu.Increment(ref value, ref flags);
+
+            Assert.Equal(0x10, value);
+            Assert.Equal(0b00100000, flags);
+        }
+
+        [Fact()]
+        public void IncrementInMemoryTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte flags = 0b00000000;
+            memory.WriteByte(0xACDC, 0xFF);
+
+            alu.IncrementInMemory(0xAC, 0xDC, ref flags);
+
+            Assert.Equal(0, memory.ReadByte(0xACDC));
+            Assert.Equal(0b10100000, flags);
+        }
+
+        [Fact()]
+        public void DecrementSetsZeroTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte value = 0x01;
+            byte flags = 0b00010000;
+
+            alu.Decrement(ref value, ref flags);
+
+            Assert.Equal(0, value);
+            Assert.Equal(0b11010000, flags);
+        }
+
+        [Fact()]
+        public void DecrementSetsHalfCarryTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte value = 0x10;
+            byte flags = 0b11000000;
+
+            alu.Decrement(ref value, ref flags);
+
+            Assert.Equal(0x0F, value);
+            Assert.Equal(0b01100000, flags);
+        }
+
+        [Fact()]
+        public void DecrementInMemoryTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte flags = 0b00000000;
+            memory.WriteByte(0xACDC, 0x01);
+
+            alu.DecrementInMemory(0xAC, 0xDC, ref flags);
+
+            Assert.Equal(0x0, memory.ReadByte(0xACDC));
+            Assert.Equal(0b11000000, flags);
         }
     }
 }

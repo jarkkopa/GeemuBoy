@@ -236,6 +236,24 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0xBD, () => alu.Compare(cpu.A, cpu.L, ref cpu.F), 4);
             AssertSingleCall(0xBE, () => alu.Compare(cpu.A, MEM_HL_BYTE, ref cpu.F), 8);
             AssertSingleCall(0xFE, () => alu.Compare(cpu.A, IMMEDIATE_BYTE, ref cpu.F), 8);
+
+            AssertSingleCall(0x3C, () => alu.Increment(ref cpu.A, ref cpu.F), 4);
+            AssertSingleCall(0x04, () => alu.Increment(ref cpu.B, ref cpu.F), 4);
+            AssertSingleCall(0x0C, () => alu.Increment(ref cpu.C, ref cpu.F), 4);
+            AssertSingleCall(0x14, () => alu.Increment(ref cpu.D, ref cpu.F), 4);
+            AssertSingleCall(0x1C, () => alu.Increment(ref cpu.E, ref cpu.F), 4);
+            AssertSingleCall(0x24, () => alu.Increment(ref cpu.H, ref cpu.F), 4);
+            AssertSingleCall(0x2C, () => alu.Increment(ref cpu.L, ref cpu.F), 4);
+            AssertSingleCall(0x34, () => alu.IncrementInMemory(cpu.H, cpu.L, ref cpu.F), 12);
+
+            AssertSingleCall(0x3D, () => alu.Decrement(ref cpu.A, ref cpu.F), 4);
+            AssertSingleCall(0x05, () => alu.Decrement(ref cpu.B, ref cpu.F), 4);
+            AssertSingleCall(0x0D, () => alu.Decrement(ref cpu.C, ref cpu.F), 4);
+            AssertSingleCall(0x15, () => alu.Decrement(ref cpu.D, ref cpu.F), 4);
+            AssertSingleCall(0x1D, () => alu.Decrement(ref cpu.E, ref cpu.F), 4);
+            AssertSingleCall(0x25, () => alu.Decrement(ref cpu.H, ref cpu.F), 4);
+            AssertSingleCall(0x2D, () => alu.Decrement(ref cpu.L, ref cpu.F), 4);
+            AssertSingleCall(0x35, () => alu.DecrementInMemory(cpu.H, cpu.L, ref cpu.F), 12);
         }
 
         [Fact()]
@@ -269,7 +287,7 @@ namespace GameBoy.GB.Tests
             Assert.Equal(4, cycles);
         }
 
-        private void AssertSingleCall(byte opcode, Expression<Action> expectedCall, int expectedCycles = 0)
+        private void AssertSingleCall(byte opcode, Expression<Action> expectedCall, int expectedCycles)
         {
             OpCode opCode = cpu.OpCodes[opcode];
             opCode.Instruction();

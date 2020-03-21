@@ -295,9 +295,27 @@ namespace GameBoy.GB
             CreateOpCode(0xBD, () => alu.Compare(A, L, ref F), 4, "CP L");
             CreateOpCode(0xBE, () => { ReadFromMemory(H, L, out var memValue); alu.Compare(A, memValue, ref F); }, 8, "CP (HL)");
             CreateOpCode(0xFE, () => { ReadImmediateByte(out var immediate); alu.Compare(A, immediate, ref F); }, 8, "CP d8");
+
+            CreateOpCode(0x3C, () => alu.Increment(ref A, ref F), 4, "INC A");
+            CreateOpCode(0x04, () => alu.Increment(ref B, ref F), 4, "INC B");
+            CreateOpCode(0x0C, () => alu.Increment(ref C, ref F), 4, "INC C");
+            CreateOpCode(0x14, () => alu.Increment(ref D, ref F), 4, "INC D");
+            CreateOpCode(0x1C, () => alu.Increment(ref E, ref F), 4, "INC E");
+            CreateOpCode(0x24, () => alu.Increment(ref H, ref F), 4, "INC H");
+            CreateOpCode(0x2C, () => alu.Increment(ref L, ref F), 4, "INC L");
+            CreateOpCode(0x34, () => alu.IncrementInMemory(H, L, ref F), 12, "INC (HL)");
+
+            CreateOpCode(0x3D, () => alu.Decrement(ref A, ref F), 4, "DEC A");
+            CreateOpCode(0x05, () => alu.Decrement(ref B, ref F), 4, "DEC B");
+            CreateOpCode(0x0D, () => alu.Decrement(ref C, ref F), 4, "DEC C");
+            CreateOpCode(0x15, () => alu.Decrement(ref D, ref F), 4, "DEC D");
+            CreateOpCode(0x1D, () => alu.Decrement(ref E, ref F), 4, "DEC E");
+            CreateOpCode(0x25, () => alu.Decrement(ref H, ref F), 4, "DEC H");
+            CreateOpCode(0x2D, () => alu.Decrement(ref L, ref F), 4, "DEC L");
+            CreateOpCode(0x35, () => alu.DecrementInMemory(H, L, ref F), 12, "DEC (HL)");
         }
 
-        private void CreateOpCode(byte command, Action instruction, int cycles = 0, string name = "?")
+        private void CreateOpCode(byte command, Action instruction, int cycles, string name)
         {
             OpCodes.Add(command, new OpCode(instruction, cycles, name));
         }

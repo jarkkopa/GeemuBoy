@@ -8,6 +8,10 @@
         public void Or(ref byte to, byte value, ref byte flags);
         public void Xor(ref byte to, byte value, ref byte flags);
         public void Compare(byte to, byte value, ref byte flags);
+        public void Increment(ref byte target, ref byte flags);
+        public void IncrementInMemory(byte addrHigh, byte addrLow, ref byte flags);
+        public void Decrement(ref byte target, ref byte flags);
+        public void DecrementInMemory(byte addrHigh, byte addrLow, ref byte flags);
     }
 
     public class ALU : IALU
@@ -83,6 +87,44 @@
                 true,
                 (to & 0x0F) < (value & 0x0F),
                 to < value);
+        }
+
+        public void Increment(ref byte target, ref byte flags)
+        {
+            byte origValue = target;
+            target++;
+            FlagUtils.SetFlag(Flag.Z, target == 0, ref flags);
+            FlagUtils.SetFlag(Flag.N, false, ref flags);
+            FlagUtils.SetFlag(Flag.H, (origValue & 0x0F) + 1 > 0x0F, ref flags);
+        }
+
+        public void IncrementInMemory(byte addrHigh, byte addrLow, ref byte flags)
+        {
+            ushort address = BitUtils.BytesToUshort(addrHigh, addrLow);
+            byte origValue = memory.ReadByte(address);
+            memory.WriteByte(address, (byte)(origValue + 1));
+            FlagUtils.SetFlag(Flag.Z, (byte)(origValue + 1) == 0, ref flags);
+            FlagUtils.SetFlag(Flag.N, false, ref flags);
+            FlagUtils.SetFlag(Flag.H, (origValue & 0x0F) + 1 > 0x0F, ref flags);
+        }
+
+        public void Decrement(ref byte target, ref byte flags)
+        {
+            byte origValue = target;
+            target--;
+            FlagUtils.SetFlag(Flag.Z, target == 0, ref flags);
+            FlagUtils.SetFlag(Flag.N, true, ref flags);
+            FlagUtils.SetFlag(Flag.H, (origValue & 0x0F) < 1, ref flags);
+        }
+
+        public void DecrementInMemory(byte addrHigh, byte addrLow, ref byte flags)
+        {
+            ushort address = BitUtils.BytesToUshort(addrHigh, addrLow);
+            byte origValue = memory.ReadByte(address);
+            memory.WriteByte(address, (byte)(origValue - 1));
+            FlagUtils.SetFlag(Flag.Z, (byte)(origValue - 1) == 0, ref flags);
+            FlagUtils.SetFlag(Flag.N, true, ref flags);
+            FlagUtils.SetFlag(Flag.H, (origValue & 0x0F) > 1, ref flags);
         }
     }
 }
