@@ -16,18 +16,6 @@ namespace GameBoy.GB
         private readonly byte[] cartridge;
 
         /// <summary>
-        /// ROM bank #0
-        /// Address: 0000-3FFF
-        /// 16 kB
-        /// </summary>
-        private readonly byte[] rom = new byte[0x4000];
-        /// <summary>
-        /// ROM bank 01-0F
-        /// Address: 4000-7FFF
-        /// 16 kB
-        /// </summary>
-        private readonly byte[] romBank = new byte[0x4000];
-        /// <summary>
         /// Video RAM
         /// Address: 8000-9FFF
         /// 8 kB
@@ -76,11 +64,6 @@ namespace GameBoy.GB
             this.bootRom = bootRom;
 
             RomMapMode = initialMapMode;
-
-            for (ushort i = 0; i < cartridge.Length; i++)
-            {
-                WriteByte(i, cartridge[i], true);
-            }
         }
 
         public ushort ReadWord(ushort addr)
@@ -100,12 +83,12 @@ namespace GameBoy.GB
                 }
                 else
                 {
-                    return rom[addr];
+                    return cartridge[addr];
                 }
             }
             else if (addr < 0x8000)
             {
-                return romBank[addr - 0x4000];
+                return cartridge[addr];
             }
             else if (addr < 0xA000)
             {
@@ -168,11 +151,11 @@ namespace GameBoy.GB
         {
             if (addr < 0x4000 && overwriteRom)
             {
-                rom[addr] = data;
+                cartridge[addr] = data;
             }
             else if (addr < 0x8000 && overwriteRom)
             {
-                romBank[addr - 0x4000] = data;
+                cartridge[addr] = data;
             }
             else if (addr < 0xA000)
             {
