@@ -75,6 +75,43 @@ namespace GameBoy.GB.CpuUnits.Tests
             Assert.Equal(0b00110000, flags);
         }
 
+
+        [Fact()]
+        public void AddWordSetsCarryTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte flags = 0b00000000;
+            byte toHigh = 0xFF;
+            byte toLow = 0xFF;
+            byte valueHigh = 0x10;
+            byte valueLow = 0x00;
+
+            alu.Add(ref toHigh, ref toLow, valueHigh, valueLow, ref flags);
+
+            Assert.Equal(0x0F, toHigh);
+            Assert.Equal(0xFF, toLow);
+            Assert.Equal(0b00010000, flags);
+        }
+
+        [Fact()]
+        public void AddWordSetsHalfCarryTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte flags = 0b00000000;
+            byte toHigh = 0x0F;
+            byte toLow = 0x12;
+            byte valueHigh = 0x01;
+            byte valueLow = 0x11;
+
+            alu.Add(ref toHigh, ref toLow, valueHigh, valueLow, ref flags);
+
+            Assert.Equal(0x10, toHigh);
+            Assert.Equal(0x23, toLow);
+            Assert.Equal(0b00100000, flags);
+        }
+
         [Fact()]
         public void AddSignedPositiveTest()
         {

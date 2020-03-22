@@ -255,6 +255,11 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0x2D, () => alu.Decrement(ref cpu.L, ref cpu.F), 4);
             AssertSingleCall(0x35, () => alu.DecrementInMemory(cpu.H, cpu.L, ref cpu.F), 12);
 
+            AssertSingleCall(0x09, () => alu.Add(ref cpu.H, ref cpu.L, cpu.B, cpu.C, ref cpu.F), 8);
+            AssertSingleCall(0x19, () => alu.Add(ref cpu.H, ref cpu.L, cpu.D, cpu.E, ref cpu.F), 8);
+            AssertSingleCall(0x29, () => alu.Add(ref cpu.H, ref cpu.L, cpu.H, cpu.L, ref cpu.F), 8);
+            AssertSingleCall(0x39, () => alu.Add(ref cpu.H, ref cpu.L, BitUtils.MostSignificantByte(cpu.SP), BitUtils.LeastSignificantByte(cpu.SP), ref cpu.F), 8);
+
             AssertSingleCall(0xE8, () => alu.AddSigned(ref cpu.SP, IMMEDIATE_BYTE, ref cpu.F), 16);
 
             AssertSingleCall(0x03, () => alu.IncrementWord(ref cpu.B, ref cpu.C), 8);
