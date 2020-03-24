@@ -8,6 +8,7 @@ namespace GameBoy.GB
     {
         private readonly ILoadUnit loadUnit;
         private readonly IALU alu;
+        private readonly IMiscUnit miscUnit;
 
         public byte A;
         public byte B;
@@ -23,22 +24,26 @@ namespace GameBoy.GB
 
         public int Cycles { get; private set; }
 
+        public bool IME = false;
+
         public Memory Memory { get; private set; }
 
         public Dictionary<byte, OpCode> OpCodes { get; private set; } = new Dictionary<byte, OpCode>();
 
-        public CPU(Memory memory, ILoadUnit loadUnit, IALU alu)
+        public CPU(Memory memory, ILoadUnit loadUnit, IALU alu, IMiscUnit miscUnit)
         {
             this.loadUnit = loadUnit;
             this.alu = alu;
+            this.miscUnit = miscUnit;
 
             CreateLoadUnitOpCodes();
             CreateALUOpCodes();
+            CreateMiscOpCodes();
 
             Memory = memory;
         }
 
-        public CPU(Memory memory) : this(memory, new LoadUnit(memory), new ALU(memory))
+        public CPU(Memory memory) : this(memory, new LoadUnit(memory), new ALU(memory), new MiscUnit(memory))
         {
         }
 
@@ -330,6 +335,12 @@ namespace GameBoy.GB
             CreateOpCode(0x1B, () => alu.DecrementWord(ref D, ref E), 8, "DEC DE");
             CreateOpCode(0x2B, () => alu.DecrementWord(ref H, ref L), 8, "DEC HL");
             CreateOpCode(0x3B, () => alu.DecrementWord(ref SP), 8, "DEC SP");
+        }
+
+        private void CreateMiscOpCodes()
+        {
+            CreateOpCode(0xF3, () => miscUnit.SetInterruptMasterEnable(ref IME, false), 4, "DI");
+            CreateOpCode(0xFB, () => miscUnit.SetInterruptMasterEnable(ref IME, true), 4, "EI");
         }
 
         private void CreateOpCode(byte command, Action instruction, int cycles, string name)

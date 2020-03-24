@@ -16,6 +16,7 @@ namespace GameBoy.GB.Tests
         private readonly CPU cpu;
         private readonly ILoadUnit loadUnit;
         private readonly IALU alu;
+        private readonly IMiscUnit miscUnit;
 
         public CPUTests()
         {
@@ -26,7 +27,8 @@ namespace GameBoy.GB.Tests
             });
             loadUnit = A.Fake<ILoadUnit>();
             alu = A.Fake<IALU>();
-            cpu = new CPU(memory, loadUnit, alu)
+            miscUnit = A.Fake<IMiscUnit>();
+            cpu = new CPU(memory, loadUnit, alu, miscUnit)
             {
                 A = 0x0A,
                 B = 0x0B,
@@ -271,6 +273,13 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0x1B, () => alu.DecrementWord(ref cpu.D, ref cpu.E), 8);
             AssertSingleCall(0x2B, () => alu.DecrementWord(ref cpu.H, ref cpu.L), 8);
             AssertSingleCall(0x3B, () => alu.DecrementWord(ref cpu.SP), 8);
+        }
+
+        [Fact()]
+        public void MiscInstructionMappingTest()
+        {
+            AssertSingleCall(0xF3, () => miscUnit.SetInterruptMasterEnable(ref cpu.IME, false), 4);
+            AssertSingleCall(0xFB, () => miscUnit.SetInterruptMasterEnable(ref cpu.IME, true), 4);
         }
 
         [Fact()]
