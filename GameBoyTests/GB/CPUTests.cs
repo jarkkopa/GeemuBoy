@@ -9,7 +9,7 @@ namespace GameBoy.GB.Tests
     public class CPUTests
     {
         private const byte IMMEDIATE_BYTE = 0x01;
-        private const ushort IMMEDIATE_WORD = 0x0123;
+        private const ushort IMMEDIATE_WORD = 0x2301;
         private const byte MEM_HL_BYTE = 0x45;
 
         private readonly Memory memory;
@@ -17,18 +17,20 @@ namespace GameBoy.GB.Tests
         private readonly ILoadUnit loadUnit;
         private readonly IALU alu;
         private readonly IMiscUnit miscUnit;
+        private readonly IJumpUnit jumpUnit;
 
         public CPUTests()
         {
             memory = new Memory(new byte[]
             {
                 IMMEDIATE_BYTE,
-                IMMEDIATE_WORD & 0x00FF
+                (IMMEDIATE_WORD >> 8) & 0xFF
             });
             loadUnit = A.Fake<ILoadUnit>();
             alu = A.Fake<IALU>();
             miscUnit = A.Fake<IMiscUnit>();
-            cpu = new CPU(memory, loadUnit, alu, miscUnit)
+            jumpUnit = A.Fake<IJumpUnit>();
+            cpu = new CPU(memory, loadUnit, alu, miscUnit, jumpUnit)
             {
                 A = 0x0A,
                 B = 0x0B,
@@ -281,6 +283,12 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0x00, () => miscUnit.Nop(), 4);
             AssertSingleCall(0xF3, () => miscUnit.SetInterruptMasterEnable(ref cpu.IME, false), 4);
             AssertSingleCall(0xFB, () => miscUnit.SetInterruptMasterEnable(ref cpu.IME, true), 4);
+        }
+
+        [Fact()]
+        public void JumpUnitInstructionMappingTest()
+        {
+            AssertSingleCall(0xC3, () => jumpUnit.JumpToAddress(IMMEDIATE_WORD, ref cpu.PC), 16);
         }
 
         [Fact()]

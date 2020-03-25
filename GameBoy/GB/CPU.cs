@@ -9,6 +9,7 @@ namespace GameBoy.GB
         private readonly ILoadUnit loadUnit;
         private readonly IALU alu;
         private readonly IMiscUnit miscUnit;
+        private readonly IJumpUnit jumpUnit;
 
         public byte A;
         public byte B;
@@ -30,20 +31,22 @@ namespace GameBoy.GB
 
         public Dictionary<byte, OpCode> OpCodes { get; private set; } = new Dictionary<byte, OpCode>();
 
-        public CPU(Memory memory, ILoadUnit loadUnit, IALU alu, IMiscUnit miscUnit)
+        public CPU(Memory memory, ILoadUnit loadUnit, IALU alu, IMiscUnit miscUnit, IJumpUnit jumpUnit)
         {
             this.loadUnit = loadUnit;
             this.alu = alu;
             this.miscUnit = miscUnit;
+            this.jumpUnit = jumpUnit;
 
             CreateLoadUnitOpCodes();
             CreateALUOpCodes();
             CreateMiscOpCodes();
+            CreateJumpOpCodes();
 
             Memory = memory;
         }
 
-        public CPU(Memory memory) : this(memory, new LoadUnit(memory), new ALU(memory), new MiscUnit(memory))
+        public CPU(Memory memory) : this(memory, new LoadUnit(memory), new ALU(memory), new MiscUnit(memory), new JumpUnit(memory))
         {
         }
 
@@ -129,9 +132,9 @@ namespace GameBoy.GB
 
         public int ReadImmediateWord(out ushort value)
         {
-            var msb = Memory.ReadByte(PC);
-            PC++;
             var lsb = Memory.ReadByte(PC);
+            PC++;
+            var msb = Memory.ReadByte(PC);
             PC++;
             value = BitUtils.BytesToUshort(msb, lsb);
             return 8;
@@ -384,6 +387,11 @@ namespace GameBoy.GB
             CreateOpCode(0x00, () => miscUnit.Nop(), 4, "NOP");
             CreateOpCode(0xF3, () => miscUnit.SetInterruptMasterEnable(ref IME, false), 4, "DI");
             CreateOpCode(0xFB, () => miscUnit.SetInterruptMasterEnable(ref IME, true), 4, "EI");
+        }
+
+        private void CreateJumpOpCodes()
+        {
+            CreateOpCode(0xC3, () => { ReadImmediateWord(out var address); jumpUnit.JumpToAddress(address, ref PC); }, 16, "JP a16");
         }
 
         private void CreateOpCode(byte command, Action instruction, int cycles, string name)
