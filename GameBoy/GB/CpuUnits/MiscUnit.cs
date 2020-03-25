@@ -7,6 +7,7 @@ namespace GameBoy.GB.CpuUnits
     public interface IMiscUnit
     {
         public void SetInterruptMasterEnable(ref bool master, bool enabled);
+        public void Nop();
     }
 
     public class MiscUnit : IMiscUnit
@@ -23,5 +24,7 @@ namespace GameBoy.GB.CpuUnits
             // TODO: Don't set ime immediately. Set it after the next intruction
             master = enabled;
         }
+
+        public void Nop() { }
     }
 }

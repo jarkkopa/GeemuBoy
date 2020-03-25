@@ -278,6 +278,7 @@ namespace GameBoy.GB.Tests
         [Fact()]
         public void MiscInstructionMappingTest()
         {
+            AssertSingleCall(0x00, () => miscUnit.Nop(), 4);
             AssertSingleCall(0xF3, () => miscUnit.SetInterruptMasterEnable(ref cpu.IME, false), 4);
             AssertSingleCall(0xFB, () => miscUnit.SetInterruptMasterEnable(ref cpu.IME, true), 4);
         }
