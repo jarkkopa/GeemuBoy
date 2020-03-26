@@ -391,7 +391,33 @@ namespace GameBoy.GB
 
         private void CreateJumpOpCodes()
         {
+            CreateOpCode(0xCD, () => { ReadImmediateWord(out var address); jumpUnit.Call(address, ref SP, ref PC); }, 24, "CALL a16");
+            
             CreateOpCode(0xC3, () => { ReadImmediateWord(out var address); jumpUnit.JumpToAddress(address, ref PC); }, 16, "JP a16");
+            
+            CreateOpCode(0xC2, () =>
+            {
+                ReadImmediateWord(out var address);
+                jumpUnit.JumpToAddressConditional(address, ref PC, Flag.Z, false, F);
+            }, 16, "JP NZ, a16"); // TODO: Cycles 16/12 depending if condition is true
+
+            CreateOpCode(0xCA, () =>
+            {
+                ReadImmediateWord(out var address);
+                jumpUnit.JumpToAddressConditional(address, ref PC, Flag.Z, true, F);
+            }, 16, "JP Z, a16"); // TODO: Cycles 16/12 depending if condition is true
+
+            CreateOpCode(0xD2, () =>
+            {
+                ReadImmediateWord(out var address);
+                jumpUnit.JumpToAddressConditional(address, ref PC, Flag.C, false, F);
+            }, 16, "JP NC, a16"); // TODO: Cycles 16/12 depending if condition is true
+
+            CreateOpCode(0xDA, () =>
+            {
+                ReadImmediateWord(out var address);
+                jumpUnit.JumpToAddressConditional(address, ref PC, Flag.C, true, F);
+            }, 16, "JP C, a16"); // TODO: Cycles 16/12 depending if condition is true
         }
 
         private void CreateOpCode(byte command, Action instruction, int cycles, string name)
