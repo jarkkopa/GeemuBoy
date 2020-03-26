@@ -4,6 +4,7 @@
     {
         public void Call(ushort address, ref ushort sp, ref ushort pc);
         public void JumpToAddress(ushort address, ref ushort pc);
+        public void JumpToAddress(byte addrHigh, byte addrLow, ref ushort pc);
         public void JumpToAddressConditional(ushort address, ref ushort pc, Flag flag, bool condition, byte flags);
         public void JumpRelative(byte value, ref ushort pc);
     }
@@ -33,6 +34,12 @@
         public void JumpToAddress(ushort address, ref ushort pc)
         {
             pc = address;
+        }
+
+        public void JumpToAddress(byte addrHigh, byte addrLow, ref ushort pc)
+        {
+            ushort address = BitUtils.BytesToUshort(addrHigh, addrLow);
+            JumpToAddress(address, ref pc);
         }
 
         public void JumpToAddressConditional(ushort address, ref ushort pc, Flag flag, bool condition, byte flags)
