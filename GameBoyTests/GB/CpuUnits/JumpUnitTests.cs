@@ -84,5 +84,29 @@ namespace GameBoy.GB.CpuUnits.Tests
 
             Assert.Equal(0x0123, pc);
         }
+
+        [Fact()]
+        public void JumpRelativeNegativeTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var jumpUnit = new JumpUnit(memory);
+            ushort pc = 0x0A0B;
+
+            jumpUnit.JumpRelative(0xE7, ref pc);
+
+            Assert.Equal(0x9F2, pc);
+        }
+
+        [Fact()]
+        public void JumpRelativePositiveTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var jumpUnit = new JumpUnit(memory);
+            ushort pc = 0x0A0B;
+
+            jumpUnit.JumpRelative(0x78, ref pc);
+
+            Assert.Equal(0xA83, pc);
+        }
     }
 }

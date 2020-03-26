@@ -394,7 +394,8 @@ namespace GameBoy.GB
             CreateOpCode(0xCD, () => { ReadImmediateWord(out var address); jumpUnit.Call(address, ref SP, ref PC); }, 24, "CALL a16");
             
             CreateOpCode(0xC3, () => { ReadImmediateWord(out var address); jumpUnit.JumpToAddress(address, ref PC); }, 16, "JP a16");
-            
+            CreateOpCode(0x18, () => { ReadImmediateByte(out var value); jumpUnit.JumpRelative(value, ref PC); }, 12, "JR a8");
+
             CreateOpCode(0xC2, () =>
             {
                 ReadImmediateWord(out var address);
