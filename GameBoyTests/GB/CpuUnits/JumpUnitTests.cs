@@ -21,6 +21,53 @@ namespace GameBoy.GB.CpuUnits.Tests
         }
 
         [Fact()]
+        public void CallWhenSetConditionTrueTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var jumpUnit = new JumpUnit(memory);
+            ushort pc = 0x0123;
+            ushort sp = 0xFFFE;
+            byte flags = 0b10000000;
+
+            jumpUnit.CallConditional(0xACDC, ref sp, ref pc, Flag.Z, true, flags);
+
+            Assert.Equal(0x23, memory.ReadByte(0xFFFC));
+            Assert.Equal(0x01, memory.ReadByte(0xFFFD));
+            Assert.Equal(0xACDC, pc);
+        }
+
+        [Fact()]
+        public void CallWhenResetConditionTrueTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var jumpUnit = new JumpUnit(memory);
+            ushort pc = 0x0123;
+            ushort sp = 0xFFFE;
+            byte flags = 0b01110000;
+
+            jumpUnit.CallConditional(0xACDC, ref sp, ref pc, Flag.Z, false, flags);
+
+            Assert.Equal(0x23, memory.ReadByte(0xFFFC));
+            Assert.Equal(0x01, memory.ReadByte(0xFFFD));
+            Assert.Equal(0xACDC, pc);
+        }
+
+        [Fact()]
+        public void DoesNotCallWhenConditionFalseTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var jumpUnit = new JumpUnit(memory);
+            ushort pc = 0x0123;
+            ushort sp = 0xFFFE;
+            byte flags = 0b00000000;
+
+            jumpUnit.CallConditional(0xACDC, ref sp, ref pc, Flag.Z, true, flags);
+
+            Assert.Equal(0xFFFE, sp);
+            Assert.Equal(0x0123, pc);
+        }
+
+        [Fact()]
         public void JumpToAddressTest()
         {
             var memory = new Memory(new byte[0]);

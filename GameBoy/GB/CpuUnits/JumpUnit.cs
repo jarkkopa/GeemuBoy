@@ -3,6 +3,7 @@
     public interface IJumpUnit
     {
         public void Call(ushort address, ref ushort sp, ref ushort pc);
+        public void CallConditional(ushort address, ref ushort sp, ref ushort pc, Flag flag, bool condition, byte flags);
         public void JumpToAddress(ushort address, ref ushort pc);
         public void JumpToAddress(byte addrHigh, byte addrLow, ref ushort pc);
         public void JumpToAddressConditional(ushort address, ref ushort pc, Flag flag, bool condition, byte flags);
@@ -25,6 +26,14 @@
             sp = (ushort)(sp - 2);
             memory.WriteWord(sp, pc);
             pc = address;
+        }
+
+        public void CallConditional(ushort address, ref ushort sp, ref ushort pc, Flag flag, bool condition, byte flags)
+        {
+            if(FlagUtils.GetFlag(flag, flags) == condition)
+            {
+                Call(address, ref sp, ref pc);
+            }
         }
 
         public void JumpRelative(byte value, ref ushort pc)

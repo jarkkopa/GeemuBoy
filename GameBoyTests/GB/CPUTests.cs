@@ -289,6 +289,10 @@ namespace GameBoy.GB.Tests
         public void JumpUnitInstructionMappingTest()
         {
             AssertSingleCall(0xCD, () => jumpUnit.Call(IMMEDIATE_WORD, ref cpu.SP, ref cpu.PC), 24);
+            AssertSingleCall(0xC4, () => jumpUnit.CallConditional(IMMEDIATE_WORD, ref cpu.SP, ref cpu.PC, Flag.Z, false, cpu.F), 24);
+            AssertSingleCall(0xCC, () => jumpUnit.CallConditional(IMMEDIATE_WORD, ref cpu.SP, ref cpu.PC, Flag.Z, true, cpu.F), 24);
+            AssertSingleCall(0xD4, () => jumpUnit.CallConditional(IMMEDIATE_WORD, ref cpu.SP, ref cpu.PC, Flag.C, false, cpu.F), 24);
+            AssertSingleCall(0xDC, () => jumpUnit.CallConditional(IMMEDIATE_WORD, ref cpu.SP, ref cpu.PC, Flag.C, true, cpu.F), 24);
 
             AssertSingleCall(0xC3, () => jumpUnit.JumpToAddress(IMMEDIATE_WORD, ref cpu.PC), 16);
             AssertSingleCall(0x18, () => jumpUnit.JumpRelative(IMMEDIATE_BYTE, ref cpu.PC), 12);

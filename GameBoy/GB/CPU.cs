@@ -392,6 +392,29 @@ namespace GameBoy.GB
         private void CreateJumpOpCodes()
         {
             CreateOpCode(0xCD, () => { ReadImmediateWord(out var address); jumpUnit.Call(address, ref SP, ref PC); }, 24, "CALL a16");
+            CreateOpCode(0xC4, () =>
+            {
+                ReadImmediateWord(out var address);
+                jumpUnit.CallConditional(address, ref SP, ref PC, Flag.Z, false, F);
+            }, 24, "CALL NZ, a16"); // TODO: Cycles 24/12 depending if condition is true
+
+            CreateOpCode(0xCC, () =>
+            {
+                ReadImmediateWord(out var address);
+                jumpUnit.CallConditional(address, ref SP, ref PC, Flag.Z, true, F);
+            }, 24, "CALL Z, a16"); // TODO: Cycles 24/12 depending if condition is true
+
+            CreateOpCode(0xD4, () =>
+            {
+                ReadImmediateWord(out var address);
+                jumpUnit.CallConditional(address, ref SP, ref PC, Flag.C, false, F);
+            }, 24, "CALL NC, a16"); // TODO: Cycles 24/12 depending if condition is true
+
+            CreateOpCode(0xDC, () =>
+            {
+                ReadImmediateWord(out var address);
+                jumpUnit.CallConditional(address, ref SP, ref PC, Flag.C, true, F);
+            }, 24, "CALL C, a16"); // TODO: Cycles 24/12 depending if condition is true
 
             CreateOpCode(0xC3, () => { ReadImmediateWord(out var address); jumpUnit.JumpToAddress(address, ref PC); }, 16, "JP a16");
             CreateOpCode(0x18, () => { ReadImmediateByte(out var value); jumpUnit.JumpRelative(value, ref PC); }, 12, "JR a8");
