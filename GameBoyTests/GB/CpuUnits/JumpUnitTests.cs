@@ -110,6 +110,45 @@ namespace GameBoy.GB.CpuUnits.Tests
         }
 
         [Fact()]
+        public void JumpRelativeWhenSetConditionTrueTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var jumpUnit = new JumpUnit(memory);
+            ushort pc = 0x0123;
+            byte flags = 0b10000000;
+
+            jumpUnit.JumpRelativeConditional(0x02, ref pc, Flag.Z, true, flags);
+
+            Assert.Equal(0x0125, pc);
+        }
+
+        [Fact()]
+        public void JumpRelativeWhenResetConditionTrueTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var jumpUnit = new JumpUnit(memory);
+            ushort pc = 0x0123;
+            byte flags = 0b01110000;
+
+            jumpUnit.JumpRelativeConditional(0xFF, ref pc, Flag.Z, false, flags);
+
+            Assert.Equal(0x0122, pc);
+        }
+
+        [Fact()]
+        public void DontJumpRelativeWhenSetConditionFalseTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var jumpUnit = new JumpUnit(memory);
+            ushort pc = 0x0123;
+            byte flags = 0b00000000;
+
+            jumpUnit.JumpRelativeConditional(0x02, ref pc, Flag.Z, true, flags);
+
+            Assert.Equal(0x0123, pc);
+        }
+
+        [Fact()]
         public void JumpToAddressCombinedTest()
         {
             var memory = new Memory(new byte[0]);

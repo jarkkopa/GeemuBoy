@@ -7,6 +7,7 @@
         public void JumpToAddress(byte addrHigh, byte addrLow, ref ushort pc);
         public void JumpToAddressConditional(ushort address, ref ushort pc, Flag flag, bool condition, byte flags);
         public void JumpRelative(byte value, ref ushort pc);
+        public void JumpRelativeConditional(byte value, ref ushort pc, Flag flag, bool condition, byte flags);
         public void Return(ref ushort sp, ref ushort pc);
     }
 
@@ -30,6 +31,14 @@
         {
             sbyte signed = unchecked((sbyte)value);
             pc = (ushort)(pc + signed);
+        }
+
+        public void JumpRelativeConditional(byte value, ref ushort pc, Flag flag, bool condition, byte flags)
+        {
+            if (FlagUtils.GetFlag(flag, flags) == condition)
+            {
+                JumpRelative(value, ref pc);
+            }
         }
 
         public void JumpToAddress(ushort address, ref ushort pc)

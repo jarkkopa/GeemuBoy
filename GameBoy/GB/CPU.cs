@@ -421,6 +421,30 @@ namespace GameBoy.GB
                 jumpUnit.JumpToAddressConditional(address, ref PC, Flag.C, true, F);
             }, 16, "JP C, a16"); // TODO: Cycles 16/12 depending if condition is true
 
+            CreateOpCode(0x20, () =>
+            {
+                ReadImmediateByte(out var value);
+                jumpUnit.JumpRelativeConditional(value, ref PC, Flag.Z, false, F);
+            }, 12, "JR NZ, r8"); // TODO: Cycles 12/8 depending if condition is true
+
+            CreateOpCode(0x28, () =>
+            {
+                ReadImmediateByte(out var value);
+                jumpUnit.JumpRelativeConditional(value, ref PC, Flag.Z, true, F);
+            }, 12, "JR Z, r8"); // TODO: Cycles 12/8 depending if condition is true
+
+            CreateOpCode(0x30, () =>
+            {
+                ReadImmediateByte(out var value);
+                jumpUnit.JumpRelativeConditional(value, ref PC, Flag.C, false, F);
+            }, 12, "JR NC, r8"); // TODO: Cycles 12/8 depending if condition is true
+
+            CreateOpCode(0x38, () =>
+            {
+                ReadImmediateByte(out var value);
+                jumpUnit.JumpRelativeConditional(value, ref PC, Flag.C, true, F);
+            }, 12, "JR C, r8"); // TODO: Cycles 12/8 depending if condition is true
+
             CreateOpCode(0xC9, () => jumpUnit.Return(ref SP, ref PC), 16, "RET");
         }
 

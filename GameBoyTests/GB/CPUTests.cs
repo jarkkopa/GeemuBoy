@@ -299,6 +299,11 @@ namespace GameBoy.GB.Tests
             AssertSingleCall(0xD2, () => jumpUnit.JumpToAddressConditional(IMMEDIATE_WORD, ref cpu.PC, Flag.C, false, cpu.F), 16);
             AssertSingleCall(0xDA, () => jumpUnit.JumpToAddressConditional(IMMEDIATE_WORD, ref cpu.PC, Flag.C, true, cpu.F), 16);
 
+            AssertSingleCall(0x20, () => jumpUnit.JumpRelativeConditional(IMMEDIATE_BYTE, ref cpu.PC, Flag.Z, false, cpu.F), 12);
+            AssertSingleCall(0x28, () => jumpUnit.JumpRelativeConditional(IMMEDIATE_BYTE, ref cpu.PC, Flag.Z, true, cpu.F), 12);
+            AssertSingleCall(0x30, () => jumpUnit.JumpRelativeConditional(IMMEDIATE_BYTE, ref cpu.PC, Flag.C, false, cpu.F), 12);
+            AssertSingleCall(0x38, () => jumpUnit.JumpRelativeConditional(IMMEDIATE_BYTE, ref cpu.PC, Flag.C, true, cpu.F), 12);
+
             AssertSingleCall(0xC9, () => jumpUnit.Return(ref cpu.SP, ref cpu.PC), 16);
         }
 
