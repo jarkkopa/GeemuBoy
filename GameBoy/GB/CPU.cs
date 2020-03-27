@@ -420,6 +420,8 @@ namespace GameBoy.GB
                 ReadImmediateWord(out var address);
                 jumpUnit.JumpToAddressConditional(address, ref PC, Flag.C, true, F);
             }, 16, "JP C, a16"); // TODO: Cycles 16/12 depending if condition is true
+
+            CreateOpCode(0xC9, () => jumpUnit.Return(ref SP, ref PC), 16, "RET");
         }
 
         private void CreateOpCode(byte command, Action instruction, int cycles, string name)

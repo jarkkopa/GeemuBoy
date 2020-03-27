@@ -7,6 +7,7 @@
         public void JumpToAddress(byte addrHigh, byte addrLow, ref ushort pc);
         public void JumpToAddressConditional(ushort address, ref ushort pc, Flag flag, bool condition, byte flags);
         public void JumpRelative(byte value, ref ushort pc);
+        public void Return(ref ushort sp, ref ushort pc);
     }
 
     public class JumpUnit : IJumpUnit
@@ -48,6 +49,12 @@
             {
                 JumpToAddress(address, ref pc);
             }
+        }
+
+        public void Return(ref ushort sp, ref ushort pc)
+        {
+            pc = memory.ReadWord(sp);
+            sp = (ushort)(sp + 2);
         }
     }
 }

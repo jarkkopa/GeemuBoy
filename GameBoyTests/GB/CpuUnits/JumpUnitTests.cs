@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using GameBoy.GB.CpuUnits;
+using Xunit;
 
 namespace GameBoy.GB.CpuUnits.Tests
 {
@@ -120,6 +121,22 @@ namespace GameBoy.GB.CpuUnits.Tests
             jumpUnit.JumpToAddress(high, low, ref pc);
 
             Assert.Equal(0xABBA, pc);
+        }
+
+        [Fact()]
+        public void ReturnTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var jumpUnit = new JumpUnit(memory);
+            ushort pc = 0x0100;
+            ushort sp = 0xFFFA;
+            memory.WriteByte(0xFFFA, 0x23);
+            memory.WriteByte(0xFFFB, 0x01);
+
+            jumpUnit.Return(ref sp, ref pc);
+
+            Assert.Equal(0x0123, pc);
+            Assert.Equal(0xFFFC, sp);
         }
     }
 }
