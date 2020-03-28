@@ -18,6 +18,7 @@ namespace GameBoy.GB.Tests
         private readonly IALU alu;
         private readonly IMiscUnit miscUnit;
         private readonly IJumpUnit jumpUnit;
+        private readonly IBitUnit bitUnit;
 
         public CPUTests()
         {
@@ -30,7 +31,8 @@ namespace GameBoy.GB.Tests
             alu = A.Fake<IALU>();
             miscUnit = A.Fake<IMiscUnit>();
             jumpUnit = A.Fake<IJumpUnit>();
-            cpu = new CPU(memory, loadUnit, alu, miscUnit, jumpUnit)
+            bitUnit = A.Fake<IBitUnit>();
+            cpu = new CPU(memory, loadUnit, alu, miscUnit, jumpUnit, bitUnit)
             {
                 A = 0x0A,
                 B = 0x0B,
@@ -312,6 +314,73 @@ namespace GameBoy.GB.Tests
         }
 
         [Fact()]
+        public void BitUnitInstructionMappingTest()
+        {
+            AssertSinglePrefixedCall(0x47, () => bitUnit.TestBit(cpu.A, 0, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x4F, () => bitUnit.TestBit(cpu.A, 1, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x57, () => bitUnit.TestBit(cpu.A, 2, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x5F, () => bitUnit.TestBit(cpu.A, 3, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x67, () => bitUnit.TestBit(cpu.A, 4, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x6F, () => bitUnit.TestBit(cpu.A, 5, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x77, () => bitUnit.TestBit(cpu.A, 6, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x7F, () => bitUnit.TestBit(cpu.A, 7, ref cpu.F), 12);
+
+            AssertSinglePrefixedCall(0x40, () => bitUnit.TestBit(cpu.B, 0, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x48, () => bitUnit.TestBit(cpu.B, 1, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x50, () => bitUnit.TestBit(cpu.B, 2, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x58, () => bitUnit.TestBit(cpu.B, 3, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x60, () => bitUnit.TestBit(cpu.B, 4, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x68, () => bitUnit.TestBit(cpu.B, 5, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x70, () => bitUnit.TestBit(cpu.B, 6, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x78, () => bitUnit.TestBit(cpu.B, 7, ref cpu.F), 12);
+
+            AssertSinglePrefixedCall(0x41, () => bitUnit.TestBit(cpu.C, 0, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x49, () => bitUnit.TestBit(cpu.C, 1, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x51, () => bitUnit.TestBit(cpu.C, 2, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x59, () => bitUnit.TestBit(cpu.C, 3, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x61, () => bitUnit.TestBit(cpu.C, 4, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x69, () => bitUnit.TestBit(cpu.C, 5, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x71, () => bitUnit.TestBit(cpu.C, 6, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x79, () => bitUnit.TestBit(cpu.C, 7, ref cpu.F), 12);
+
+            AssertSinglePrefixedCall(0x42, () => bitUnit.TestBit(cpu.D, 0, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x4A, () => bitUnit.TestBit(cpu.D, 1, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x52, () => bitUnit.TestBit(cpu.D, 2, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x5A, () => bitUnit.TestBit(cpu.D, 3, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x62, () => bitUnit.TestBit(cpu.D, 4, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x6A, () => bitUnit.TestBit(cpu.D, 5, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x72, () => bitUnit.TestBit(cpu.D, 6, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x7A, () => bitUnit.TestBit(cpu.D, 7, ref cpu.F), 12);
+
+            AssertSinglePrefixedCall(0x43, () => bitUnit.TestBit(cpu.E, 0, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x4B, () => bitUnit.TestBit(cpu.E, 1, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x53, () => bitUnit.TestBit(cpu.E, 2, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x5B, () => bitUnit.TestBit(cpu.E, 3, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x63, () => bitUnit.TestBit(cpu.E, 4, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x6B, () => bitUnit.TestBit(cpu.E, 5, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x73, () => bitUnit.TestBit(cpu.E, 6, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x7B, () => bitUnit.TestBit(cpu.E, 7, ref cpu.F), 12);
+
+            AssertSinglePrefixedCall(0x44, () => bitUnit.TestBit(cpu.H, 0, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x4C, () => bitUnit.TestBit(cpu.H, 1, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x54, () => bitUnit.TestBit(cpu.H, 2, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x5C, () => bitUnit.TestBit(cpu.H, 3, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x64, () => bitUnit.TestBit(cpu.H, 4, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x6C, () => bitUnit.TestBit(cpu.H, 5, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x74, () => bitUnit.TestBit(cpu.H, 6, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x7C, () => bitUnit.TestBit(cpu.H, 7, ref cpu.F), 12);
+
+            AssertSinglePrefixedCall(0x45, () => bitUnit.TestBit(cpu.L, 0, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x4D, () => bitUnit.TestBit(cpu.L, 1, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x55, () => bitUnit.TestBit(cpu.L, 2, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x5D, () => bitUnit.TestBit(cpu.L, 3, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x65, () => bitUnit.TestBit(cpu.L, 4, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x6D, () => bitUnit.TestBit(cpu.L, 5, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x75, () => bitUnit.TestBit(cpu.L, 6, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x7D, () => bitUnit.TestBit(cpu.L, 7, ref cpu.F), 12);
+        }
+
+        [Fact()]
         public void ReadImmediateByteTest()
         {
             var cycles = cpu.ReadImmediateByte(out var immediate);
@@ -345,6 +414,18 @@ namespace GameBoy.GB.Tests
         private void AssertSingleCall(byte opcode, Expression<Action> expectedCall, int expectedCycles)
         {
             OpCode opCode = cpu.OpCodes[opcode];
+            opCode.Instruction();
+            A.CallTo(expectedCall).MustHaveHappenedOnceExactly();
+            Fake.ClearRecordedCalls(loadUnit);
+            Assert.Equal(expectedCycles, opCode.Cycles);
+
+            // Reset PC between calls because some instructions rely on immediate values at the beginning of the rom.
+            cpu.PC = 0;
+        }
+
+        private void AssertSinglePrefixedCall(byte opcode, Expression<Action> expectedCall, int expectedCycles)
+        {
+            OpCode opCode = cpu.OpCodesPrefixed[opcode];
             opCode.Instruction();
             A.CallTo(expectedCall).MustHaveHappenedOnceExactly();
             Fake.ClearRecordedCalls(loadUnit);

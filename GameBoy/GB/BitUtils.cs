@@ -16,5 +16,10 @@
         {
             return (byte)(value & 0xFF);
         }
+
+        public static bool GetBit(byte value, int index)
+        {
+            return (value & 1 << index) > 0;
+        }
     }
 }

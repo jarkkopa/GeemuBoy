@@ -6,10 +6,13 @@ namespace GameBoy.GB
 {
     public class CPU
     {
+        public const byte PREFIX_OPCODE = 0xCB;
+
         private readonly ILoadUnit loadUnit;
         private readonly IALU alu;
         private readonly IMiscUnit miscUnit;
         private readonly IJumpUnit jumpUnit;
+        private readonly IBitUnit bitOpsUnit;
 
         public byte A;
         public byte B;
@@ -30,23 +33,27 @@ namespace GameBoy.GB
         public Memory Memory { get; private set; }
 
         public Dictionary<byte, OpCode> OpCodes { get; private set; } = new Dictionary<byte, OpCode>();
+        public Dictionary<byte, OpCode> OpCodesPrefixed { get; private set; } = new Dictionary<byte, OpCode>();
 
-        public CPU(Memory memory, ILoadUnit loadUnit, IALU alu, IMiscUnit miscUnit, IJumpUnit jumpUnit)
+        public CPU(Memory memory, ILoadUnit loadUnit, IALU alu, IMiscUnit miscUnit, IJumpUnit jumpUnit, IBitUnit bitOpsUnit)
         {
             this.loadUnit = loadUnit;
             this.alu = alu;
             this.miscUnit = miscUnit;
             this.jumpUnit = jumpUnit;
+            this.bitOpsUnit = bitOpsUnit;
 
             CreateLoadUnitOpCodes();
             CreateALUOpCodes();
             CreateMiscOpCodes();
             CreateJumpOpCodes();
+            CreateBitUnitOpCodes();
 
             Memory = memory;
         }
 
-        public CPU(Memory memory) : this(memory, new LoadUnit(memory), new ALU(memory), new MiscUnit(memory), new JumpUnit(memory))
+        public CPU(Memory memory) :
+            this(memory, new LoadUnit(memory), new ALU(memory), new MiscUnit(memory), new JumpUnit(memory), new BitUnit())
         {
         }
 
@@ -111,9 +118,27 @@ namespace GameBoy.GB
         {
             var code = Memory.ReadByte(PC);
             PC++;
-            if (OpCodes.ContainsKey(code))
+            if (code == PREFIX_OPCODE || OpCodes.ContainsKey(code))
             {
-                var opCode = OpCodes[code];
+                OpCode opCode;
+                if (code == PREFIX_OPCODE)
+                {
+                    code = Memory.ReadByte(PC);
+                    PC++;
+                    if (OpCodesPrefixed.ContainsKey(code))
+                    {
+                        opCode = OpCodesPrefixed[code];
+                    }
+                    else
+                    {
+                        throw new Exception($"Trying to run prefixed opcode 0x{PREFIX_OPCODE:x2} 0x{code:x2} that is not implemented.");
+                    }
+
+                }
+                else
+                {
+                    opCode = OpCodes[code];
+                }
                 Cycles = opCode.Cycles;
                 opCode.Instruction();
             }
@@ -471,9 +496,80 @@ namespace GameBoy.GB
             CreateOpCode(0xC9, () => jumpUnit.Return(ref SP, ref PC), 16, "RET");
         }
 
+        private void CreateBitUnitOpCodes()
+        {
+            CreatePrefixedOpCode(0x47, () => bitOpsUnit.TestBit(A, 0, ref F), 12, "BIT 0, A");
+            CreatePrefixedOpCode(0x4F, () => bitOpsUnit.TestBit(A, 1, ref F), 12, "BIT 1, A");
+            CreatePrefixedOpCode(0x57, () => bitOpsUnit.TestBit(A, 2, ref F), 12, "BIT 2, A");
+            CreatePrefixedOpCode(0x5F, () => bitOpsUnit.TestBit(A, 3, ref F), 12, "BIT 3, A");
+            CreatePrefixedOpCode(0x67, () => bitOpsUnit.TestBit(A, 4, ref F), 12, "BIT 4, A");
+            CreatePrefixedOpCode(0x6f, () => bitOpsUnit.TestBit(A, 5, ref F), 12, "BIT 5, A");
+            CreatePrefixedOpCode(0x77, () => bitOpsUnit.TestBit(A, 6, ref F), 12, "BIT 6, A");
+            CreatePrefixedOpCode(0x7F, () => bitOpsUnit.TestBit(A, 7, ref F), 12, "BIT 7, A");
+
+            CreatePrefixedOpCode(0x40, () => bitOpsUnit.TestBit(B, 0, ref F), 12, "BIT 0, B");
+            CreatePrefixedOpCode(0x48, () => bitOpsUnit.TestBit(B, 1, ref F), 12, "BIT 1, B");
+            CreatePrefixedOpCode(0x50, () => bitOpsUnit.TestBit(B, 2, ref F), 12, "BIT 2, B");
+            CreatePrefixedOpCode(0x58, () => bitOpsUnit.TestBit(B, 3, ref F), 12, "BIT 3, B");
+            CreatePrefixedOpCode(0x60, () => bitOpsUnit.TestBit(B, 4, ref F), 12, "BIT 4, B");
+            CreatePrefixedOpCode(0x68, () => bitOpsUnit.TestBit(B, 5, ref F), 12, "BIT 5, B");
+            CreatePrefixedOpCode(0x70, () => bitOpsUnit.TestBit(B, 6, ref F), 12, "BIT 6, B");
+            CreatePrefixedOpCode(0x78, () => bitOpsUnit.TestBit(B, 7, ref F), 12, "BIT 7, B");
+
+            CreatePrefixedOpCode(0x41, () => bitOpsUnit.TestBit(C, 0, ref F), 12, "BIT 0, C");
+            CreatePrefixedOpCode(0x49, () => bitOpsUnit.TestBit(C, 1, ref F), 12, "BIT 1, C");
+            CreatePrefixedOpCode(0x51, () => bitOpsUnit.TestBit(C, 2, ref F), 12, "BIT 2, C");
+            CreatePrefixedOpCode(0x59, () => bitOpsUnit.TestBit(C, 3, ref F), 12, "BIT 3, C");
+            CreatePrefixedOpCode(0x61, () => bitOpsUnit.TestBit(C, 4, ref F), 12, "BIT 4, C");
+            CreatePrefixedOpCode(0x69, () => bitOpsUnit.TestBit(C, 5, ref F), 12, "BIT 5, C");
+            CreatePrefixedOpCode(0x71, () => bitOpsUnit.TestBit(C, 6, ref F), 12, "BIT 6, C");
+            CreatePrefixedOpCode(0x79, () => bitOpsUnit.TestBit(C, 7, ref F), 12, "BIT 7, C");
+
+            CreatePrefixedOpCode(0x42, () => bitOpsUnit.TestBit(D, 0, ref F), 12, "BIT 0, D");
+            CreatePrefixedOpCode(0x4A, () => bitOpsUnit.TestBit(D, 1, ref F), 12, "BIT 1, D");
+            CreatePrefixedOpCode(0x52, () => bitOpsUnit.TestBit(D, 2, ref F), 12, "BIT 2, D");
+            CreatePrefixedOpCode(0x5A, () => bitOpsUnit.TestBit(D, 3, ref F), 12, "BIT 3, D");
+            CreatePrefixedOpCode(0x62, () => bitOpsUnit.TestBit(D, 4, ref F), 12, "BIT 4, D");
+            CreatePrefixedOpCode(0x6A, () => bitOpsUnit.TestBit(D, 5, ref F), 12, "BIT 5, D");
+            CreatePrefixedOpCode(0x72, () => bitOpsUnit.TestBit(D, 6, ref F), 12, "BIT 6, D");
+            CreatePrefixedOpCode(0x7A, () => bitOpsUnit.TestBit(D, 7, ref F), 12, "BIT 7, D");
+
+            CreatePrefixedOpCode(0x43, () => bitOpsUnit.TestBit(E, 0, ref F), 12, "BIT 0, E");
+            CreatePrefixedOpCode(0x4B, () => bitOpsUnit.TestBit(E, 1, ref F), 12, "BIT 1, E");
+            CreatePrefixedOpCode(0x53, () => bitOpsUnit.TestBit(E, 2, ref F), 12, "BIT 2, E");
+            CreatePrefixedOpCode(0x5B, () => bitOpsUnit.TestBit(E, 3, ref F), 12, "BIT 3, E");
+            CreatePrefixedOpCode(0x63, () => bitOpsUnit.TestBit(E, 4, ref F), 12, "BIT 4, E");
+            CreatePrefixedOpCode(0x6B, () => bitOpsUnit.TestBit(E, 5, ref F), 12, "BIT 5, E");
+            CreatePrefixedOpCode(0x73, () => bitOpsUnit.TestBit(E, 6, ref F), 12, "BIT 6, E");
+            CreatePrefixedOpCode(0x7B, () => bitOpsUnit.TestBit(E, 7, ref F), 12, "BIT 7, E");
+
+            CreatePrefixedOpCode(0x44, () => bitOpsUnit.TestBit(H, 0, ref F), 12, "BIT 0, H");
+            CreatePrefixedOpCode(0x4C, () => bitOpsUnit.TestBit(H, 1, ref F), 12, "BIT 1, H");
+            CreatePrefixedOpCode(0x54, () => bitOpsUnit.TestBit(H, 2, ref F), 12, "BIT 2, H");
+            CreatePrefixedOpCode(0x5C, () => bitOpsUnit.TestBit(H, 3, ref F), 12, "BIT 3, H");
+            CreatePrefixedOpCode(0x64, () => bitOpsUnit.TestBit(H, 4, ref F), 12, "BIT 4, H");
+            CreatePrefixedOpCode(0x6C, () => bitOpsUnit.TestBit(H, 5, ref F), 12, "BIT 5, H");
+            CreatePrefixedOpCode(0x74, () => bitOpsUnit.TestBit(H, 6, ref F), 12, "BIT 6, H");
+            CreatePrefixedOpCode(0x7C, () => bitOpsUnit.TestBit(H, 7, ref F), 12, "BIT 7, H");
+
+            CreatePrefixedOpCode(0x45, () => bitOpsUnit.TestBit(L, 0, ref F), 12, "BIT 0, L");
+            CreatePrefixedOpCode(0x4D, () => bitOpsUnit.TestBit(L, 1, ref F), 12, "BIT 1, L");
+            CreatePrefixedOpCode(0x55, () => bitOpsUnit.TestBit(L, 2, ref F), 12, "BIT 2, L");
+            CreatePrefixedOpCode(0x5D, () => bitOpsUnit.TestBit(L, 3, ref F), 12, "BIT 3, L");
+            CreatePrefixedOpCode(0x65, () => bitOpsUnit.TestBit(L, 4, ref F), 12, "BIT 4, L");
+            CreatePrefixedOpCode(0x6D, () => bitOpsUnit.TestBit(L, 5, ref F), 12, "BIT 5, L");
+            CreatePrefixedOpCode(0x75, () => bitOpsUnit.TestBit(L, 6, ref F), 12, "BIT 6, L");
+            CreatePrefixedOpCode(0x7D, () => bitOpsUnit.TestBit(L, 7, ref F), 12, "BIT 7, L");
+        }
+
         private void CreateOpCode(byte command, Action instruction, int cycles, string name)
         {
             OpCodes.Add(command, new OpCode(instruction, cycles, name));
+        }
+
+        private void CreatePrefixedOpCode(byte command, Action instruction, int cycles, string name)
+        {
+            OpCodesPrefixed.Add(command, new OpCode(instruction, cycles, name));
         }
     }
 }
