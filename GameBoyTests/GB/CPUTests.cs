@@ -387,6 +387,15 @@ namespace GameBoy.GB.Tests
             AssertSinglePrefixedCall(0x6E, () => bitUnit.TestBit(MEM_HL_BYTE, 5, ref cpu.F), 16);
             AssertSinglePrefixedCall(0x76, () => bitUnit.TestBit(MEM_HL_BYTE, 6, ref cpu.F), 16);
             AssertSinglePrefixedCall(0x7E, () => bitUnit.TestBit(MEM_HL_BYTE, 7, ref cpu.F), 16);
+
+            AssertSinglePrefixedCall(0x10, () => bitUnit.RotateLeft(ref cpu.B, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x11, () => bitUnit.RotateLeft(ref cpu.C, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x12, () => bitUnit.RotateLeft(ref cpu.D, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x13, () => bitUnit.RotateLeft(ref cpu.E, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x14, () => bitUnit.RotateLeft(ref cpu.H, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x15, () => bitUnit.RotateLeft(ref cpu.L, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x16, () => bitUnit.RotateLeft(cpu.H, cpu.L, ref cpu.F), 20);
+            AssertSinglePrefixedCall(0x17, () => bitUnit.RotateLeft(ref cpu.A, ref cpu.F), 12);
         }
 
         [Fact()]

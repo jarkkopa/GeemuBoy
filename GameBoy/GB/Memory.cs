@@ -58,12 +58,19 @@ namespace GameBoy.GB
         /// </summary>
         private byte interruptEnableRegister;
 
-        public Memory(byte[] cartridge, MapMode initialMapMode = MapMode.Cartridge, byte[]? bootRom = null)
+        public Memory(byte[]? cartridge = null, byte[]? bootRom = null)
         {
-            this.cartridge = cartridge;
+            if (cartridge != null)
+            {
+                this.cartridge = cartridge;
+            }
+            else
+            {
+                this.cartridge = new byte[0x8000];
+            }
             this.bootRom = bootRom;
 
-            RomMapMode = initialMapMode;
+            RomMapMode = bootRom != null ? MapMode.Boot : MapMode.Cartridge;
         }
 
         public ushort ReadWord(ushort addr)

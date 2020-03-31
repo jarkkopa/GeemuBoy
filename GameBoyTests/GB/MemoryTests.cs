@@ -132,9 +132,9 @@ namespace GameBoy.GB.Tests
         public void SettingBootRomLockAddressShouldChangeRomMapModeToCartridge()
         {
             byte[] bootRom = Enumerable.Repeat((byte)0x10, 0x80).ToArray();
-            byte[] cartridge = Enumerable.Repeat((byte)0xFF, 0x4000).ToArray();
+            byte[] cartridge = Enumerable.Repeat((byte)0xFF, 0x8000).ToArray();
 
-            var memory = new Memory(cartridge, Memory.MapMode.Boot, bootRom);
+            var memory = new Memory(cartridge, bootRom);
 
             // Should read from boot rom
             Assert.Equal(0x10, memory.ReadByte(0x7F));

@@ -53,7 +53,12 @@ namespace GameBoy.GB
         }
 
         public CPU(Memory memory) :
-            this(memory, new LoadUnit(memory), new ALU(memory), new MiscUnit(memory), new JumpUnit(memory), new BitUnit())
+            this(memory,
+                new LoadUnit(memory),
+                new ALU(memory),
+                new MiscUnit(memory),
+                new JumpUnit(memory),
+                new BitUnit(memory))
         {
         }
 
@@ -118,6 +123,7 @@ namespace GameBoy.GB
         {
             var code = Memory.ReadByte(PC);
             PC++;
+
             if (code == PREFIX_OPCODE || OpCodes.ContainsKey(code))
             {
                 OpCode opCode;
@@ -131,9 +137,8 @@ namespace GameBoy.GB
                     }
                     else
                     {
-                        throw new Exception($"Trying to run prefixed opcode 0x{PREFIX_OPCODE:x2} 0x{code:x2} that is not implemented.");
+                        throw new NotImplementedException($"Trying to run prefixed opcode 0x{PREFIX_OPCODE:X2} 0x{code:X2} that is not implemented.");
                     }
-
                 }
                 else
                 {
@@ -144,7 +149,7 @@ namespace GameBoy.GB
             }
             else
             {
-                throw new Exception($"Trying to run opcode 0x{code:x2} that is not implemented.");
+                throw new NotImplementedException($"Trying to run opcode 0x{code:X2} that is not implemented.");
             }
         }
 
@@ -248,7 +253,7 @@ namespace GameBoy.GB
             CreateOpCode(0x0A, () => loadUnit.LoadFromAddress(ref A, B, C), 8, "LD A, (BC)");
             CreateOpCode(0x1A, () => loadUnit.LoadFromAddress(ref A, D, E), 8, "LD A, (DE)");
             CreateOpCode(0xFA, () => { ReadImmediateWord(out var immediate); loadUnit.LoadFromAddress(ref A, immediate); }, 16, "LD A, (a16)");
-            CreateOpCode(0x3E, () => { ReadImmediateByte(out var immediate); loadUnit.Load(ref A, immediate); }, 8, "LO A, d8");
+            CreateOpCode(0x3E, () => { ReadImmediateByte(out var immediate); loadUnit.Load(ref A, immediate); }, 8, "LD A, d8");
 
             CreateOpCode(0x47, () => loadUnit.Load(ref B, A), 4, "LD B, A");
             CreateOpCode(0x4F, () => loadUnit.Load(ref C, A), 4, "LD C, A");
@@ -569,6 +574,15 @@ namespace GameBoy.GB
             CreatePrefixedOpCode(0x6E, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 5, ref F); }, 16, "BIT 5, (HL)");
             CreatePrefixedOpCode(0x76, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 6, ref F); }, 16, "BIT 6, (HL)");
             CreatePrefixedOpCode(0x7E, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 7, ref F); }, 16, "BIT 7, (HL)");
+
+            CreatePrefixedOpCode(0x10, () => bitUnit.RotateLeft(ref B, ref F), 12, "RL B");
+            CreatePrefixedOpCode(0x11, () => bitUnit.RotateLeft(ref C, ref F), 12, "RL C");
+            CreatePrefixedOpCode(0x12, () => bitUnit.RotateLeft(ref D, ref F), 12, "RL D");
+            CreatePrefixedOpCode(0x13, () => bitUnit.RotateLeft(ref E, ref F), 12, "RL E");
+            CreatePrefixedOpCode(0x14, () => bitUnit.RotateLeft(ref H, ref F), 12, "RL H");
+            CreatePrefixedOpCode(0x15, () => bitUnit.RotateLeft(ref L, ref F), 12, "RL L");
+            CreatePrefixedOpCode(0x16, () => bitUnit.RotateLeft(H, L, ref F), 20, "RL (HL)");
+            CreatePrefixedOpCode(0x17, () => bitUnit.RotateLeft(ref A, ref F), 12, "RL A");
         }
 
         private void CreateOpCode(byte command, Action instruction, int cycles, string name)
