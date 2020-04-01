@@ -598,6 +598,15 @@ namespace GameBoy.GB
             CreatePrefixedOpCode(0x76, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 6, ref F); }, 16, "BIT 6, (HL)");
             CreatePrefixedOpCode(0x7E, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 7, ref F); }, 16, "BIT 7, (HL)");
 
+            CreatePrefixedOpCode(0x00, () => bitUnit.RotateLeft(ref B, ref F, false), 12, "RLC B");
+            CreatePrefixedOpCode(0x01, () => bitUnit.RotateLeft(ref C, ref F, false), 12, "RLC C");
+            CreatePrefixedOpCode(0x02, () => bitUnit.RotateLeft(ref D, ref F, false), 12, "RLC D");
+            CreatePrefixedOpCode(0x03, () => bitUnit.RotateLeft(ref E, ref F, false), 12, "RLC E");
+            CreatePrefixedOpCode(0x04, () => bitUnit.RotateLeft(ref H, ref F, false), 12, "RLC H");
+            CreatePrefixedOpCode(0x05, () => bitUnit.RotateLeft(ref L, ref F, false), 12, "RLC L");
+            CreatePrefixedOpCode(0x06, () => bitUnit.RotateLeft(H, L, ref F), 20, "RLC (HL)");
+            CreatePrefixedOpCode(0x07, () => bitUnit.RotateLeft(ref A, ref F, false), 12, "RLC A");
+
             CreatePrefixedOpCode(0x10, () => bitUnit.RotateLeftThroughCarry(ref B, ref F, false), 12, "RL B");
             CreatePrefixedOpCode(0x11, () => bitUnit.RotateLeftThroughCarry(ref C, ref F, false), 12, "RL C");
             CreatePrefixedOpCode(0x12, () => bitUnit.RotateLeftThroughCarry(ref D, ref F, false), 12, "RL D");

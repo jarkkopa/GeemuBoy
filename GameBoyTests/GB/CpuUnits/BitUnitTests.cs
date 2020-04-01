@@ -163,5 +163,19 @@ namespace GameBoy.GB.CpuUnits.Tests
             Assert.Equal(0b01011111, register);
             Assert.Equal(0b00010000, flags);
         }
+
+        [Fact()]
+        public void RotateLeftInMemoryTest()
+        {
+            var memory = new Memory();
+            var bitUnit = new BitUnit(memory);
+            byte flags = 0b01100000;
+            memory.WriteByte(0xABBA, 0b11111110);
+
+            bitUnit.RotateLeft(0xAB, 0xBA, ref flags);
+
+            Assert.Equal(0b11111101, memory.ReadByte(0xABBA));
+            Assert.Equal(0b00010000, flags);
+        }
     }
 }

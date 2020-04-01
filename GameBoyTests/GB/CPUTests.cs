@@ -391,6 +391,15 @@ namespace GameBoy.GB.Tests
             AssertSinglePrefixedCall(0x76, () => bitUnit.TestBit(MEM_HL_BYTE, 6, ref cpu.F), 16);
             AssertSinglePrefixedCall(0x7E, () => bitUnit.TestBit(MEM_HL_BYTE, 7, ref cpu.F), 16);
 
+            AssertSinglePrefixedCall(0x00, () => bitUnit.RotateLeft(ref cpu.B, ref cpu.F, false), 12);
+            AssertSinglePrefixedCall(0x01, () => bitUnit.RotateLeft(ref cpu.C, ref cpu.F, false), 12);
+            AssertSinglePrefixedCall(0x02, () => bitUnit.RotateLeft(ref cpu.D, ref cpu.F, false), 12);
+            AssertSinglePrefixedCall(0x03, () => bitUnit.RotateLeft(ref cpu.E, ref cpu.F, false), 12);
+            AssertSinglePrefixedCall(0x04, () => bitUnit.RotateLeft(ref cpu.H, ref cpu.F, false), 12);
+            AssertSinglePrefixedCall(0x05, () => bitUnit.RotateLeft(ref cpu.L, ref cpu.F, false), 12);
+            AssertSinglePrefixedCall(0x06, () => bitUnit.RotateLeft(cpu.H, cpu.L, ref cpu.F), 20);
+            AssertSinglePrefixedCall(0x07, () => bitUnit.RotateLeft(ref cpu.A, ref cpu.F, false), 12);
+
             AssertSinglePrefixedCall(0x10, () => bitUnit.RotateLeftThroughCarry(ref cpu.B, ref cpu.F, false), 12);
             AssertSinglePrefixedCall(0x11, () => bitUnit.RotateLeftThroughCarry(ref cpu.C, ref cpu.F, false), 12);
             AssertSinglePrefixedCall(0x12, () => bitUnit.RotateLeftThroughCarry(ref cpu.D, ref cpu.F, false), 12);

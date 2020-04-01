@@ -3,6 +3,7 @@
     public interface IBitUnit
     {
         public void RotateLeft(ref byte register, ref byte flags, bool alwaysResetZero);
+        public void RotateLeft(byte addrHigh, byte addrLow, ref byte flags);
         public void RotateLeftThroughCarry(ref byte register, ref byte flags, bool alwaysResetZero);
         public void RotateLeftThroughCarry(byte addrHigh, byte addrLow, ref byte flags);
         public void TestBit(byte register, byte index, ref byte flags);
@@ -21,7 +22,6 @@
         {
             bool setCarry = BitUtils.GetBit(register, 7);
 
-            //register = (byte)(((register << 1) & 0xFF) | ((register & 0x80) >> 7));
             RotateLeft(ref register, (register & 0x80) > 0);
 
             if (alwaysResetZero)
@@ -37,11 +37,18 @@
             FlagUtils.SetFlag(Flag.C, setCarry, ref flags);
         }
 
+        public void RotateLeft(byte addrHigh, byte addrLow, ref byte flags)
+        {
+            ushort address = BitUtils.BytesToUshort(addrHigh, addrLow);
+            byte data = memory.ReadByte(address);
+            RotateLeft(ref data, ref flags, false);
+            memory.WriteByte(address, data);
+        }
+
         public void RotateLeftThroughCarry(ref byte register, ref byte flags, bool alwaysResetZero)
         {
             bool setCarry = BitUtils.GetBit(register, 7);
 
-            // register = (byte)(((register << 1) & 0xFF) | (FlagUtils.GetFlag(Flag.C, flags) ? 1 : 0));
             RotateLeft(ref register, FlagUtils.GetFlag(Flag.C, flags));
             if (alwaysResetZero)
             {

@@ -22,11 +22,26 @@ namespace GameBoy
         private string serial = "";
         private int instructionsRun = 0;
 
-        public GameBoyEmulator(string cartridgePath)
-        {
-            byte[] cartridge = File.ReadAllBytes(cartridgePath);
+        private int totalWidth = 100;
+        private int leftSectionWidth = 50;
 
-            var memory = new Memory(cartridge);
+        private bool turbo = false;
+
+        public GameBoyEmulator(string? cartridgePath, string? bootRomPath)
+        {
+            byte[]? cartridge = null;
+            if (!string.IsNullOrEmpty(cartridgePath))
+            {
+                cartridge = File.ReadAllBytes(cartridgePath);
+            }
+
+            byte[]? bootRom = null;
+            if (!string.IsNullOrEmpty(bootRomPath))
+            {
+                bootRom = File.ReadAllBytes(bootRomPath);
+            }
+
+            var memory = new Memory(cartridge, bootRom);
             cpu = new CPU(memory);
             //cpu.SetInitialStateAfterBootSequence();
 
@@ -39,14 +54,15 @@ namespace GameBoy
 
         private void Run()
         {
-            //PrintCpuDebug();
-            PrintSections();
+            PrintDebugger();
 
             while (state != State.Quit)
             {
                 if (breakpoint.HasValue && cpu.PC == breakpoint.Value)
                 {
                     state = State.Stop;
+                    turbo = false;
+                    PrintDebugger();
                 }
 
                 if (state == State.Running)
@@ -77,19 +93,21 @@ namespace GameBoy
                         state = State.Stop;
                         cpu.Reset();
                         Console.Clear();
-                        //PrintCpuDebug();
-                        PrintSections();
+                        PrintDebugger();
                     }
                     else if (key == ConsoleKey.M)
                     {
                         state = State.SetMemoryRead;
-                        //PrintMemoryLocation();
-                        PrintSections();
+                        PrintDebugger();
                     }
                     else if (key == ConsoleKey.B)
                     {
                         state = State.SetBreakpoint;
-                        PrintSections();
+                        PrintDebugger();
+                    }
+                    else if (key == ConsoleKey.T)
+                    {
+                        turbo = !turbo;
                     }
                 }
             }
@@ -101,105 +119,34 @@ namespace GameBoy
             {
                 cpu.RunCommand();
                 instructionsRun++;
-                //PrintCpuDebug();
-                PrintSections();
+                PrintDebugger();
             }
-            catch (Exception e)
+            catch (NotImplementedException e)
             {
                 Console.WriteLine($"Stopped to opcode that is not implemented. Error: {e.Message}");
                 state = State.Stop;
             }
         }
 
-        //private void PrintCpuDebug()
-        //{
-        //    Console.SetCursorPosition(0, 2);
-
-        //    Console.WriteLine($"Instruction #{instructionsRun}");
-        //    Console.WriteLine($"PC: 0x{cpu.PC:X4}, SP: 0x{cpu.SP:X4}");
-        //    Console.WriteLine("----");
-        //    Console.WriteLine($"Registers");
-        //    Console.WriteLine($"A: 0x{cpu.A:X2} F: 0x{cpu.F:X2}");
-        //    Console.WriteLine("----");
-        //    Console.WriteLine($"B: 0x{cpu.B:X2} C: 0x{cpu.C:X2}");
-        //    Console.WriteLine($"D: 0x{cpu.D:X2} E: 0x{cpu.E:X2}");
-        //    Console.WriteLine($"H: 0x{cpu.H:X2} L: 0x{cpu.L:X2}");
-        //    Console.WriteLine("----");
-
-        //    Console.WriteLine("Memory");
-        //    PrintMemory(4, 5);
-        //    PrintTestOutput();
-        //}
-
-        //private void PrintMemory(int linesBeforePc, int linesAfterPc)
-        //{
-        //    var prefixed = false;
-        //    for (ushort i = (ushort)(Math.Max(cpu.PC - linesBeforePc, 0)); i < cpu.PC + linesAfterPc; i++)
-        //    {
-        //        var code = cpu.Memory.ReadByte(i);
-        //        cpu.OpCodes.TryGetValue(code, out OpCode? opCode);
-
-        //        var name = opCode?.Name ?? (code == CPU.PREFIX_OPCODE ? "Prefix" : "Unknown instruction");
-
-        //        if (prefixed)
-        //        {
-        //            cpu.OpCodesPrefixed.TryGetValue(code, out OpCode? prefixedOpCode);
-        //            name = prefixedOpCode?.Name ?? "Unknown instruction";
-        //        }
-
-        //        var isNextOpCode = cpu.PC == i;
-        //        var showArrow = isNextOpCode || prefixed;
-        //        Console.WriteLine($"{(showArrow ? "->" : "  ")} [0x{i:X4}]: 0x{ code:X2} {(isNextOpCode || prefixed ? name.PadRight(20) : "")}");
-
-        //        prefixed = isNextOpCode && code == CPU.PREFIX_OPCODE; // Reset double arrow for prefixed opcodes
-        //    }
-        //}
-
-        //private void PrintMemoryLocation()
-        //{
-        //    Console.Write("Read memory address: ");
-        //    var input = Console.ReadLine();
-        //    try
-        //    {
-        //        var address = Convert.ToUInt16(input, 16);
-
-        //        Console.WriteLine($"[0x{address:X4}]: {cpu.Memory.ReadByte(address):x4}");
-        //    }
-        //    catch (Exception)
-        //    {
-        //        Console.WriteLine("Invalid memory address.");
-        //    }
-        //    state = State.Stop;
-        //}
-
-        //private void PrintTestOutput()
-        //{
-        //    var lastByte = cpu.Memory.ReadByte(0xFF01);
-        //    if (cpu.Memory.ReadByte(0xFF02) != 0)
-        //    {
-        //        serial += ".";
-        //    }
-        //    Console.WriteLine($"Output: {serial}");
-        //}
-
-        private void PrintSections()
+        private void PrintDebugger()
         {
-            PrintInfoSection();
-            PrintMemorySection();
-            PrintRegisterSection();
-            PrintMemoryReadSection();
-            PrintBreakpointSection();
-            PrintHelpSection();
-        }
 
-        private int totalWidth = 100;
-        private int leftSectionWidth = 50;
+            if (!turbo || instructionsRun % 250 == 0)
+            {
+                PrintInfoSection();
+                PrintMemorySection();
+                PrintRegisterSection();
+                PrintMemoryReadSection();
+                PrintBreakpointSection();
+                PrintHelpSection();
+            }
+        }
 
         private void PrintInfoSection()
         {
             Console.SetCursorPosition(0, 0);
             Console.WriteLine("Game Boy Emulator");
-            Console.WriteLine($"Instruction #{instructionsRun}");
+            Console.WriteLine($"Instruction #{instructionsRun} - TURBO MODE: {(turbo ? "ON " : "OFF")}");
             Console.WriteLine($"Serial output:{serial}");
         }
 
@@ -256,18 +203,18 @@ namespace GameBoy
 
             Console.WriteLine(border);
             Console.SetCursorPosition(leftSectionWidth, 6);
-            Console.WriteLine($"{border}PC: 0x{cpu.PC:x4}");
+            Console.WriteLine($"{border}PC: 0x{cpu.PC:X4}");
             Console.SetCursorPosition(leftSectionWidth, 7);
-            Console.WriteLine($"{border}SP: 0x{cpu.SP:x4}");
+            Console.WriteLine($"{border}SP: 0x{cpu.SP:X4}");
 
             Console.SetCursorPosition(leftSectionWidth, 8);
             Console.WriteLine(border);
             Console.SetCursorPosition(leftSectionWidth, 9);
-            Console.WriteLine($"{border}A: 0x{cpu.A:x2} F: 0x{cpu.F:x2}");
+            Console.WriteLine($"{border}A: 0x{cpu.A:X2} F: 0x{cpu.F:X2}");
             Console.SetCursorPosition(leftSectionWidth, 10);
-            Console.WriteLine($"{border}B: 0x{cpu.B:x2} C: 0x{cpu.C:x2}");
+            Console.WriteLine($"{border}B: 0x{cpu.B:X2} C: 0x{cpu.C:X2}");
             Console.SetCursorPosition(leftSectionWidth, 11);
-            Console.WriteLine($"{border}D: 0x{cpu.D:x2} E: 0x{cpu.E:x2}");
+            Console.WriteLine($"{border}D: 0x{cpu.D:X2} E: 0x{cpu.E:X2}");
             Console.SetCursorPosition(leftSectionWidth, 12);
             Console.WriteLine($"{border}H: 0x{cpu.H:x2} L: 0x{cpu.L:x2}");
 
@@ -288,7 +235,7 @@ namespace GameBoy
         {
             string border = "|".PadRight(4);
             PrintHorizontalLine();
-            Console.WriteLine($"Memory: [0x{lastMemoryPeekAddress:x4}]: 0x{cpu.Memory.ReadByte(lastMemoryPeekAddress):x2}");
+            Console.WriteLine($"Memory: [0x{lastMemoryPeekAddress:X4}]: 0x{cpu.Memory.ReadByte(lastMemoryPeekAddress):X2}");
             if (state == State.SetMemoryRead)
             {
                 Console.SetCursorPosition(leftSectionWidth, 18);
@@ -300,7 +247,7 @@ namespace GameBoy
                 {
                     lastMemoryPeekAddress = Convert.ToUInt16(input, 16);
                     Console.SetCursorPosition(0, 18);
-                    Console.WriteLine($"Memory: [0x{lastMemoryPeekAddress:x4}]: 0x{cpu.Memory.ReadByte(lastMemoryPeekAddress):x2}");
+                    Console.WriteLine($"Memory: [0x{lastMemoryPeekAddress:X4}]: 0x{cpu.Memory.ReadByte(lastMemoryPeekAddress):X2}");
                     Console.SetCursorPosition(leftSectionWidth, 18);
                     Console.WriteLine($"{border}{new string(' ', totalWidth - leftSectionWidth - 1)}");
                 }
@@ -344,7 +291,7 @@ namespace GameBoy
                 {
                     breakpoint = Convert.ToUInt16(input, 16);
                     Console.SetCursorPosition(0, 19);
-                    Console.WriteLine($"Next breakpoint: 0x{breakpoint:x4}");
+                    Console.WriteLine($"Next breakpoint: 0x{breakpoint:X4}");
                     Console.SetCursorPosition(leftSectionWidth, 19);
                     Console.WriteLine($"{border}{new string(' ', totalWidth - leftSectionWidth - 1)}");
                 }
