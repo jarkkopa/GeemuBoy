@@ -119,37 +119,57 @@ namespace GameBoy.GB
             Memory.WriteByte(0xFFFF, 0x00);
         }
 
-        public void RunCommand()
+        public void RunCommand(Dictionary<byte, OpCode> opCodeTable)
         {
             var code = Memory.ReadByte(PC);
             PC++;
 
-            if (code == PREFIX_OPCODE || OpCodes.ContainsKey(code))
+            if (opCodeTable.ContainsKey(code))
             {
-                OpCode opCode;
-                if (code == PREFIX_OPCODE)
-                {
-                    code = Memory.ReadByte(PC);
-                    PC++;
-                    if (OpCodesPrefixed.ContainsKey(code))
-                    {
-                        opCode = OpCodesPrefixed[code];
-                    }
-                    else
-                    {
-                        throw new NotImplementedException($"Trying to run prefixed opcode 0x{PREFIX_OPCODE:X2} 0x{code:X2} that is not implemented.");
-                    }
-                }
-                else
-                {
-                    opCode = OpCodes[code];
-                }
+                var opCode = opCodeTable[code];
                 Cycles = opCode.Cycles;
                 opCode.Instruction();
             }
             else
             {
                 throw new NotImplementedException($"Trying to run opcode 0x{code:X2} that is not implemented.");
+            }
+        }
+
+        public void RunCommand()
+        {
+            var code = Memory.ReadByte(PC);
+            PC++;
+
+            if (code == PREFIX_OPCODE)
+            {
+                RunPrefixedCommand();
+            }
+            else if (OpCodes.ContainsKey(code))
+            {
+                OpCode opCode = OpCodes[code];
+                Cycles = opCode.Cycles;
+                opCode.Instruction();
+            }
+            else
+            {
+                throw new NotImplementedException($"Trying to run opcode 0x{code:X2} that is not implemented.");
+            }
+        }
+
+        public void RunPrefixedCommand()
+        {
+            var code = Memory.ReadByte(PC);
+            PC++;
+            if (OpCodesPrefixed.ContainsKey(code))
+            {
+                var opCode = OpCodesPrefixed[code];
+                Cycles = opCode.Cycles;
+                opCode.Instruction();
+            }
+            else
+            {
+                throw new NotImplementedException($"Trying to run prefixed opcode 0x{PREFIX_OPCODE:X2} 0x{code:X2} that is not implemented.");
             }
         }
 
@@ -503,6 +523,9 @@ namespace GameBoy.GB
 
         private void CreateBitUnitOpCodes()
         {
+            CreateOpCode(0x07, () => bitUnit.RotateLeft(ref A, ref F, true), 4, "RLCA");
+            CreateOpCode(0x17, () => bitUnit.RotateLeftThroughCarry(ref A, ref F, true), 4, "RLA");
+
             CreatePrefixedOpCode(0x47, () => bitUnit.TestBit(A, 0, ref F), 12, "BIT 0, A");
             CreatePrefixedOpCode(0x4F, () => bitUnit.TestBit(A, 1, ref F), 12, "BIT 1, A");
             CreatePrefixedOpCode(0x57, () => bitUnit.TestBit(A, 2, ref F), 12, "BIT 2, A");
@@ -575,14 +598,14 @@ namespace GameBoy.GB
             CreatePrefixedOpCode(0x76, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 6, ref F); }, 16, "BIT 6, (HL)");
             CreatePrefixedOpCode(0x7E, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 7, ref F); }, 16, "BIT 7, (HL)");
 
-            CreatePrefixedOpCode(0x10, () => bitUnit.RotateLeft(ref B, ref F), 12, "RL B");
-            CreatePrefixedOpCode(0x11, () => bitUnit.RotateLeft(ref C, ref F), 12, "RL C");
-            CreatePrefixedOpCode(0x12, () => bitUnit.RotateLeft(ref D, ref F), 12, "RL D");
-            CreatePrefixedOpCode(0x13, () => bitUnit.RotateLeft(ref E, ref F), 12, "RL E");
-            CreatePrefixedOpCode(0x14, () => bitUnit.RotateLeft(ref H, ref F), 12, "RL H");
-            CreatePrefixedOpCode(0x15, () => bitUnit.RotateLeft(ref L, ref F), 12, "RL L");
-            CreatePrefixedOpCode(0x16, () => bitUnit.RotateLeft(H, L, ref F), 20, "RL (HL)");
-            CreatePrefixedOpCode(0x17, () => bitUnit.RotateLeft(ref A, ref F), 12, "RL A");
+            CreatePrefixedOpCode(0x10, () => bitUnit.RotateLeftThroughCarry(ref B, ref F, false), 12, "RL B");
+            CreatePrefixedOpCode(0x11, () => bitUnit.RotateLeftThroughCarry(ref C, ref F, false), 12, "RL C");
+            CreatePrefixedOpCode(0x12, () => bitUnit.RotateLeftThroughCarry(ref D, ref F, false), 12, "RL D");
+            CreatePrefixedOpCode(0x13, () => bitUnit.RotateLeftThroughCarry(ref E, ref F, false), 12, "RL E");
+            CreatePrefixedOpCode(0x14, () => bitUnit.RotateLeftThroughCarry(ref H, ref F, false), 12, "RL H");
+            CreatePrefixedOpCode(0x15, () => bitUnit.RotateLeftThroughCarry(ref L, ref F, false), 12, "RL L");
+            CreatePrefixedOpCode(0x16, () => bitUnit.RotateLeftThroughCarry(H, L, ref F), 20, "RL (HL)");
+            CreatePrefixedOpCode(0x17, () => bitUnit.RotateLeftThroughCarry(ref A, ref F, false), 12, "RL A");
         }
 
         private void CreateOpCode(byte command, Action instruction, int cycles, string name)
