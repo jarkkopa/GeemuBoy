@@ -6,7 +6,22 @@ namespace GameBoy.GB
 {
     public class CPU
     {
+        public enum Interrupt
+        {
+            VBlank = 0,
+            LCDStat = 1,
+            Timer = 2,
+            Serial = 3,
+            Joypad = 4
+        }
+
         public const byte PREFIX_OPCODE = 0xCB;
+
+        private const ushort INTERRUPT_ENABLE_ADDR = 0xFFFF;
+        private const ushort INTERRUPT_FLAG_ADDR = 0xFF0F;
+
+        private readonly Memory memory;
+        private readonly InterruptHandler interruptHandler;
 
         private readonly ILoadUnit loadUnit;
         private readonly IALU alu;
@@ -28,12 +43,15 @@ namespace GameBoy.GB
 
         public int Cycles { get; private set; }
 
-        public bool IME = false;
-
-        public Memory Memory { get; private set; }
+        public bool InterruptMasterEnableFlag = false;
 
         public Dictionary<byte, OpCode> OpCodes { get; private set; } = new Dictionary<byte, OpCode>();
         public Dictionary<byte, OpCode> OpCodesPrefixed { get; private set; } = new Dictionary<byte, OpCode>();
+
+        private Dictionary<Interrupt, ushort> interruptVector;
+
+        // EI enables interrupt master flag with delay. This variable is used to handle that delay.
+        private int enableInterruptMasterAfter = -1;
 
         public CPU(Memory memory, ILoadUnit loadUnit, IALU alu, IMiscUnit miscUnit, IJumpUnit jumpUnit, IBitUnit bitOpsUnit)
         {
@@ -49,7 +67,14 @@ namespace GameBoy.GB
             CreateJumpOpCodes();
             CreateBitUnitOpCodes();
 
-            Memory = memory;
+            this.memory = memory;
+
+            interruptVector = new Dictionary<Interrupt, ushort>();
+            interruptVector.Add(Interrupt.VBlank, 0x40);
+            interruptVector.Add(Interrupt.LCDStat, 0x48);
+            interruptVector.Add(Interrupt.Timer, 0x50);
+            interruptVector.Add(Interrupt.Serial, 0x58);
+            interruptVector.Add(Interrupt.Joypad, 0x60);
         }
 
         public CPU(Memory memory) :
@@ -59,8 +84,7 @@ namespace GameBoy.GB
                 new MiscUnit(memory),
                 new JumpUnit(memory),
                 new BitUnit(memory))
-        {
-        }
+        { }
 
         public void Reset()
         {
@@ -86,59 +110,42 @@ namespace GameBoy.GB
             PC = 0x100;
             SP = 0xFFFE;
 
-            Memory.WriteByte(0xFF05, 0x00);
-            Memory.WriteByte(0xFF06, 0x00);
-            Memory.WriteByte(0xFF07, 0x00);
-            Memory.WriteByte(0xFF10, 0x80);
-            Memory.WriteByte(0xFF11, 0xBF);
-            Memory.WriteByte(0xFF12, 0xF3);
-            Memory.WriteByte(0xFF14, 0xBF);
-            Memory.WriteByte(0xFF16, 0x3F);
-            Memory.WriteByte(0xFF17, 0x00);
-            Memory.WriteByte(0xFF19, 0xBF);
-            Memory.WriteByte(0xFF1A, 0x7F);
-            Memory.WriteByte(0xFF1B, 0xFF);
-            Memory.WriteByte(0xFF1C, 0x9F);
-            Memory.WriteByte(0xFF1E, 0xBF);
-            Memory.WriteByte(0xFF20, 0xFF);
-            Memory.WriteByte(0xFF21, 0x00);
-            Memory.WriteByte(0xFF22, 0x00);
-            Memory.WriteByte(0xFF23, 0xBF);
-            Memory.WriteByte(0xFF24, 0x77);
-            Memory.WriteByte(0xFF25, 0xF3);
-            Memory.WriteByte(0xFF26, 0xF1);
-            Memory.WriteByte(0xFF40, 0x91);
-            Memory.WriteByte(0xFF42, 0x00);
-            Memory.WriteByte(0xFF43, 0x00);
-            Memory.WriteByte(0xFF45, 0x00);
-            Memory.WriteByte(0xFF47, 0xFC);
-            Memory.WriteByte(0xFF48, 0xFF);
-            Memory.WriteByte(0xFF49, 0xFF);
-            Memory.WriteByte(0xFF4A, 0x00);
-            Memory.WriteByte(0xFF4B, 0x00);
-            Memory.WriteByte(0xFFFF, 0x00);
-        }
-
-        public void RunCommand(Dictionary<byte, OpCode> opCodeTable)
-        {
-            var code = Memory.ReadByte(PC);
-            PC++;
-
-            if (opCodeTable.ContainsKey(code))
-            {
-                var opCode = opCodeTable[code];
-                Cycles = opCode.Cycles;
-                opCode.Instruction();
-            }
-            else
-            {
-                throw new NotImplementedException($"Trying to run opcode 0x{code:X2} that is not implemented.");
-            }
+            memory.WriteByte(0xFF05, 0x00);
+            memory.WriteByte(0xFF06, 0x00);
+            memory.WriteByte(0xFF07, 0x00);
+            memory.WriteByte(0xFF10, 0x80);
+            memory.WriteByte(0xFF11, 0xBF);
+            memory.WriteByte(0xFF12, 0xF3);
+            memory.WriteByte(0xFF14, 0xBF);
+            memory.WriteByte(0xFF16, 0x3F);
+            memory.WriteByte(0xFF17, 0x00);
+            memory.WriteByte(0xFF19, 0xBF);
+            memory.WriteByte(0xFF1A, 0x7F);
+            memory.WriteByte(0xFF1B, 0xFF);
+            memory.WriteByte(0xFF1C, 0x9F);
+            memory.WriteByte(0xFF1E, 0xBF);
+            memory.WriteByte(0xFF20, 0xFF);
+            memory.WriteByte(0xFF21, 0x00);
+            memory.WriteByte(0xFF22, 0x00);
+            memory.WriteByte(0xFF23, 0xBF);
+            memory.WriteByte(0xFF24, 0x77);
+            memory.WriteByte(0xFF25, 0xF3);
+            memory.WriteByte(0xFF26, 0xF1);
+            memory.WriteByte(0xFF40, 0x91);
+            memory.WriteByte(0xFF42, 0x00);
+            memory.WriteByte(0xFF43, 0x00);
+            memory.WriteByte(0xFF45, 0x00);
+            memory.WriteByte(0xFF47, 0xFC);
+            memory.WriteByte(0xFF48, 0xFF);
+            memory.WriteByte(0xFF49, 0xFF);
+            memory.WriteByte(0xFF4A, 0x00);
+            memory.WriteByte(0xFF4B, 0x00);
+            memory.WriteByte(0xFFFF, 0x00);
         }
 
         public void RunCommand()
         {
-            var code = Memory.ReadByte(PC);
+            var code = memory.ReadByte(PC);
             PC++;
 
             if (code == PREFIX_OPCODE)
@@ -155,11 +162,13 @@ namespace GameBoy.GB
             {
                 throw new NotImplementedException($"Trying to run opcode 0x{code:X2} that is not implemented.");
             }
+
+            HandleInterrupts();
         }
 
         public void RunPrefixedCommand()
         {
-            var code = Memory.ReadByte(PC);
+            var code = memory.ReadByte(PC);
             PC++;
             if (OpCodesPrefixed.ContainsKey(code))
             {
@@ -175,16 +184,16 @@ namespace GameBoy.GB
 
         public int ReadImmediateByte(out byte value)
         {
-            value = Memory.ReadByte(PC);
+            value = memory.ReadByte(PC);
             PC++;
             return 4;
         }
 
         public int ReadImmediateWord(out ushort value)
         {
-            var lsb = Memory.ReadByte(PC);
+            var lsb = memory.ReadByte(PC);
             PC++;
-            var msb = Memory.ReadByte(PC);
+            var msb = memory.ReadByte(PC);
             PC++;
             value = BitUtils.BytesToUshort(msb, lsb);
             return 8;
@@ -192,8 +201,45 @@ namespace GameBoy.GB
 
         public int ReadFromMemory(byte addrHigh, byte addrLow, out byte value)
         {
-            value = Memory.ReadByte(BitUtils.BytesToUshort(addrHigh, addrLow));
+            value = memory.ReadByte(BitUtils.BytesToUshort(addrHigh, addrLow));
             return 4;
+        }
+
+        public void RequestInterrupt(Interrupt interrupt)
+        {
+            byte flag = memory.ReadByte(INTERRUPT_FLAG_ADDR);
+            flag = BitUtils.SetBit(flag, (int)interrupt, true);
+            memory.WriteByte(INTERRUPT_FLAG_ADDR, flag);
+        }
+
+        private void HandleInterrupts()
+        {
+            if (InterruptMasterEnableFlag)
+            {
+                byte enabledInterrupts = memory.ReadByte(INTERRUPT_ENABLE_ADDR);
+                byte requestedInterrupts = memory.ReadByte(INTERRUPT_FLAG_ADDR);
+
+                for (int i = 0; i < (int)Interrupt.Joypad && InterruptMasterEnableFlag; i++)
+                {
+                    if (BitUtils.GetBit(requestedInterrupts, i) && BitUtils.GetBit(enabledInterrupts, i))
+                    {
+                        InterruptMasterEnableFlag = false;
+
+                        requestedInterrupts = BitUtils.SetBit(requestedInterrupts, i, false);
+                        memory.WriteByte(INTERRUPT_FLAG_ADDR, requestedInterrupts);
+
+                        jumpUnit.Call(interruptVector[(Interrupt)i], ref SP, ref PC);
+                        // TODO: Add cycles (20?)
+                    }
+                }
+            }
+
+            if (enableInterruptMasterAfter != -1)
+            {
+                InterruptMasterEnableFlag = enableInterruptMasterAfter == 0;
+                enableInterruptMasterAfter--;
+                // imeEnableRequested = false;
+            }
         }
 
         private void CreateLoadUnitOpCodes()
@@ -435,8 +481,10 @@ namespace GameBoy.GB
         private void CreateMiscOpCodes()
         {
             CreateOpCode(0x00, () => miscUnit.Nop(), 4, "NOP");
-            CreateOpCode(0xF3, () => miscUnit.SetInterruptMasterEnable(ref IME, false), 4, "DI");
-            CreateOpCode(0xFB, () => miscUnit.SetInterruptMasterEnable(ref IME, true), 4, "EI");
+            //CreateOpCode(0xF3, () => miscUnit.SetInterruptMasterEnable(ref InterruptMasterEnableFlag, false), 4, "DI");
+            CreateOpCode(0xF3, () => miscUnit.DisableInterruptMasterFlag(ref InterruptMasterEnableFlag), 4, "DI");
+            //CreateOpCode(0xFB, () => miscUnit.SetInterruptMasterEnable(ref imeEnableRequested, true), 4, "EI");
+            CreateOpCode(0xFB, () => miscUnit.EnableInterruptMasterFlag(ref enableInterruptMasterAfter), 4, "EI");
         }
 
         private void CreateJumpOpCodes()

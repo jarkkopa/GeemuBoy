@@ -1,5 +1,4 @@
-﻿using GameBoy.GB.CpuUnits;
-using Xunit;
+﻿using Xunit;
 
 namespace GameBoy.GB.CpuUnits.Tests
 {

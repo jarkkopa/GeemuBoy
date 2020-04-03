@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GameBoy.GB.CpuUnits
+﻿namespace GameBoy.GB.CpuUnits
 {
     public interface IMiscUnit
     {
-        public void SetInterruptMasterEnable(ref bool master, bool enabled);
+        public void EnableInterruptMasterFlag(ref int enableAfter);
+        public void DisableInterruptMasterFlag(ref bool flag);
         public void Nop();
     }
 
@@ -19,12 +16,16 @@ namespace GameBoy.GB.CpuUnits
             this.memory = memory;
         }
 
-        public void SetInterruptMasterEnable(ref bool master, bool enabled)
+        public void Nop() { }
+
+        public void EnableInterruptMasterFlag(ref int enableAfter)
         {
-            // TODO: Don't set ime immediately. Set it after the next intruction
-            master = enabled;
+            enableAfter = 1;
         }
 
-        public void Nop() { }
+        public void DisableInterruptMasterFlag(ref bool flag)
+        {
+            flag = false;
+        }
     }
 }

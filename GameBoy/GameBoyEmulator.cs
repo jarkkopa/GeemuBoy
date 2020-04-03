@@ -16,6 +16,7 @@ namespace GameBoy
         }
 
         private readonly CPU cpu;
+        private readonly Memory memory;
 
         private State state = State.Stop;
 
@@ -41,7 +42,7 @@ namespace GameBoy
                 bootRom = File.ReadAllBytes(bootRomPath);
             }
 
-            var memory = new Memory(cartridge, bootRom);
+            memory = new Memory(cartridge, bootRom);
             cpu = new CPU(memory);
             //cpu.SetInitialStateAfterBootSequence();
 
@@ -92,6 +93,9 @@ namespace GameBoy
                     {
                         state = State.Stop;
                         cpu.Reset();
+                        instructionsRun = 0;
+                        turbo = false;
+                        breakpoint = null;
                         Console.Clear();
                         PrintDebugger();
                     }
@@ -165,7 +169,7 @@ namespace GameBoy
                     Console.WriteLine("   [------]: ----");
                     continue;
                 }
-                var code = cpu.Memory.ReadByte((ushort)i);
+                var code = memory.ReadByte((ushort)i);
                 cpu.OpCodes.TryGetValue(code, out OpCode? opCode);
 
                 var name = opCode?.Name ?? (code == CPU.PREFIX_OPCODE ? "Prefix" : "Unknown instruction");
@@ -235,7 +239,7 @@ namespace GameBoy
         {
             string border = "|".PadRight(4);
             PrintHorizontalLine();
-            Console.WriteLine($"Memory: [0x{lastMemoryPeekAddress:X4}]: 0x{cpu.Memory.ReadByte(lastMemoryPeekAddress):X2}");
+            Console.WriteLine($"Memory: [0x{lastMemoryPeekAddress:X4}]: 0x{memory.ReadByte(lastMemoryPeekAddress):X2}");
             if (state == State.SetMemoryRead)
             {
                 Console.SetCursorPosition(leftSectionWidth, 18);
@@ -247,7 +251,7 @@ namespace GameBoy
                 {
                     lastMemoryPeekAddress = Convert.ToUInt16(input, 16);
                     Console.SetCursorPosition(0, 18);
-                    Console.WriteLine($"Memory: [0x{lastMemoryPeekAddress:X4}]: 0x{cpu.Memory.ReadByte(lastMemoryPeekAddress):X2}");
+                    Console.WriteLine($"Memory: [0x{lastMemoryPeekAddress:X4}]: 0x{memory.ReadByte(lastMemoryPeekAddress):X2}");
                     Console.SetCursorPosition(leftSectionWidth, 18);
                     Console.WriteLine($"{border}{new string(' ', totalWidth - leftSectionWidth - 1)}");
                 }

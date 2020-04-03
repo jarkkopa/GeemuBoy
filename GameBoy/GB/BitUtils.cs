@@ -21,5 +21,17 @@
         {
             return (value & 1 << index) > 0;
         }
+
+        public static byte SetBit(byte value, int index, bool bit)
+        {
+            if (bit)
+            {
+                return (byte)(value | (1 << index));
+            }
+            else
+            {
+                return (byte)(value & ~(1 << index));
+            }
+        }
     }
 }
