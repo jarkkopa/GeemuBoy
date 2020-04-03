@@ -41,5 +41,14 @@ namespace GameBoy.GB.Tests
             Assert.True(BitUtils.GetBit(0b00000010, 1));
             Assert.True(BitUtils.GetBit(0b00000001, 0));
         }
+
+        [Fact()]
+        public void SetBitTest()
+        {
+            Assert.Equal(0b00001111, BitUtils.SetBit(0b00001011, 2, true));
+            Assert.Equal(0b00001011, BitUtils.SetBit(0b00001111, 2, false));
+            Assert.Equal(0b00001111, BitUtils.SetBit(0b00001111, 2, true));
+            Assert.Equal(0b00001011, BitUtils.SetBit(0b00001011, 2, false));
+        }
     }
 }

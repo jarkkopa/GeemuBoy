@@ -21,7 +21,6 @@ namespace GameBoy.GB
         private const ushort INTERRUPT_FLAG_ADDR = 0xFF0F;
 
         private readonly Memory memory;
-        private readonly InterruptHandler interruptHandler;
 
         private readonly ILoadUnit loadUnit;
         private readonly IALU alu;
