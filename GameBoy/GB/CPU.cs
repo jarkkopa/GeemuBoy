@@ -237,7 +237,6 @@ namespace GameBoy.GB
             {
                 InterruptMasterEnableFlag = enableInterruptMasterAfter == 0;
                 enableInterruptMasterAfter--;
-                // imeEnableRequested = false;
             }
         }
 

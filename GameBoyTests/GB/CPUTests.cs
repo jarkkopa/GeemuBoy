@@ -83,8 +83,10 @@ namespace GameBoy.GB.Tests
                 0xFB, //EI
                 0x00 //NOP
             });
-            var cpu = new CPU(memory);
-            cpu.InterruptMasterEnableFlag = false;
+            var cpu = new CPU(memory)
+            {
+                InterruptMasterEnableFlag = false
+            };
 
             cpu.RunCommand();
             Assert.False(cpu.InterruptMasterEnableFlag);
@@ -98,8 +100,10 @@ namespace GameBoy.GB.Tests
             var memory = new Memory(new byte[]{
                 0xF3 //DI
             });
-            var cpu = new CPU(memory);
-            cpu.InterruptMasterEnableFlag = true;
+            var cpu = new CPU(memory)
+            {
+                InterruptMasterEnableFlag = true
+            };
 
             cpu.RunCommand();
             Assert.False(cpu.InterruptMasterEnableFlag);
