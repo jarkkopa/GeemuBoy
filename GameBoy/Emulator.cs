@@ -4,7 +4,7 @@ using System.IO;
 
 namespace GameBoy
 {
-    class GameBoyEmulator
+    class Emulator
     {
         private enum State
         {
@@ -28,7 +28,7 @@ namespace GameBoy
 
         private bool turbo = false;
 
-        public GameBoyEmulator(string? cartridgePath, string? bootRomPath)
+        public Emulator(string? cartridgePath, string? bootRomPath)
         {
             byte[]? cartridge = null;
             if (!string.IsNullOrEmpty(cartridgePath))
@@ -47,8 +47,6 @@ namespace GameBoy
             //cpu.SetInitialStateAfterBootSequence();
 
             Console.CursorVisible = false;
-            Console.WriteLine("Starting Game Boy Emulator...");
-            Console.WriteLine();
 
             Run();
         }
