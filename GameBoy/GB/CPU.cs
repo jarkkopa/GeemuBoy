@@ -154,8 +154,7 @@ namespace GameBoy.GB
             else if (OpCodes.ContainsKey(code))
             {
                 OpCode opCode = OpCodes[code];
-                Cycles = opCode.Cycles;
-                opCode.Instruction();
+                Cycles = opCode.Instruction();
             }
             else
             {
@@ -172,8 +171,7 @@ namespace GameBoy.GB
             if (OpCodesPrefixed.ContainsKey(code))
             {
                 var opCode = OpCodesPrefixed[code];
-                Cycles = opCode.Cycles;
-                opCode.Instruction();
+                Cycles = opCode.Instruction();
             }
             else
             {
@@ -242,12 +240,12 @@ namespace GameBoy.GB
 
         private void CreateLoadUnitOpCodes()
         {
-            CreateOpCode(0x06, () => { ReadImmediateByte(out var immediate); loadUnit.Load(ref B, immediate); }, 8, "LD B, d8");
-            CreateOpCode(0x0E, () => { ReadImmediateByte(out var immediate); loadUnit.Load(ref C, immediate); }, 8, "LD C, d8");
-            CreateOpCode(0x16, () => { ReadImmediateByte(out var immediate); loadUnit.Load(ref D, immediate); }, 8, "LD D, d8");
-            CreateOpCode(0x1E, () => { ReadImmediateByte(out var immediate); loadUnit.Load(ref E, immediate); }, 8, "LD E, d8");
-            CreateOpCode(0x26, () => { ReadImmediateByte(out var immediate); loadUnit.Load(ref H, immediate); }, 8, "LD H, d8");
-            CreateOpCode(0x2E, () => { ReadImmediateByte(out var immediate); loadUnit.Load(ref L, immediate); }, 8, "LD L, d8");
+            CreateOpCode(0x06, () => { ReadImmediateByte(out var immediate); loadUnit.Load(ref B, immediate); return 8; }, 8, "LD B, d8");
+            CreateOpCode(0x0E, () => { ReadImmediateByte(out var immediate); loadUnit.Load(ref C, immediate); return 8; }, 8, "LD C, d8");
+            CreateOpCode(0x16, () => { ReadImmediateByte(out var immediate); loadUnit.Load(ref D, immediate); return 8; }, 8, "LD D, d8");
+            CreateOpCode(0x1E, () => { ReadImmediateByte(out var immediate); loadUnit.Load(ref E, immediate); return 8; }, 8, "LD E, d8");
+            CreateOpCode(0x26, () => { ReadImmediateByte(out var immediate); loadUnit.Load(ref H, immediate); return 8; }, 8, "LD H, d8");
+            CreateOpCode(0x2E, () => { ReadImmediateByte(out var immediate); loadUnit.Load(ref L, immediate); return 8; }, 8, "LD L, d8");
 
             CreateOpCode(0x7F, () => loadUnit.Load(ref A, A), 4, "LD A, A");
             CreateOpCode(0x78, () => loadUnit.Load(ref A, B), 4, "LD A, B");
@@ -312,12 +310,12 @@ namespace GameBoy.GB
             CreateOpCode(0x73, () => loadUnit.WriteToAddress(H, L, E), 8, "LD (HL), E");
             CreateOpCode(0x74, () => loadUnit.WriteToAddress(H, L, H), 8, "LD (HL), H");
             CreateOpCode(0x75, () => loadUnit.WriteToAddress(H, L, L), 8, "LD (HL), L");
-            CreateOpCode(0x36, () => { ReadImmediateByte(out var immediate); loadUnit.WriteToAddress(H, L, immediate); }, 12, "LD (HL), d8");
+            CreateOpCode(0x36, () => { ReadImmediateByte(out var immediate); loadUnit.WriteToAddress(H, L, immediate); return 12; }, 12, "LD (HL), d8");
 
             CreateOpCode(0x0A, () => loadUnit.LoadFromAddress(ref A, B, C), 8, "LD A, (BC)");
             CreateOpCode(0x1A, () => loadUnit.LoadFromAddress(ref A, D, E), 8, "LD A, (DE)");
-            CreateOpCode(0xFA, () => { ReadImmediateWord(out var immediate); loadUnit.LoadFromAddress(ref A, immediate); }, 16, "LD A, (a16)");
-            CreateOpCode(0x3E, () => { ReadImmediateByte(out var immediate); loadUnit.Load(ref A, immediate); }, 8, "LD A, d8");
+            CreateOpCode(0xFA, () => { ReadImmediateWord(out var immediate); loadUnit.LoadFromAddress(ref A, immediate); return 16; }, 16, "LD A, (a16)");
+            CreateOpCode(0x3E, () => { ReadImmediateByte(out var immediate); loadUnit.Load(ref A, immediate); return 8; }, 8, "LD A, d8");
 
             CreateOpCode(0x47, () => loadUnit.Load(ref B, A), 4, "LD B, A");
             CreateOpCode(0x4F, () => loadUnit.Load(ref C, A), 4, "LD C, A");
@@ -328,7 +326,7 @@ namespace GameBoy.GB
             CreateOpCode(0x02, () => loadUnit.WriteToAddress(B, C, A), 8, "LD (BC), A");
             CreateOpCode(0x12, () => loadUnit.WriteToAddress(D, E, A), 8, "LD (DE), A");
             CreateOpCode(0x77, () => loadUnit.WriteToAddress(H, L, A), 8, "LD (HL), A");
-            CreateOpCode(0xEA, () => { ReadImmediateWord(out var immediate); loadUnit.WriteToAddress(immediate, A); }, 16, "LD (a16), A");
+            CreateOpCode(0xEA, () => { ReadImmediateWord(out var immediate); loadUnit.WriteToAddress(immediate, A); return 16; }, 16, "LD (a16), A");
 
             CreateOpCode(0xF2, () => loadUnit.LoadFromAddress(ref A, (ushort)(0xFF00 + C)), 8, "LD A, (C)");
             CreateOpCode(0xE2, () => loadUnit.WriteToAddress((ushort)(0xFF00 + C), A), 8, "LD (C), A");
@@ -337,16 +335,16 @@ namespace GameBoy.GB
             CreateOpCode(0x32, () => loadUnit.WriteToAddressAndIncrement(ref H, ref L, A, -1), 8, "LD (HL-), A");
             CreateOpCode(0x2A, () => loadUnit.LoadFromAddressAndIncrement(ref A, ref H, ref L, 1), 8, "LD A, (HL+)");
             CreateOpCode(0x22, () => loadUnit.WriteToAddressAndIncrement(ref H, ref L, A, 1), 8, "LD (HL+), A");
-            CreateOpCode(0xE0, () => { ReadImmediateByte(out var immediate); loadUnit.WriteToAddress((ushort)(0xFF00 + immediate), A); }, 12, "LDH (a8), A");
-            CreateOpCode(0xF0, () => { ReadImmediateByte(out var immediate); loadUnit.LoadFromAddress(ref A, (ushort)(0xFF00 + immediate)); }, 12, "LDH A, (a8)");
+            CreateOpCode(0xE0, () => { ReadImmediateByte(out var immediate); loadUnit.WriteToAddress((ushort)(0xFF00 + immediate), A); return 12; }, 12, "LDH (a8), A");
+            CreateOpCode(0xF0, () => { ReadImmediateByte(out var immediate); loadUnit.LoadFromAddress(ref A, (ushort)(0xFF00 + immediate)); return 12; }, 12, "LDH A, (a8)");
 
-            CreateOpCode(0x01, () => { ReadImmediateWord(out var immediate); loadUnit.Load(ref B, ref C, immediate); }, 12, "LD BC, d16");
-            CreateOpCode(0x11, () => { ReadImmediateWord(out var immediate); loadUnit.Load(ref D, ref E, immediate); }, 12, "LD DE, d16");
-            CreateOpCode(0x21, () => { ReadImmediateWord(out var immediate); loadUnit.Load(ref H, ref L, immediate); }, 12, "LD HL, d16");
-            CreateOpCode(0x31, () => { ReadImmediateWord(out var immediate); loadUnit.Load(ref SP, immediate); }, 12, "LD SP, d16");
+            CreateOpCode(0x01, () => { ReadImmediateWord(out var immediate); loadUnit.Load(ref B, ref C, immediate); return 12; }, 12, "LD BC, d16");
+            CreateOpCode(0x11, () => { ReadImmediateWord(out var immediate); loadUnit.Load(ref D, ref E, immediate); return 12; }, 12, "LD DE, d16");
+            CreateOpCode(0x21, () => { ReadImmediateWord(out var immediate); loadUnit.Load(ref H, ref L, immediate); return 12; }, 12, "LD HL, d16");
+            CreateOpCode(0x31, () => { ReadImmediateWord(out var immediate); loadUnit.Load(ref SP, immediate); return 12; }, 12, "LD SP, d16");
             CreateOpCode(0xF9, () => loadUnit.Load(ref SP, H, L), 8, "LD SP, HL");
-            CreateOpCode(0xF8, () => { ReadImmediateByte(out var immediate); loadUnit.LoadAdjusted(ref H, ref L, SP, immediate, ref F); }, 12, "LD HL, SP + r8");
-            CreateOpCode(0x08, () => { ReadImmediateWord(out var immediate); loadUnit.WriteToAddress(immediate, SP); }, 20, "LD (a16), SP");
+            CreateOpCode(0xF8, () => { ReadImmediateByte(out var immediate); loadUnit.LoadAdjusted(ref H, ref L, SP, immediate, ref F); return 12; }, 12, "LD HL, SP + r8");
+            CreateOpCode(0x08, () => { ReadImmediateWord(out var immediate); loadUnit.WriteToAddress(immediate, SP); return 20; }, 20, "LD (a16), SP");
 
             CreateOpCode(0xF5, () => loadUnit.Push(ref SP, A, F), 16, "PUSH AF");
             CreateOpCode(0xC5, () => loadUnit.Push(ref SP, B, C), 16, "PUSH BC");
@@ -367,8 +365,8 @@ namespace GameBoy.GB
             CreateOpCode(0x83, () => alu.Add(ref A, E, ref F), 4, "ADD A, E");
             CreateOpCode(0x84, () => alu.Add(ref A, H, ref F), 4, "ADD A, H");
             CreateOpCode(0x85, () => alu.Add(ref A, L, ref F), 4, "ADD A, L");
-            CreateOpCode(0x86, () => { ReadFromMemory(H, L, out var memValue); alu.Add(ref A, memValue, ref F); }, 8, "ADD A, (HL)");
-            CreateOpCode(0xC6, () => { ReadImmediateByte(out var immediate); alu.Add(ref A, immediate, ref F); }, 8, "ADD A, d8");
+            CreateOpCode(0x86, () => { ReadFromMemory(H, L, out var memValue); alu.Add(ref A, memValue, ref F); return 8; }, 8, "ADD A, (HL)");
+            CreateOpCode(0xC6, () => { ReadImmediateByte(out var immediate); alu.Add(ref A, immediate, ref F); return 8; }, 8, "ADD A, d8");
 
             CreateOpCode(0x8F, () => alu.Add(ref A, A, ref F, true), 4, "ADC A,A");
             CreateOpCode(0x88, () => alu.Add(ref A, B, ref F, true), 4, "ADC A,B");
@@ -377,8 +375,8 @@ namespace GameBoy.GB
             CreateOpCode(0x8B, () => alu.Add(ref A, E, ref F, true), 4, "ADC A,E");
             CreateOpCode(0x8C, () => alu.Add(ref A, H, ref F, true), 4, "ADC A,H");
             CreateOpCode(0x8D, () => alu.Add(ref A, L, ref F, true), 4, "ADC A,L");
-            CreateOpCode(0x8E, () => { ReadFromMemory(H, L, out var memValue); alu.Add(ref A, memValue, ref F, true); }, 8, "ADC A, (HL)");
-            CreateOpCode(0xCE, () => { ReadImmediateByte(out var immediate); alu.Add(ref A, immediate, ref F, true); }, 8, "ADC A, d8");
+            CreateOpCode(0x8E, () => { ReadFromMemory(H, L, out var memValue); alu.Add(ref A, memValue, ref F, true); return 8; }, 8, "ADC A, (HL)");
+            CreateOpCode(0xCE, () => { ReadImmediateByte(out var immediate); alu.Add(ref A, immediate, ref F, true); return 8; }, 8, "ADC A, d8");
 
             CreateOpCode(0x97, () => alu.Subtract(ref A, A, ref F), 4, "SUB A");
             CreateOpCode(0x90, () => alu.Subtract(ref A, B, ref F), 4, "SUB B");
@@ -387,8 +385,8 @@ namespace GameBoy.GB
             CreateOpCode(0x93, () => alu.Subtract(ref A, E, ref F), 4, "SUB E");
             CreateOpCode(0x94, () => alu.Subtract(ref A, H, ref F), 4, "SUB H");
             CreateOpCode(0x95, () => alu.Subtract(ref A, L, ref F), 4, "SUB L");
-            CreateOpCode(0x96, () => { ReadFromMemory(H, L, out var memValue); alu.Subtract(ref A, memValue, ref F); }, 8, "SUB (HL)");
-            CreateOpCode(0xD6, () => { ReadImmediateByte(out var immediate); alu.Subtract(ref A, immediate, ref F); }, 8, "SUB d8");
+            CreateOpCode(0x96, () => { ReadFromMemory(H, L, out var memValue); alu.Subtract(ref A, memValue, ref F); return 8; }, 8, "SUB (HL)");
+            CreateOpCode(0xD6, () => { ReadImmediateByte(out var immediate); alu.Subtract(ref A, immediate, ref F); return 8; }, 8, "SUB d8");
 
             CreateOpCode(0x9F, () => alu.Subtract(ref A, A, ref F, true), 4, "SBC A, A");
             CreateOpCode(0x98, () => alu.Subtract(ref A, B, ref F, true), 4, "SBC A, B");
@@ -397,8 +395,8 @@ namespace GameBoy.GB
             CreateOpCode(0x9B, () => alu.Subtract(ref A, E, ref F, true), 4, "SBC A, E");
             CreateOpCode(0x9C, () => alu.Subtract(ref A, H, ref F, true), 4, "SBC A, H");
             CreateOpCode(0x9D, () => alu.Subtract(ref A, L, ref F, true), 4, "SBC A, L");
-            CreateOpCode(0x9E, () => { ReadFromMemory(H, L, out var memValue); alu.Subtract(ref A, memValue, ref F, true); }, 8, "SBC A, (HL)");
-            CreateOpCode(0xDE, () => { ReadImmediateByte(out var immediate); alu.Subtract(ref A, immediate, ref F, true); }, 8, "SBC A, d8");
+            CreateOpCode(0x9E, () => { ReadFromMemory(H, L, out var memValue); alu.Subtract(ref A, memValue, ref F, true); return 8; }, 8, "SBC A, (HL)");
+            CreateOpCode(0xDE, () => { ReadImmediateByte(out var immediate); alu.Subtract(ref A, immediate, ref F, true); return 8; }, 8, "SBC A, d8");
 
             CreateOpCode(0xA7, () => alu.And(ref A, A, ref F), 4, "AND A");
             CreateOpCode(0xA0, () => alu.And(ref A, B, ref F), 4, "AND B");
@@ -407,8 +405,8 @@ namespace GameBoy.GB
             CreateOpCode(0xA3, () => alu.And(ref A, E, ref F), 4, "AND E");
             CreateOpCode(0xA4, () => alu.And(ref A, H, ref F), 4, "AND H");
             CreateOpCode(0xA5, () => alu.And(ref A, L, ref F), 4, "AND L");
-            CreateOpCode(0xA6, () => { ReadFromMemory(H, L, out var memValue); alu.And(ref A, memValue, ref F); }, 8, "AND (HL)");
-            CreateOpCode(0xE6, () => { ReadImmediateByte(out var immediate); alu.And(ref A, immediate, ref F); }, 8, "AND d8");
+            CreateOpCode(0xA6, () => { ReadFromMemory(H, L, out var memValue); alu.And(ref A, memValue, ref F); return 8; }, 8, "AND (HL)");
+            CreateOpCode(0xE6, () => { ReadImmediateByte(out var immediate); alu.And(ref A, immediate, ref F); return 8; }, 8, "AND d8");
 
             CreateOpCode(0xB7, () => alu.Or(ref A, A, ref F), 4, "OR A");
             CreateOpCode(0xB0, () => alu.Or(ref A, B, ref F), 4, "OR B");
@@ -417,8 +415,8 @@ namespace GameBoy.GB
             CreateOpCode(0xB3, () => alu.Or(ref A, E, ref F), 4, "OR E");
             CreateOpCode(0xB4, () => alu.Or(ref A, H, ref F), 4, "OR H");
             CreateOpCode(0xB5, () => alu.Or(ref A, L, ref F), 4, "OR L");
-            CreateOpCode(0xB6, () => { ReadFromMemory(H, L, out var memValue); alu.Or(ref A, memValue, ref F); }, 8, "OR (HL)");
-            CreateOpCode(0xF6, () => { ReadImmediateByte(out var immediate); alu.Or(ref A, immediate, ref F); }, 8, "OR d8");
+            CreateOpCode(0xB6, () => { ReadFromMemory(H, L, out var memValue); alu.Or(ref A, memValue, ref F); return 8; }, 8, "OR (HL)");
+            CreateOpCode(0xF6, () => { ReadImmediateByte(out var immediate); alu.Or(ref A, immediate, ref F); return 8; }, 8, "OR d8");
 
             CreateOpCode(0xAF, () => alu.Xor(ref A, A, ref F), 4, "XOR A");
             CreateOpCode(0xA8, () => alu.Xor(ref A, B, ref F), 4, "XOR B");
@@ -427,8 +425,8 @@ namespace GameBoy.GB
             CreateOpCode(0xAB, () => alu.Xor(ref A, E, ref F), 4, "XOR E");
             CreateOpCode(0xAC, () => alu.Xor(ref A, H, ref F), 4, "XOR H");
             CreateOpCode(0xAD, () => alu.Xor(ref A, L, ref F), 4, "XOR L");
-            CreateOpCode(0xAE, () => { ReadFromMemory(H, L, out var memValue); alu.Xor(ref A, memValue, ref F); }, 8, "XOR (HL)");
-            CreateOpCode(0xEE, () => { ReadImmediateByte(out var immediate); alu.Xor(ref A, immediate, ref F); }, 8, "XOR d8");
+            CreateOpCode(0xAE, () => { ReadFromMemory(H, L, out var memValue); alu.Xor(ref A, memValue, ref F); return 8; }, 8, "XOR (HL)");
+            CreateOpCode(0xEE, () => { ReadImmediateByte(out var immediate); alu.Xor(ref A, immediate, ref F); return 8; }, 8, "XOR d8");
 
             CreateOpCode(0xBF, () => alu.Compare(A, A, ref F), 4, "CP A");
             CreateOpCode(0xB8, () => alu.Compare(A, B, ref F), 4, "CP B");
@@ -437,8 +435,8 @@ namespace GameBoy.GB
             CreateOpCode(0xBB, () => alu.Compare(A, E, ref F), 4, "CP E");
             CreateOpCode(0xBC, () => alu.Compare(A, H, ref F), 4, "CP H");
             CreateOpCode(0xBD, () => alu.Compare(A, L, ref F), 4, "CP L");
-            CreateOpCode(0xBE, () => { ReadFromMemory(H, L, out var memValue); alu.Compare(A, memValue, ref F); }, 8, "CP (HL)");
-            CreateOpCode(0xFE, () => { ReadImmediateByte(out var immediate); alu.Compare(A, immediate, ref F); }, 8, "CP d8");
+            CreateOpCode(0xBE, () => { ReadFromMemory(H, L, out var memValue); alu.Compare(A, memValue, ref F); return 8; }, 8, "CP (HL)");
+            CreateOpCode(0xFE, () => { ReadImmediateByte(out var immediate); alu.Compare(A, immediate, ref F); return 8; }, 8, "CP d8");
 
             CreateOpCode(0x3C, () => alu.Increment(ref A, ref F), 4, "INC A");
             CreateOpCode(0x04, () => alu.Increment(ref B, ref F), 4, "INC B");
@@ -463,7 +461,7 @@ namespace GameBoy.GB
             CreateOpCode(0x29, () => alu.Add(ref H, ref L, H, L, ref F), 8, "ADD HL, HL");
             CreateOpCode(0x39, () => alu.Add(ref H, ref L, BitUtils.MostSignificantByte(SP), BitUtils.LeastSignificantByte(SP), ref F), 8, "ADD HL, SP");
 
-            CreateOpCode(0xE8, () => { ReadImmediateByte(out var data); alu.AddSigned(ref SP, data, ref F); }, 16, "ADD SP, r8");
+            CreateOpCode(0xE8, () => { ReadImmediateByte(out var data); alu.AddSigned(ref SP, data, ref F); return 16; }, 16, "ADD SP, r8");
 
             CreateOpCode(0x03, () => alu.IncrementWord(ref B, ref C), 8, "INC BC");
             CreateOpCode(0x13, () => alu.IncrementWord(ref D, ref E), 8, "INC DE");
@@ -479,98 +477,107 @@ namespace GameBoy.GB
         private void CreateMiscOpCodes()
         {
             CreateOpCode(0x00, () => miscUnit.Nop(), 4, "NOP");
-            //CreateOpCode(0xF3, () => miscUnit.SetInterruptMasterEnable(ref InterruptMasterEnableFlag, false), 4, "DI");
             CreateOpCode(0xF3, () => miscUnit.DisableInterruptMasterFlag(ref InterruptMasterEnableFlag), 4, "DI");
-            //CreateOpCode(0xFB, () => miscUnit.SetInterruptMasterEnable(ref imeEnableRequested, true), 4, "EI");
             CreateOpCode(0xFB, () => miscUnit.EnableInterruptMasterFlag(ref enableInterruptMasterAfter), 4, "EI");
         }
 
         private void CreateJumpOpCodes()
         {
-            CreateOpCode(0xCD, () => { ReadImmediateWord(out var address); jumpUnit.Call(address, ref SP, ref PC); }, 24, "CALL a16");
+            CreateOpCode(0xCD, () =>
+            {
+                ReadImmediateWord(out var address);
+                return jumpUnit.Call(address, ref SP, ref PC);
+            }, 24, "CALL a16");
             CreateOpCode(0xC4, () =>
             {
                 ReadImmediateWord(out var address);
-                jumpUnit.CallConditional(address, ref SP, ref PC, Flag.Z, false, F);
-            }, 24, "CALL NZ, a16"); // TODO: Cycles 24/12 depending if condition is true
+                return jumpUnit.CallConditional(address, ref SP, ref PC, Flag.Z, false, F);
+            }, 24, "CALL NZ, a16");
 
             CreateOpCode(0xCC, () =>
             {
                 ReadImmediateWord(out var address);
-                jumpUnit.CallConditional(address, ref SP, ref PC, Flag.Z, true, F);
-            }, 24, "CALL Z, a16"); // TODO: Cycles 24/12 depending if condition is true
+                return jumpUnit.CallConditional(address, ref SP, ref PC, Flag.Z, true, F);
+            }, 24, "CALL Z, a16");
 
             CreateOpCode(0xD4, () =>
             {
                 ReadImmediateWord(out var address);
-                jumpUnit.CallConditional(address, ref SP, ref PC, Flag.C, false, F);
-            }, 24, "CALL NC, a16"); // TODO: Cycles 24/12 depending if condition is true
+                return jumpUnit.CallConditional(address, ref SP, ref PC, Flag.C, false, F);
+            }, 24, "CALL NC, a16");
 
             CreateOpCode(0xDC, () =>
             {
                 ReadImmediateWord(out var address);
-                jumpUnit.CallConditional(address, ref SP, ref PC, Flag.C, true, F);
-            }, 24, "CALL C, a16"); // TODO: Cycles 24/12 depending if condition is true
+                return jumpUnit.CallConditional(address, ref SP, ref PC, Flag.C, true, F);
+            }, 24, "CALL C, a16");
 
-            CreateOpCode(0xC3, () => { ReadImmediateWord(out var address); jumpUnit.JumpToAddress(address, ref PC); }, 16, "JP a16");
-            CreateOpCode(0x18, () => { ReadImmediateByte(out var value); jumpUnit.JumpRelative(value, ref PC); }, 12, "JR a8");
+            CreateOpCode(0xC3, () =>
+            {
+                ReadImmediateWord(out var address);
+                return jumpUnit.JumpToAddress(address, ref PC);
+            }, 16, "JP a16");
+            CreateOpCode(0x18, () =>
+            {
+                ReadImmediateByte(out var value); return jumpUnit.JumpRelative(value, ref PC);
+            }, 12, "JR a8");
             CreateOpCode(0xE9, () => jumpUnit.JumpToAddress(H, L, ref PC), 4, "JP (HL)");
 
             CreateOpCode(0xC2, () =>
             {
                 ReadImmediateWord(out var address);
-                jumpUnit.JumpToAddressConditional(address, ref PC, Flag.Z, false, F);
-            }, 16, "JP NZ, a16"); // TODO: Cycles 16/12 depending if condition is true
+                return jumpUnit.JumpToAddressConditional(address, ref PC, Flag.Z, false, F);
+            }, 16, "JP NZ, a16");
 
             CreateOpCode(0xCA, () =>
             {
                 ReadImmediateWord(out var address);
-                jumpUnit.JumpToAddressConditional(address, ref PC, Flag.Z, true, F);
-            }, 16, "JP Z, a16"); // TODO: Cycles 16/12 depending if condition is true
+                return jumpUnit.JumpToAddressConditional(address, ref PC, Flag.Z, true, F);
+            }, 16, "JP Z, a16");
 
             CreateOpCode(0xD2, () =>
             {
                 ReadImmediateWord(out var address);
-                jumpUnit.JumpToAddressConditional(address, ref PC, Flag.C, false, F);
-            }, 16, "JP NC, a16"); // TODO: Cycles 16/12 depending if condition is true
+                return jumpUnit.JumpToAddressConditional(address, ref PC, Flag.C, false, F);
+            }, 16, "JP NC, a16");
 
             CreateOpCode(0xDA, () =>
             {
                 ReadImmediateWord(out var address);
-                jumpUnit.JumpToAddressConditional(address, ref PC, Flag.C, true, F);
-            }, 16, "JP C, a16"); // TODO: Cycles 16/12 depending if condition is true
+                return jumpUnit.JumpToAddressConditional(address, ref PC, Flag.C, true, F);
+            }, 16, "JP C, a16");
 
             CreateOpCode(0x20, () =>
             {
                 ReadImmediateByte(out var value);
-                jumpUnit.JumpRelativeConditional(value, ref PC, Flag.Z, false, F);
-            }, 12, "JR NZ, r8"); // TODO: Cycles 12/8 depending if condition is true
+                return jumpUnit.JumpRelativeConditional(value, ref PC, Flag.Z, false, F);
+            }, 12, "JR NZ, r8");
 
             CreateOpCode(0x28, () =>
             {
                 ReadImmediateByte(out var value);
-                jumpUnit.JumpRelativeConditional(value, ref PC, Flag.Z, true, F);
-            }, 12, "JR Z, r8"); // TODO: Cycles 12/8 depending if condition is true
+                return jumpUnit.JumpRelativeConditional(value, ref PC, Flag.Z, true, F);
+            }, 12, "JR Z, r8");
 
             CreateOpCode(0x30, () =>
             {
                 ReadImmediateByte(out var value);
-                jumpUnit.JumpRelativeConditional(value, ref PC, Flag.C, false, F);
-            }, 12, "JR NC, r8"); // TODO: Cycles 12/8 depending if condition is true
+                return jumpUnit.JumpRelativeConditional(value, ref PC, Flag.C, false, F);
+            }, 12, "JR NC, r8");
 
             CreateOpCode(0x38, () =>
             {
                 ReadImmediateByte(out var value);
-                jumpUnit.JumpRelativeConditional(value, ref PC, Flag.C, true, F);
-            }, 12, "JR C, r8"); // TODO: Cycles 12/8 depending if condition is true
+                return jumpUnit.JumpRelativeConditional(value, ref PC, Flag.C, true, F);
+            }, 12, "JR C, r8");
 
             CreateOpCode(0xC9, () => jumpUnit.Return(ref SP, ref PC), 16, "RET");
         }
 
         private void CreateBitUnitOpCodes()
         {
-            CreateOpCode(0x07, () => bitUnit.RotateLeft(ref A, ref F, true), 4, "RLCA");
-            CreateOpCode(0x17, () => bitUnit.RotateLeftThroughCarry(ref A, ref F, true), 4, "RLA");
+            CreateOpCode(0x07, () => { bitUnit.RotateLeft(ref A, ref F, true); return 4; }, 4, "RLCA");
+            CreateOpCode(0x17, () => { bitUnit.RotateLeftThroughCarry(ref A, ref F, true); return 4; }, 4, "RLA");
 
             CreatePrefixedOpCode(0x47, () => bitUnit.TestBit(A, 0, ref F), 12, "BIT 0, A");
             CreatePrefixedOpCode(0x4F, () => bitUnit.TestBit(A, 1, ref F), 12, "BIT 1, A");
@@ -635,14 +642,14 @@ namespace GameBoy.GB
             CreatePrefixedOpCode(0x75, () => bitUnit.TestBit(L, 6, ref F), 12, "BIT 6, L");
             CreatePrefixedOpCode(0x7D, () => bitUnit.TestBit(L, 7, ref F), 12, "BIT 7, L");
 
-            CreatePrefixedOpCode(0x46, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 0, ref F); }, 16, "BIT 0, (HL)");
-            CreatePrefixedOpCode(0x4E, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 1, ref F); }, 16, "BIT 1, (HL)");
-            CreatePrefixedOpCode(0x56, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 2, ref F); }, 16, "BIT 2, (HL)");
-            CreatePrefixedOpCode(0x5E, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 3, ref F); }, 16, "BIT 3, (HL)");
-            CreatePrefixedOpCode(0x66, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 4, ref F); }, 16, "BIT 4, (HL)");
-            CreatePrefixedOpCode(0x6E, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 5, ref F); }, 16, "BIT 5, (HL)");
-            CreatePrefixedOpCode(0x76, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 6, ref F); }, 16, "BIT 6, (HL)");
-            CreatePrefixedOpCode(0x7E, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 7, ref F); }, 16, "BIT 7, (HL)");
+            CreatePrefixedOpCode(0x46, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 0, ref F); return 16; }, 16, "BIT 0, (HL)");
+            CreatePrefixedOpCode(0x4E, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 1, ref F); return 16; }, 16, "BIT 1, (HL)");
+            CreatePrefixedOpCode(0x56, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 2, ref F); return 16; }, 16, "BIT 2, (HL)");
+            CreatePrefixedOpCode(0x5E, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 3, ref F); return 16; }, 16, "BIT 3, (HL)");
+            CreatePrefixedOpCode(0x66, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 4, ref F); return 16; }, 16, "BIT 4, (HL)");
+            CreatePrefixedOpCode(0x6E, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 5, ref F); return 16; }, 16, "BIT 5, (HL)");
+            CreatePrefixedOpCode(0x76, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 6, ref F); return 16; }, 16, "BIT 6, (HL)");
+            CreatePrefixedOpCode(0x7E, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 7, ref F); return 16; }, 16, "BIT 7, (HL)");
 
             CreatePrefixedOpCode(0x00, () => bitUnit.RotateLeft(ref B, ref F, false), 12, "RLC B");
             CreatePrefixedOpCode(0x01, () => bitUnit.RotateLeft(ref C, ref F, false), 12, "RLC C");
@@ -663,14 +670,14 @@ namespace GameBoy.GB
             CreatePrefixedOpCode(0x17, () => bitUnit.RotateLeftThroughCarry(ref A, ref F, false), 12, "RL A");
         }
 
-        private void CreateOpCode(byte command, Action instruction, int cycles, string name)
+        private void CreateOpCode(byte command, Func<int> instruction, int cycles, string name)
         {
-            OpCodes.Add(command, new OpCode(instruction, cycles, name));
+            OpCodes.Add(command, new OpCode(instruction, name));
         }
 
-        private void CreatePrefixedOpCode(byte command, Action instruction, int cycles, string name)
+        private void CreatePrefixedOpCode(byte command, Func<int> instruction, int cycles, string name)
         {
-            OpCodesPrefixed.Add(command, new OpCode(instruction, cycles, name));
+            OpCodesPrefixed.Add(command, new OpCode(instruction, name));
         }
     }
 }

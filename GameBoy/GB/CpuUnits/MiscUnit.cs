@@ -2,9 +2,9 @@
 {
     public interface IMiscUnit
     {
-        public void EnableInterruptMasterFlag(ref int enableAfter);
-        public void DisableInterruptMasterFlag(ref bool flag);
-        public void Nop();
+        public int EnableInterruptMasterFlag(ref int enableAfter);
+        public int DisableInterruptMasterFlag(ref bool flag);
+        public int Nop();
     }
 
     public class MiscUnit : IMiscUnit
@@ -16,16 +16,20 @@
             this.memory = memory;
         }
 
-        public void Nop() { }
-
-        public void EnableInterruptMasterFlag(ref int enableAfter)
-        {
-            enableAfter = 1;
+        public int Nop() {
+            return 4;
         }
 
-        public void DisableInterruptMasterFlag(ref bool flag)
+        public int EnableInterruptMasterFlag(ref int enableAfter)
+        {
+            enableAfter = 1;
+            return 4;
+        }
+
+        public int DisableInterruptMasterFlag(ref bool flag)
         {
             flag = false;
+            return 4;
         }
     }
 }

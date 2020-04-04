@@ -449,7 +449,6 @@ namespace GameBoy.GB.Tests
             opCode.Instruction();
             A.CallTo(expectedCall).MustHaveHappenedOnceExactly();
             Fake.ClearRecordedCalls(loadUnit);
-            Assert.Equal(expectedCycles, opCode.Cycles);
 
             // Reset PC between calls because some instructions rely on immediate values at the beginning of the rom.
             cpu.PC = 0;
@@ -461,7 +460,6 @@ namespace GameBoy.GB.Tests
             opCode.Instruction();
             A.CallTo(expectedCall).MustHaveHappenedOnceExactly();
             Fake.ClearRecordedCalls(loadUnit);
-            Assert.Equal(expectedCycles, opCode.Cycles);
 
             // Reset PC between calls because some instructions rely on immediate values at the beginning of the rom.
             cpu.PC = 0;
