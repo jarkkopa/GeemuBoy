@@ -115,7 +115,6 @@ namespace GameBoy.GB.Tests
             var memory = new Memory(new byte[]{
                 0xFB, // DI, enable interrupts
                 0x00, // NOP, interrupts enabled after this instruction
-                0x00  // NOP, jump to interrupt vector after this one
             });
             var cpu = new CPU(memory)
             {
@@ -131,13 +130,11 @@ namespace GameBoy.GB.Tests
             Assert.Equal(0x1, cpu.PC);
             Assert.False(cpu.InterruptMasterEnableFlag);
             cpu.RunCommand();
-            Assert.True(cpu.InterruptMasterEnableFlag);
-            cpu.RunCommand();
 
             // Highest enabled and requested interrupt is LCDStat with interrupt vector 0x48
             Assert.Equal(0x48, cpu.PC);
             Assert.Equal(0xFFFC, cpu.SP);
-            Assert.Equal(0x0003, memory.ReadWord(0xFFFC));
+            Assert.Equal(0x0002, memory.ReadWord(0xFFFC));
         }
     }
 }

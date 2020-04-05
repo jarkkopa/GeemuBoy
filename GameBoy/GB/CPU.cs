@@ -211,6 +211,12 @@ namespace GameBoy.GB
 
         private void HandleInterrupts()
         {
+            if (enableInterruptMasterAfter != -1)
+            {
+                InterruptMasterEnableFlag = enableInterruptMasterAfter == 0;
+                enableInterruptMasterAfter--;
+            }
+
             if (InterruptMasterEnableFlag)
             {
                 byte enabledInterrupts = memory.ReadByte(INTERRUPT_ENABLE_ADDR);
@@ -229,12 +235,6 @@ namespace GameBoy.GB
                         // TODO: Add cycles (20?)
                     }
                 }
-            }
-
-            if (enableInterruptMasterAfter != -1)
-            {
-                InterruptMasterEnableFlag = enableInterruptMasterAfter == 0;
-                enableInterruptMasterAfter--;
             }
         }
 
