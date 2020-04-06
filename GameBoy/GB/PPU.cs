@@ -2,9 +2,9 @@
 {
     public class PPU
     {
-        private enum Mode
+        public enum Mode
         {
-            OAM,
+            OamSearch,
             PixelTransfer,
             HBlank,
             VBlank
@@ -12,7 +12,7 @@
 
         private readonly Memory memory;
 
-        private Mode mode = Mode.OAM;
+        public Mode CurrentMode { get; private set; } = Mode.OamSearch;
         private int cycles = 0;
         private int currentLine = 0;
 
@@ -24,12 +24,12 @@
         public void Tick(int cpuCycles)
         {
             cycles += cpuCycles;
-            switch (mode)
+            switch (CurrentMode)
             {
-                case Mode.OAM:
+                case Mode.OamSearch:
                     if (cycles >= 80)
                     {
-                        mode = Mode.PixelTransfer;
+                        CurrentMode = Mode.PixelTransfer;
                         cycles -= 80;
                     }
                     break;
@@ -37,8 +37,9 @@
                 case Mode.PixelTransfer:
                     if (cycles >= 172)
                     {
-                        mode = Mode.HBlank;
+                        CurrentMode = Mode.HBlank;
                         cycles -= 172;
+                        // Write scanline
                     }
                     break;
 
@@ -47,9 +48,13 @@
                     {
                         currentLine++;
                         cycles -= 204;
-                        if (currentLine > 144)
+                        if (currentLine == 143)
                         {
-                            mode = Mode.VBlank;
+                            CurrentMode = Mode.VBlank;
+                            // Render picture
+                        } else
+                        {
+                            CurrentMode = Mode.OamSearch;
                         }
                     }
                     break;
@@ -58,7 +63,7 @@
                     if (cycles >= 4560)
                     {
                         cycles -= 4560;
-                        mode = Mode.OAM;
+                        CurrentMode = Mode.OamSearch;
                     }
                     break;
             }

@@ -15,6 +15,7 @@ namespace GameBoy.GB.Tests
         private int ENABLE_IME_AFTER = -1;
 
         private readonly Memory memory;
+        private readonly PPU ppu;
         private readonly CPU cpu;
         private readonly ILoadUnit loadUnit;
         private readonly IALU alu;
@@ -29,12 +30,13 @@ namespace GameBoy.GB.Tests
                 IMMEDIATE_BYTE,
                 (IMMEDIATE_WORD >> 8) & 0xFF
             });
+            ppu = new PPU(memory);
             loadUnit = A.Fake<ILoadUnit>();
             alu = A.Fake<IALU>();
             miscUnit = A.Fake<IMiscUnit>();
             jumpUnit = A.Fake<IJumpUnit>();
             bitUnit = A.Fake<IBitUnit>();
-            cpu = new CPU(memory, loadUnit, alu, miscUnit, jumpUnit, bitUnit)
+            cpu = new CPU(memory, ppu, loadUnit, alu, miscUnit, jumpUnit, bitUnit)
             {
                 A = 0x0A,
                 B = 0x0B,

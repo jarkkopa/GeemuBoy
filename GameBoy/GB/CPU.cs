@@ -22,6 +22,8 @@ namespace GameBoy.GB
 
         private readonly Memory memory;
 
+        private readonly PPU ppu;
+
         private readonly ILoadUnit loadUnit;
         private readonly IALU alu;
         private readonly IMiscUnit miscUnit;
@@ -52,8 +54,10 @@ namespace GameBoy.GB
         // EI enables interrupt master flag with delay. This variable is used to handle that delay.
         private int enableInterruptMasterAfter = -1;
 
-        public CPU(Memory memory, ILoadUnit loadUnit, IALU alu, IMiscUnit miscUnit, IJumpUnit jumpUnit, IBitUnit bitOpsUnit)
+        public CPU(Memory memory, PPU ppu, ILoadUnit loadUnit, IALU alu, IMiscUnit miscUnit, IJumpUnit jumpUnit, IBitUnit bitOpsUnit)
         {
+            this.ppu = ppu;
+
             this.loadUnit = loadUnit;
             this.alu = alu;
             this.miscUnit = miscUnit;
@@ -76,14 +80,17 @@ namespace GameBoy.GB
             interruptVector.Add(Interrupt.Joypad, 0x60);
         }
 
-        public CPU(Memory memory) :
+        public CPU(Memory memory, PPU ppu) :
             this(memory,
+                ppu,
                 new LoadUnit(memory),
                 new ALU(memory),
                 new MiscUnit(memory),
                 new JumpUnit(memory),
                 new BitUnit(memory))
         { }
+
+        public CPU(Memory memory): this(memory, new PPU(memory)) { }
 
         public void Reset()
         {
@@ -160,6 +167,8 @@ namespace GameBoy.GB
             {
                 throw new NotImplementedException($"Trying to run opcode 0x{code:X2} that is not implemented.");
             }
+
+            ppu.Tick(Cycles);
 
             HandleInterrupts();
         }

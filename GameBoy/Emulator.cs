@@ -17,6 +17,7 @@ namespace GameBoy
 
         private readonly CPU cpu;
         private readonly Memory memory;
+        private readonly PPU ppu;
 
         private State state = State.Stop;
 
@@ -43,7 +44,8 @@ namespace GameBoy
             }
 
             memory = new Memory(cartridge, bootRom);
-            cpu = new CPU(memory);
+            ppu = new PPU(memory);
+            cpu = new CPU(memory, ppu);
             //cpu.SetInitialStateAfterBootSequence();
 
             Console.CursorVisible = false;
@@ -148,7 +150,8 @@ namespace GameBoy
         {
             Console.SetCursorPosition(0, 0);
             Console.WriteLine("Game Boy Emulator");
-            Console.WriteLine($"Instruction #{instructionsRun} - TURBO MODE: {(turbo ? "ON " : "OFF")}");
+            Console.WriteLine($"Instruction #{instructionsRun} - TURBO MODE: {(turbo ? "ON " : "OFF")}" +
+                $" PPU MODE: {ppu.CurrentMode.ToString().PadRight(20)}");
             Console.WriteLine($"Serial output:{serial}");
         }
 
