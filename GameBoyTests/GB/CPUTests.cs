@@ -12,6 +12,7 @@ namespace GameBoy.GB.Tests
 
         private readonly Memory memory;
         private readonly PPU ppu;
+        private readonly IDisplay display;
         private readonly CPU cpu;
         private readonly ILoadUnit loadUnit;
         private readonly IALU alu;
@@ -26,7 +27,8 @@ namespace GameBoy.GB.Tests
                 IMMEDIATE_BYTE,
                 (IMMEDIATE_WORD >> 8) & 0xFF
             });
-            ppu = new PPU(memory);
+            display = new BlankDisplay();
+            ppu = new PPU(memory, display);
             loadUnit = A.Fake<ILoadUnit>();
             alu = A.Fake<IALU>();
             miscUnit = A.Fake<IMiscUnit>();
@@ -85,7 +87,7 @@ namespace GameBoy.GB.Tests
                 0xFB, //EI
                 0x00 //NOP
             });
-            var cpu = new CPU(memory)
+            var cpu = new CPU(memory, display)
             {
                 InterruptMasterEnableFlag = false
             };
@@ -102,7 +104,7 @@ namespace GameBoy.GB.Tests
             var memory = new Memory(new byte[]{
                 0xF3 //DI
             });
-            var cpu = new CPU(memory)
+            var cpu = new CPU(memory, display)
             {
                 InterruptMasterEnableFlag = true
             };
@@ -118,7 +120,7 @@ namespace GameBoy.GB.Tests
                 0xFB, // DI, enable interrupts
                 0x00, // NOP, interrupts enabled after this instruction
             });
-            var cpu = new CPU(memory)
+            var cpu = new CPU(memory, display)
             {
                 SP = 0xFFFE
             };

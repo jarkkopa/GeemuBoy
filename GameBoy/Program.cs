@@ -10,8 +10,8 @@
             string cartridgePath = $"{romFolderPath}/06-ld r,r.gb";
             //string cartridgePath = "Roms/01-special.gb";
             string bootRomPath = $"{romFolderPath }/DMG_ROM.bin";
-            new Emulator(cartridgePath, bootRomPath);
-            //new EmulatorSDL(cartridgePath, bootRomPath);
+            //new Emulator(cartridgePath, bootRomPath);
+            new EmulatorSDL(cartridgePath, bootRomPath);
         }
     }
 }

@@ -44,7 +44,7 @@ namespace GameBoy
             }
 
             memory = new Memory(cartridge, bootRom);
-            ppu = new PPU(memory);
+            ppu = new PPU(memory, new BlankDisplay());
             cpu = new CPU(memory, ppu);
             //cpu.SetInitialStateAfterBootSequence();
 

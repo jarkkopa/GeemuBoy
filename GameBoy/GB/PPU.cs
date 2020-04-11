@@ -11,14 +11,16 @@
         }
 
         private readonly Memory memory;
+        private readonly IDisplay display;
 
         public Mode CurrentMode { get; private set; } = Mode.OamSearch;
         private int cycles = 0;
         private int currentLine = 0;
 
-        public PPU(Memory memory)
+        public PPU(Memory memory, IDisplay display)
         {
             this.memory = memory;
+            this.display = display;
         }
 
         public void Tick(int cpuCycles)
@@ -40,6 +42,7 @@
                         CurrentMode = Mode.HBlank;
                         cycles -= 172;
                         // Write scanline
+                        display.DrawLine(0, new byte[0]);
                     }
                     break;
 
@@ -52,7 +55,9 @@
                         {
                             CurrentMode = Mode.VBlank;
                             // Render picture
-                        } else
+                            display.Render();
+                        }
+                        else
                         {
                             CurrentMode = Mode.OamSearch;
                         }

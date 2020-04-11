@@ -90,7 +90,7 @@ namespace GameBoy.GB
                 new BitUnit(memory))
         { }
 
-        public CPU(Memory memory): this(memory, new PPU(memory)) { }
+        public CPU(Memory memory, IDisplay display): this(memory, new PPU(memory, display)) { }
 
         public void Reset()
         {

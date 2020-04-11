@@ -30,7 +30,7 @@ namespace GameBoy.GB.Tests
                 IMMEDIATE_BYTE,
                 (IMMEDIATE_WORD >> 8) & 0xFF
             });
-            ppu = new PPU(memory);
+            ppu = new PPU(memory, new BlankDisplay());
             loadUnit = A.Fake<ILoadUnit>();
             alu = A.Fake<IALU>();
             miscUnit = A.Fake<IMiscUnit>();
