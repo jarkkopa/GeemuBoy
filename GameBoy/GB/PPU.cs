@@ -47,10 +47,12 @@ namespace GameBoy.GB
                         uint[] line;
                         if(currentLine%2==0)
                         {
-                            line = Enumerable.Repeat(0xFF000000, 160).ToArray();
+                            //line = Enumerable.Repeat(0xFF000000, 160).ToArray();
+                            line = Enumerable.Range(0, 160).Select(v => v % 2 == 0 ? 0xFF000000: 0xFF00FF00).ToArray();
                         } else
                         {
-                            line = Enumerable.Repeat(0xFF00FF00, 160).ToArray();
+                            //line = Enumerable.Repeat(0xFF00FF00, 160).ToArray();
+                            line = Enumerable.Range(0, 160).Select(v => v % 2 == 0 ? 0xFF00FF00 : 0xFF000000).ToArray();
                         }
                         display.DrawLine(currentLine, line);
                     }

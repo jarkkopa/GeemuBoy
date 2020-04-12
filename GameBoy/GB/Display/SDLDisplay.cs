@@ -6,6 +6,7 @@ namespace GameBoy.GB
 {
     public class SDLDisplay : IDisplay, IDisposable
     {
+        private const float SCALE = 2;
         private const int WIDTH = 160;
         private const int HEIGHT = 144;
 
@@ -28,8 +29,8 @@ namespace GameBoy.GB
                 "Emulator",
                 SDL.SDL_WINDOWPOS_CENTERED,
                 SDL.SDL_WINDOWPOS_CENTERED,
-                WIDTH,
-                HEIGHT,
+                Convert.ToInt32(WIDTH * SCALE),
+                Convert.ToInt32(HEIGHT * SCALE),
                 SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN);
 
             renderer = SDL.SDL_CreateRenderer(
