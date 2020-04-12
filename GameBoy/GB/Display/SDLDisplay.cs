@@ -47,15 +47,25 @@ namespace GameBoy.GB
 
         }
 
-        public void DrawLine(int y, byte[] line)
+        public void DrawLine(int y, uint[] line)
         {
             // Array.Copy(line, 0, renderData, y * WIDTH, line.Length);
             //UpdateTexture();
+            unsafe
+            {
+                uint* pixels = (uint*)renderTest;
+                int offset = y * WIDTH;
+                for (int i = 0; i < line.Length; i++)
+                {
+                    pixels[i + offset] = line[i];
+
+                }
+            }
         }
 
         public void Render()
         {
-            UpdateTexture();
+            //UpdateTexture();
             SDL.SDL_UpdateTexture(
                 texture,
                 IntPtr.Zero,

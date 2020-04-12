@@ -2,7 +2,7 @@
 {
     public class BlankDisplay : IDisplay
     {
-        public void DrawLine(int y, byte[] line)
+        public void DrawLine(int y, uint[] line)
         {
 
         }

@@ -1,4 +1,6 @@
-﻿namespace GameBoy.GB
+﻿using System.Linq;
+
+namespace GameBoy.GB
 {
     public class PPU
     {
@@ -42,7 +44,15 @@
                         CurrentMode = Mode.HBlank;
                         cycles -= 172;
                         // Write scanline
-                        display.DrawLine(0, new byte[0]);
+                        uint[] line;
+                        if(currentLine%2==0)
+                        {
+                            line = Enumerable.Repeat(0xFF000000, 160).ToArray();
+                        } else
+                        {
+                            line = Enumerable.Repeat(0xFF00FF00, 160).ToArray();
+                        }
+                        display.DrawLine(currentLine, line);
                     }
                     break;
 
@@ -69,6 +79,7 @@
                     {
                         cycles -= 4560;
                         CurrentMode = Mode.OamSearch;
+                        currentLine = 0;
                     }
                     break;
             }
