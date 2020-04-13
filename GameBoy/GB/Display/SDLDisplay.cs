@@ -48,7 +48,7 @@ namespace GameBoy.GB
 
         }
 
-        public void DrawLine(int y, uint[] line)
+        public void RenderLine(int y, uint[] line)
         {
             // Array.Copy(line, 0, renderData, y * WIDTH, line.Length);
             //UpdateTexture();

@@ -2,6 +2,11 @@
 {
     public static class BitUtils
     {
+        public static bool IsBitSet(this byte value, int index)
+        {
+            return GetBit(value, index);
+        }
+
         public static ushort BytesToUshort(byte mostSignificant, byte leastSignificant)
         {
             return (ushort)(mostSignificant << 8 | leastSignificant);

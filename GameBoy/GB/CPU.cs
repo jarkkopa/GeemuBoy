@@ -90,7 +90,7 @@ namespace GameBoy.GB
                 new BitUnit(memory))
         { }
 
-        public CPU(Memory memory, IDisplay display): this(memory, new PPU(memory, display)) { }
+        public CPU(Memory memory, IDisplay display) : this(memory, new PPU(memory, display)) { }
 
         public void Reset()
         {
@@ -211,7 +211,7 @@ namespace GameBoy.GB
             return 4;
         }
 
-        public void RequestInterrupt(Interrupt interrupt)
+        public static void RequestInterrupt(Memory memory, Interrupt interrupt)
         {
             byte flag = memory.ReadByte(INTERRUPT_FLAG_ADDR);
             flag = BitUtils.SetBit(flag, (int)interrupt, true);

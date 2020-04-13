@@ -2,7 +2,7 @@
 {
     public interface IDisplay
     {
-        public void DrawLine(int y, uint[] line);
+        public void RenderLine(int y, uint[] line);
         public void Render();
     }
 }

@@ -125,9 +125,9 @@ namespace GameBoy.GB.Tests
                 SP = 0xFFFE
             };
 
-            cpu.RequestInterrupt(CPU.Interrupt.LCDStat);
-            cpu.RequestInterrupt(CPU.Interrupt.VBlank);
-            cpu.RequestInterrupt(CPU.Interrupt.Serial);
+            CPU.RequestInterrupt(memory, CPU.Interrupt.LCDStat);
+            CPU.RequestInterrupt(memory, CPU.Interrupt.VBlank);
+            CPU.RequestInterrupt(memory, CPU.Interrupt.Serial);
             // Enable LCDStat and Serial
             memory.WriteByte(0xFFFF, 0b00000110);
             cpu.RunCommand();
