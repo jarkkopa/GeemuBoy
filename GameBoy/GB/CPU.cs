@@ -233,7 +233,7 @@ namespace GameBoy.GB
 
                 for (int i = 0; i < (int)Interrupt.Joypad && InterruptMasterEnableFlag; i++)
                 {
-                    if (BitUtils.GetBit(requestedInterrupts, i) && BitUtils.GetBit(enabledInterrupts, i))
+                    if (requestedInterrupts.IsBitSet(i) && enabledInterrupts.IsBitSet(i))
                     {
                         InterruptMasterEnableFlag = false;
 

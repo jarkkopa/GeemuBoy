@@ -20,7 +20,7 @@
 
         public int RotateLeft(ref byte register, ref byte flags, bool alwaysResetZero)
         {
-            bool setCarry = BitUtils.GetBit(register, 7);
+            bool setCarry = register.IsBitSet(7);
 
             RotateLeft(ref register, (register & 0x80) > 0);
 
@@ -49,7 +49,7 @@
 
         public int RotateLeftThroughCarry(ref byte register, ref byte flags, bool alwaysResetZero)
         {
-            bool setCarry = BitUtils.GetBit(register, 7);
+            bool setCarry = register.IsBitSet(7);
 
             RotateLeft(ref register, FlagUtils.GetFlag(Flag.C, flags));
             if (alwaysResetZero)
@@ -77,7 +77,7 @@
 
         public int TestBit(byte register, byte index, ref byte flags)
         {
-            FlagUtils.SetFlag(Flag.Z, BitUtils.GetBit(register, index) == false, ref flags);
+            FlagUtils.SetFlag(Flag.Z, register.IsBitSet(index) == false, ref flags);
             FlagUtils.SetFlag(Flag.N, false, ref flags);
             FlagUtils.SetFlag(Flag.H, true, ref flags);
             return 12;
