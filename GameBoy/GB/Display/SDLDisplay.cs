@@ -46,6 +46,8 @@ namespace GameBoy.GB
                 WIDTH,
                 HEIGHT);
 
+            ClearTexture();
+            
         }
 
         public void RenderLine(int y, uint[] line)
@@ -73,7 +75,7 @@ namespace GameBoy.GB
                 renderTest,
                 WIDTH * sizeof(uint));
 
-            SDL.SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
+            SDL.SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
             SDL.SDL_RenderClear(renderer);
 
             SDL.SDL_RenderCopy(
@@ -84,15 +86,14 @@ namespace GameBoy.GB
             SDL.SDL_RenderPresent(renderer);
         }
 
-
-        private void UpdateTexture()
+        private void ClearTexture()
         {
             unsafe
             {
                 uint* data = (uint*)renderTest;
                 for (int i = 0; i < WIDTH * HEIGHT; i++)
                 {
-                    data[i] = i % 3 == 0 ? 0xFF000000 : 0xFF00FF00;
+                    data[i] = 0xFFFFFFFF;
                 }
             }
         }
