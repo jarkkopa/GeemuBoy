@@ -2,13 +2,15 @@
 {
     public class PPU
     {
-        public enum Mode
+        public enum Mode : byte
         {
-            OamSearch,
-            PixelTransfer,
-            HBlank,
-            VBlank
+            OamSearch = 2,
+            PixelTransfer = 3,
+            HBlank = 0,
+            VBlank = 1
         }
+
+        private const ushort LCD_STAT_ADDR = 0xFF41;
 
         private const int WIDTH = 160;
         private const int HEIGHT = 144;
@@ -16,7 +18,37 @@
         private readonly Memory memory;
         private readonly IDisplay display;
 
-        public Mode CurrentMode { get; private set; } = Mode.OamSearch;
+        private Mode currentMode;
+        public Mode CurrentMode
+        {
+            get { return currentMode; }
+            private set
+            {
+                currentMode = value;
+                byte lcdStat = memory.ReadByte(LCD_STAT_ADDR);
+                lcdStat = (byte)((lcdStat & 0xFC) | (byte)currentMode);
+                memory.WriteByte(LCD_STAT_ADDR, lcdStat);
+
+                if (currentMode == Mode.PixelTransfer)
+                {
+                    // Pixel transfer doesn't cause LCD STAT interrupt
+                    return;
+                }
+
+                var flagIndex = currentMode switch
+                {
+                    Mode.HBlank => 3,
+                    Mode.OamSearch => 5,
+                    Mode.VBlank => 4,
+                    _ => throw new System.Exception("Invalid PPU mode")
+                };
+
+                if (lcdStat.IsBitSet(flagIndex))
+                {
+                    CPU.RequestInterrupt(memory, CPU.Interrupt.LCDStat);
+                }
+            }
+        }
         private int cycles = 0;
         private byte currentLine = 0;
         private byte CurrentLine
@@ -26,6 +58,16 @@
             {
                 currentLine = value;
                 memory.WriteByte(0xFF44, currentLine);
+
+                // Set coincidence flag
+                byte lcdStat = memory.ReadByte(LCD_STAT_ADDR);
+                lcdStat = BitUtils.SetBit(lcdStat, 2, currentLine == memory.ReadByte(0xFF45));
+                memory.WriteByte(LCD_STAT_ADDR, lcdStat);
+
+                if (lcdStat.IsBitSet(6))
+                {
+                    CPU.RequestInterrupt(memory, CPU.Interrupt.LCDStat);
+                }
             }
         }
 
@@ -33,10 +75,22 @@
         {
             this.memory = memory;
             this.display = display;
+
+            CurrentMode = Mode.OamSearch;
         }
 
         public void Tick(int cpuCycles)
         {
+            byte controlRegister = memory.ReadByte(0xFF40);
+            if (controlRegister.IsBitSet(7) == false)
+            {
+                // Disabling LCD can be only done during VBlank
+                CurrentMode = Mode.VBlank;
+                cycles = 456;
+                CurrentLine = 0;
+                return;
+            }
+
             cycles += cpuCycles;
             switch (CurrentMode)
             {
@@ -54,7 +108,7 @@
                         CurrentMode = Mode.HBlank;
                         cycles -= 172;
 
-                        RenderScanLine();
+                        RenderScanLine(controlRegister);
                     }
                     break;
 
@@ -94,9 +148,10 @@
                     }
                     break;
             }
+            // TODO: Update LCD_STAT register
         }
 
-        private void RenderScanLine()
+        private void RenderScanLine(byte controlRegister)
         {
             //uint[] line;
             //if (currentLine<70)
@@ -111,11 +166,7 @@
             //}
             //display.RenderLine(currentLine, line);
             //return;
-            byte controlRegister = memory.ReadByte(0xFF40);
-            if (controlRegister.IsBitSet(7) == false)
-            {
-                return;
-            }
+
 
             if (controlRegister.IsBitSet(0))
             {
