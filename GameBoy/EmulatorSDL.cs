@@ -49,6 +49,7 @@ namespace GameBoy
             display = new SDLDisplay();
             ppu = new PPU(memory, display);
             cpu = new CPU(memory, ppu);
+            //cpu.SetInitialStateAfterBootSequence();
 
             Run();
 

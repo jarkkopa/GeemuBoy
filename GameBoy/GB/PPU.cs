@@ -197,13 +197,13 @@ namespace GameBoy.GB
         {
             switch (index)
             {
-                case 0:
-                    return 0xFF000000;
-                case 1:
-                    return 0xFF606060;
-                case 2:
-                    return 0xFFA0A0A0;
                 case 3:
+                    return 0xFF000000;
+                case 2:
+                    return 0xFF606060;
+                case 1:
+                    return 0xFFA0A0A0;
+                case 0:
                     return 0xFFFFFFFF;
             }
             return 0xFFFFFFFF;
