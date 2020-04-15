@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace GameBoy.GB
+﻿namespace GameBoy.GB
 {
     public class PPU
     {
@@ -152,7 +150,6 @@ namespace GameBoy.GB
                 int x = renderWindow && pixel >= windowX ? pixel - windowX : pixel + scrollX;
                 int tileX = x / 8;
                 ushort tileAddress = (ushort)(tileMapAddress + tileX + (tileY * 32));
-                // Read tile data
                 byte tileNumber = memory.ReadByte(tileAddress);
                 // Find out tile address
                 ushort tileDataAddress;
@@ -162,6 +159,7 @@ namespace GameBoy.GB
                 }
                 else
                 {
+                    // 0x8800 addressing mode uses signed tile numbers unlike 0x8000 address mode
                     tileDataAddress = (ushort)(0x8800 + (((sbyte)tileNumber) * 16));
                 }
 
@@ -172,7 +170,7 @@ namespace GameBoy.GB
                 byte tileLow = memory.ReadByte(tileDataAddress);
                 byte tileHigh = memory.ReadByte((ushort)(tileDataAddress + 1));
 
-                linePixels[pixel] = GetPixel((7 - (x % 8)), 0xFF, tileHigh, tileLow);
+                linePixels[pixel] = GetPixel((7 - (x % 8)), memory.ReadByte(0xFF47), tileHigh, tileLow);
             }
             display.RenderLine(CurrentLine, linePixels);
         }
@@ -188,7 +186,16 @@ namespace GameBoy.GB
             int colorL = (low & 1 << index) >> index;
             int color = colorH | colorL;
 
-            return GetColor(color);
+            int paletteIndex = color switch
+            {
+                0 => (palette & 0x3),
+                1 => (palette & 0xC) >> 2,
+                2 => (palette & 0x30) >> 4,
+                3 => (palette & 0xC0) >> 6,
+                _ => 0
+            };
+
+            return GetColor(paletteIndex);
         }
 
         private uint GetColor(int index) =>
