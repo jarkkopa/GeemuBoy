@@ -72,12 +72,14 @@ namespace GameBoy.GB
 
             this.memory = memory;
 
-            interruptVector = new Dictionary<Interrupt, ushort>();
-            interruptVector.Add(Interrupt.VBlank, 0x40);
-            interruptVector.Add(Interrupt.LCDStat, 0x48);
-            interruptVector.Add(Interrupt.Timer, 0x50);
-            interruptVector.Add(Interrupt.Serial, 0x58);
-            interruptVector.Add(Interrupt.Joypad, 0x60);
+            interruptVector = new Dictionary<Interrupt, ushort>
+            {
+                { Interrupt.VBlank, 0x40 },
+                { Interrupt.LCDStat, 0x48 },
+                { Interrupt.Timer, 0x50 },
+                { Interrupt.Serial, 0x58 },
+                { Interrupt.Joypad, 0x60 }
+            };
         }
 
         public CPU(Memory memory, PPU ppu) :

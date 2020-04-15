@@ -14,11 +14,11 @@ namespace GameBoy.GB
         private readonly IntPtr renderer = IntPtr.Zero;
         private readonly IntPtr texture = IntPtr.Zero;
 
-        private IntPtr renderTest;
+        private IntPtr pixels;
 
         public SDLDisplay()
         {
-            renderTest = Marshal.AllocHGlobal(WIDTH * HEIGHT * sizeof(uint));
+            pixels = Marshal.AllocHGlobal(WIDTH * HEIGHT * sizeof(uint));
 
             if (SDL.SDL_Init(SDL.SDL_INIT_VIDEO) < 0)
             {
@@ -38,7 +38,6 @@ namespace GameBoy.GB
                -1,
                SDL.SDL_RendererFlags.SDL_RENDERER_SOFTWARE);
 
-            //SDL.SDL_GetRendererInfo(renderer, out var info);
             texture = SDL.SDL_CreateTexture(
                 renderer,
                 SDL.SDL_PIXELFORMAT_ARGB8888,
@@ -47,32 +46,28 @@ namespace GameBoy.GB
                 HEIGHT);
 
             ClearTexture();
-            
+
         }
 
         public void RenderLine(int y, uint[] line)
         {
-            // Array.Copy(line, 0, renderData, y * WIDTH, line.Length);
-            //UpdateTexture();
             unsafe
             {
-                uint* pixels = (uint*)renderTest;
+                uint* data = (uint*)this.pixels;
                 int offset = y * WIDTH;
                 for (int i = 0; i < line.Length; i++)
                 {
-                    pixels[i + offset] = line[i];
-
+                    data[i + offset] = line[i];
                 }
             }
         }
 
         public void Render()
         {
-            //UpdateTexture();
             SDL.SDL_UpdateTexture(
                 texture,
                 IntPtr.Zero,
-                renderTest,
+                pixels,
                 WIDTH * sizeof(uint));
 
             SDL.SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
@@ -90,7 +85,7 @@ namespace GameBoy.GB
         {
             unsafe
             {
-                uint* data = (uint*)renderTest;
+                uint* data = (uint*)pixels;
                 for (int i = 0; i < WIDTH * HEIGHT; i++)
                 {
                     data[i] = 0xFFFFFFFF;
@@ -115,7 +110,7 @@ namespace GameBoy.GB
                 SDL.SDL_DestroyWindow(window);
                 SDL.SDL_DestroyRenderer(renderer);
                 SDL.SDL_DestroyTexture(texture);
-                Marshal.FreeHGlobal(renderTest);
+                Marshal.FreeHGlobal(pixels);
                 SDL.SDL_Quit();
 
                 disposedValue = true;

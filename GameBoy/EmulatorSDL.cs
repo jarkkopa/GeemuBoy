@@ -59,11 +59,10 @@ namespace GameBoy
         private void Run()
         {
             PrintDebugger();
-            SDL.SDL_Event evt;
 
             while (state != State.Quit)
             {
-                while (SDL.SDL_PollEvent(out evt) != 0)
+                while (SDL.SDL_PollEvent(out SDL.SDL_Event evt) != 0)
                 {
                     switch (evt.type)
                     {

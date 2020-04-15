@@ -60,14 +60,7 @@ namespace GameBoy.GB
 
         public Memory(byte[]? cartridge = null, byte[]? bootRom = null)
         {
-            if (cartridge != null)
-            {
-                this.cartridge = cartridge;
-            }
-            else
-            {
-                this.cartridge = new byte[0x8000];
-            }
+            this.cartridge = cartridge ?? new byte[0x8000];
             this.bootRom = bootRom;
 
             RomMapMode = bootRom != null ? MapMode.Boot : MapMode.Cartridge;

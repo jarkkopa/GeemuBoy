@@ -130,8 +130,6 @@ namespace GameBoy.GB
                 // Render sprites
                 RenderSpriteLine(controlRegister);
             }
-
-
         }
 
         private void RenderBackgroundLine(byte controlRegister)
@@ -193,20 +191,14 @@ namespace GameBoy.GB
             return GetColor(color);
         }
 
-        private uint GetColor(int index)
-        {
-            switch (index)
+        private uint GetColor(int index) =>
+            index switch
             {
-                case 3:
-                    return 0xFF000000;
-                case 2:
-                    return 0xFF606060;
-                case 1:
-                    return 0xFFA0A0A0;
-                case 0:
-                    return 0xFFFFFFFF;
-            }
-            return 0xFFFFFFFF;
-        }
+                3 => 0xFF000000,
+                2 => 0xFF606060,
+                1 => 0xFFA0A0A0,
+                0 => 0xFFFFFFFF,
+                _ => 0xFFFFFFFF
+            };
     }
 }
