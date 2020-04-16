@@ -49,7 +49,10 @@ namespace GameBoy
             display = new SDLDisplay();
             ppu = new PPU(memory, display);
             cpu = new CPU(memory, ppu);
-            //cpu.SetInitialStateAfterBootSequence();
+            if (bootRom == null)
+            {
+                cpu.SetInitialStateAfterBootSequence();
+            }
 
             Run();
 
@@ -85,9 +88,19 @@ namespace GameBoy
                                 case SDL.SDL_Keycode.SDLK_p:
                                     printDebug = !printDebug;
                                     break;
+                                case SDL.SDL_Keycode.SDLK_b:
+                                    state = State.SetBreakpoint;
+                                    PrintDebugger();
+                                    break;
                             }
                             break;
                     }
+                }
+
+                if (breakpoint.HasValue && cpu.PC == breakpoint.Value)
+                {
+                    state = State.Stop;
+                    PrintDebugger();
                 }
 
                 if (state == State.Running)
@@ -103,6 +116,11 @@ namespace GameBoy
         {
             try
             {
+                //if(cpu.PC == 0x02d3)
+                //{
+                //    var a = "jee";
+                //    Console.WriteLine("a " + a);
+                //}
                 cpu.RunCommand();
                 instructionsRun++;
                 PrintDebugger();

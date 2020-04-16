@@ -113,8 +113,8 @@ namespace GameBoy.GB
             }
             else if (addr < 0xFF00)
             {
-                // Empty but unusable for I/O
-                return 0;
+                // Empty but unusable for I/O, return default bus value 0xFF
+                return 0xFF;
             }
             else if (addr < 0xFF4C)
             {
@@ -122,8 +122,8 @@ namespace GameBoy.GB
             }
             else if (addr < 0xFF80)
             {
-                // Empty but unusable for I/O
-                return 0;
+                // Empty but unusable for I/O, return default bus value 0xFF
+                return 0xFF;
             }
             else if (addr < 0xFFFF)
             {
@@ -151,11 +151,11 @@ namespace GameBoy.GB
         {
             if (addr < 0x4000)
             {
-                throw new ArgumentException($"Could not write to read only memory address: {addr}");
+                // throw new ArgumentException($"Could not write to read only memory address: {addr:x4}");
             }
             else if (addr < 0x8000)
             {
-                throw new ArgumentException($"Could not write to read only memory address: {addr}");
+                // throw new ArgumentException($"Could not write to read only memory address: {addr}");
             }
             else if (addr < 0xA000)
             {
@@ -181,7 +181,7 @@ namespace GameBoy.GB
             else if (addr < 0xFF00)
             {
                 // Empty but unusable for I/O
-                throw new ArgumentException($"Could not write to unusable memory address: {addr}");
+                //throw new ArgumentException($"Could not write to unusable memory address: {addr}");
             }
             else if (addr < 0xFF4C)
             {
@@ -196,7 +196,7 @@ namespace GameBoy.GB
                 else
                 {
                     // Empty but unusable for I/O
-                    throw new ArgumentException($"Could not write to unusable memory address: 0x{addr:X4}");
+                    //throw new ArgumentException($"Could not write to unusable memory address: 0x{addr:X4}");
                 }
             }
             else if (addr < 0xFFFF)
