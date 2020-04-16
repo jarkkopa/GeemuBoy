@@ -135,7 +135,7 @@ namespace GameBoy.GB
             }
             else
             {
-                throw new ArgumentException($"Could not read from illegal Game Boy memory address: {addr}");
+                throw new ArgumentException($"Could not read from illegal memory address: {addr}");
             }
         }
 
@@ -147,15 +147,15 @@ namespace GameBoy.GB
             WriteByte((ushort)(addr + 1), msb);
         }
 
-        public void WriteByte(ushort addr, byte data, bool overwriteRom = false)
+        public void WriteByte(ushort addr, byte data)
         {
-            if (addr < 0x4000 && overwriteRom)
+            if (addr < 0x4000)
             {
-                cartridge[addr] = data;
+                throw new ArgumentException($"Could not write to read only memory address: {addr}");
             }
-            else if (addr < 0x8000 && overwriteRom)
+            else if (addr < 0x8000)
             {
-                cartridge[addr] = data;
+                throw new ArgumentException($"Could not write to read only memory address: {addr}");
             }
             else if (addr < 0xA000)
             {
@@ -181,7 +181,7 @@ namespace GameBoy.GB
             else if (addr < 0xFF00)
             {
                 // Empty but unusable for I/O
-                throw new ArgumentException($"Could not write to unusable Game Boy memory address: {addr}");
+                throw new ArgumentException($"Could not write to unusable memory address: {addr}");
             }
             else if (addr < 0xFF4C)
             {
@@ -196,7 +196,7 @@ namespace GameBoy.GB
                 else
                 {
                     // Empty but unusable for I/O
-                    throw new ArgumentException($"Could not write to unusable Game Boy memory address: 0x{addr:X4}");
+                    throw new ArgumentException($"Could not write to unusable memory address: 0x{addr:X4}");
                 }
             }
             else if (addr < 0xFFFF)
@@ -209,7 +209,7 @@ namespace GameBoy.GB
             }
             else
             {
-                throw new ArgumentException($"Could not write to illegal Game Boy memory address: {addr}");
+                throw new ArgumentException($"Could not write to illegal memory address: {addr}");
             }
         }
     }

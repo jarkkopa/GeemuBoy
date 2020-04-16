@@ -6,14 +6,15 @@ namespace GameBoy.GB.Tests
     public class MemoryTests
     {
         [Fact()]
-        public void RomReadWriteTest()
+        public void RomReadTest()
         {
-            var memory = new Memory(new byte[0x8000]);
             ushort addrStart = 0x0000;
             ushort addrEnd = 0x3FFF;
 
-            memory.WriteByte(addrStart, 0xFF, true);
-            memory.WriteByte(addrEnd, 0xFF, true);
+            byte[] cartridge = new byte[0x8000];
+            cartridge[addrStart] = 0xFF;
+            cartridge[addrEnd] = 0xFF;
+            var memory = new Memory(cartridge);
 
             Assert.Equal(0xFF, memory.ReadByte(addrStart));
             Assert.Equal(0xFF, memory.ReadByte(addrEnd));
@@ -22,12 +23,12 @@ namespace GameBoy.GB.Tests
         [Fact]
         public void RomBankReadWriteTest()
         {
-            var memory = new Memory(new byte[0x8000]);
             ushort addrStart = 0x4000;
             ushort addrEnd = 0x7FFF;
-
-            memory.WriteByte(addrStart, 0xFF, true);
-            memory.WriteByte(addrEnd, 0xFF, true);
+            byte[] cartridge = new byte[0x8000];
+            var memory = new Memory(cartridge);
+            cartridge[addrStart] = 0xFF;
+            cartridge[addrEnd] = 0xFF;
 
             Assert.Equal(0xFF, memory.ReadByte(addrStart));
             Assert.Equal(0xFF, memory.ReadByte(addrEnd));
