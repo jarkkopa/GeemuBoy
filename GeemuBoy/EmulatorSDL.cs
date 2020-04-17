@@ -25,10 +25,9 @@ namespace GeemuBoy
         private string serial = "";
         private int instructionsRun = 0;
 
-        private int totalWidth = 100;
-        private int leftSectionWidth = 50;
+        private readonly int totalWidth = 100;
+        private readonly int leftSectionWidth = 50;
 
-        private bool turbo = false;
         private bool printDebug = true;
 
         public EmulatorSDL(string? cartridgePath, string? bootRomPath)
@@ -116,11 +115,6 @@ namespace GeemuBoy
         {
             try
             {
-                //if(cpu.PC == 0x02d3)
-                //{
-                //    var a = "jee";
-                //    Console.WriteLine("a " + a);
-                //}
                 cpu.RunCommand();
                 instructionsRun++;
                 PrintDebugger();
@@ -134,7 +128,7 @@ namespace GeemuBoy
 
         private void PrintDebugger()
         {
-            if (printDebug && (!turbo || instructionsRun % 1000 == 0))
+            if (printDebug)
             {
                 PrintInfoSection();
                 PrintMemorySection();
@@ -149,7 +143,7 @@ namespace GeemuBoy
         {
             Console.SetCursorPosition(0, 0);
             Console.WriteLine("Emulator");
-            Console.WriteLine($"Instruction #{instructionsRun} - TURBO MODE: {(turbo ? "ON " : "OFF")}" +
+            Console.WriteLine($"Instruction #{instructionsRun}" +
                 $" PPU MODE: {ppu.CurrentMode.ToString().PadRight(20)}");
             Console.WriteLine($"Serial output:{serial}");
         }
@@ -319,7 +313,7 @@ namespace GeemuBoy
             Console.WriteLine("Commands:");
             Console.WriteLine("Space - Run");
             Console.WriteLine("N - Run next instruction");
-            Console.WriteLine("R - Reset");
+            Console.WriteLine("P - Enable / disable debug print");
             Console.WriteLine("M - Read byte from memory");
             Console.WriteLine("B - Set breakpoint to address");
         }

@@ -19,6 +19,7 @@
         private readonly IDisplay display;
 
         private Mode currentMode;
+
         public Mode CurrentMode
         {
             get { return currentMode; }
@@ -148,26 +149,10 @@
                     }
                     break;
             }
-            // TODO: Update LCD_STAT register
         }
 
         private void RenderScanLine(byte controlRegister)
         {
-            //uint[] line;
-            //if (currentLine<70)
-            //{
-            //    //line = Enumerable.Repeat(0xFF000000, 160).ToArray();
-            //    line = Enumerable.Range(0, 160).Select(v => v < 80  ? 0xFF000000 : 0xFFFFFFFF).ToArray();
-            //}
-            //else
-            //{
-            //    line = Enumerable.Repeat(0xFFFFFFFF, 160).ToArray();
-            //    //line = Enumerable.Range(0, 160).Select(v => v %  ? 0xFF00FF00 : 0xFF000000).ToArray();
-            //}
-            //display.RenderLine(currentLine, line);
-            //return;
-
-
             if (controlRegister.IsBitSet(0))
             {
                 // Render background
@@ -228,7 +213,7 @@
 
         private void RenderSpriteLine(byte controlRegister)
         {
-
+            // TODO
         }
 
         private uint GetPixel(int index, byte palette, byte high, byte low)

@@ -135,7 +135,7 @@ namespace GeemuBoy.GB
             }
             else
             {
-                throw new ArgumentException($"Could not read from illegal memory address: {addr}");
+                throw new ArgumentException($"Could not read from illegal memory address: {addr:X4}");
             }
         }
 
@@ -209,7 +209,7 @@ namespace GeemuBoy.GB
             }
             else
             {
-                throw new ArgumentException($"Could not write to illegal memory address: {addr}");
+                throw new ArgumentException($"Could not write to illegal memory address: {addr:X4}");
             }
         }
     }
