@@ -47,6 +47,20 @@ namespace GameBoy.GB.CpuUnits.Tests
         }
 
         [Fact()]
+        public void AddSetsZeroWhenSumCarriesTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var alu = new ALU(memory);
+            byte flags = 0x0;
+            byte to = 0xF5;
+
+            alu.Add(ref to, 0x0B, ref flags);
+
+            Assert.Equal(0x0, to);
+            Assert.Equal(0b10110000, flags);
+        }
+
+        [Fact()]
         public void AddWithCarrySetsHalfCarryTest()
         {
             var memory = new Memory(new byte[0]);
