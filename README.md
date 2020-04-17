@@ -1,2 +1,2 @@
-# GameBoy
-Game Boy emulator
+# Geemu Boy
+Geemu Boy emulator
