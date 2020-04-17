@@ -10,6 +10,7 @@
         public int JumpRelative(byte value, ref ushort pc);
         public int JumpRelativeConditional(byte value, ref ushort pc, Flag flag, bool condition, byte flags);
         public int Return(ref ushort sp, ref ushort pc);
+        public int ReturnConditional(ref ushort sp, ref ushort pc, Flag flag, bool condition, byte flags);
     }
 
     public class JumpUnit : IJumpUnit
@@ -31,7 +32,7 @@
 
         public int CallConditional(ushort address, ref ushort sp, ref ushort pc, Flag flag, bool condition, byte flags)
         {
-            if(FlagUtils.GetFlag(flag, flags) == condition)
+            if (FlagUtils.GetFlag(flag, flags) == condition)
             {
                 Call(address, ref sp, ref pc);
                 return 24;
@@ -84,6 +85,16 @@
             pc = memory.ReadWord(sp);
             sp = (ushort)(sp + 2);
             return 16;
+        }
+
+        public int ReturnConditional(ref ushort sp, ref ushort pc, Flag flag, bool condition, byte flags)
+        {
+            if (FlagUtils.GetFlag(flag, flags) == condition)
+            {
+                Return(ref sp, ref pc);
+                return 20;
+            }
+            return 8;
         }
     }
 }

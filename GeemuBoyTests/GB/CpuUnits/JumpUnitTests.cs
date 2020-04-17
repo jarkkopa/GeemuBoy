@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using GeemuBoy.GB.CpuUnits;
+using Xunit;
 
 namespace GeemuBoy.GB.CpuUnits.Tests
 {
@@ -222,6 +223,57 @@ namespace GeemuBoy.GB.CpuUnits.Tests
 
             Assert.Equal(0x0123, pc);
             Assert.Equal(0xFFFC, sp);
+        }
+
+        [Fact()]
+        public void ReturnWhenSetConditionTrue()
+        {
+            var memory = new Memory(new byte[0]);
+            var jumpUnit = new JumpUnit(memory);
+            ushort pc = 0x0100;
+            ushort sp = 0xFFFA;
+            byte flags = 0b10000000;
+            memory.WriteByte(0xFFFA, 0x23);
+            memory.WriteByte(0xFFFB, 0x01);
+
+            jumpUnit.ReturnConditional(ref sp, ref pc, Flag.Z, true, flags);
+
+            Assert.Equal(0x0123, pc);
+            Assert.Equal(0xFFFC, sp);
+        }
+
+        [Fact()]
+        public void ReturnWhenResetConditionTrue()
+        {
+            var memory = new Memory(new byte[0]);
+            var jumpUnit = new JumpUnit(memory);
+            ushort pc = 0x0100;
+            ushort sp = 0xFFFA;
+            byte flags = 0b11100000;
+            memory.WriteByte(0xFFFA, 0x23);
+            memory.WriteByte(0xFFFB, 0x01);
+
+            jumpUnit.ReturnConditional(ref sp, ref pc, Flag.C, false, flags);
+
+            Assert.Equal(0x0123, pc);
+            Assert.Equal(0xFFFC, sp);
+        }
+
+        [Fact()]
+        public void DontReturnWhenSetConditionFalse()
+        {
+            var memory = new Memory(new byte[0]);
+            var jumpUnit = new JumpUnit(memory);
+            ushort pc = 0x0100;
+            ushort sp = 0xFFFA;
+            byte flags = 0b10000000;
+            memory.WriteByte(0xFFFA, 0x23);
+            memory.WriteByte(0xFFFB, 0x01);
+
+            jumpUnit.ReturnConditional(ref sp, ref pc, Flag.Z, false, flags);
+
+            Assert.Equal(0x0100, pc);
+            Assert.Equal(0xFFFA, sp);
         }
     }
 }
