@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GameBoy\GeemuBoy.csproj" />
+    <ProjectReference Include="..\GeemuBoy\GeemuBoy.csproj" />
   </ItemGroup>
 
 </Project>

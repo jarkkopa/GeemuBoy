@@ -2,7 +2,7 @@
 {
     class Program
     {
-        private static readonly string romFolderPath = "C:/repos/GameBoy/GameBoy/Roms";
+        private static readonly string romFolderPath = "C:/repos/GameBoy/GeemuBoy/Roms";
 
         static void Main(string[] args)
         {
