@@ -91,6 +91,10 @@ namespace GeemuBoy
                                     state = State.SetBreakpoint;
                                     PrintDebugger();
                                     break;
+                                case SDL.SDL_Keycode.SDLK_m:
+                                    state = State.SetMemoryRead;
+                                    PrintDebugger();
+                                    break;
                             }
                             break;
                     }
@@ -312,7 +316,7 @@ namespace GeemuBoy
             PrintHorizontalLine();
             Console.WriteLine("Commands:");
             Console.WriteLine("Space - Run");
-            Console.WriteLine("N - Run next instruction");
+            Console.WriteLine("N - Step to next instruction");
             Console.WriteLine("P - Enable / disable debug print");
             Console.WriteLine("M - Read byte from memory");
             Console.WriteLine("B - Set breakpoint to address");
