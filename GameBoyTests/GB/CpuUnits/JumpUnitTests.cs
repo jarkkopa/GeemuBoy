@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace GameBoy.GB.CpuUnits.Tests
+namespace GeemuBoy.GB.CpuUnits.Tests
 {
     public class JumpUnitTests
     {

@@ -1,8 +1,8 @@
 ﻿using FakeItEasy;
-using GameBoy.GB.CpuUnits;
+using GeemuBoy.GB.CpuUnits;
 using Xunit;
 
-namespace GameBoy.GB.Tests
+namespace GeemuBoy.GB.Tests
 {
     public class CPUTests
     {

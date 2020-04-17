@@ -1,4 +1,4 @@
-﻿namespace GameBoy
+﻿namespace GeemuBoy
 {
     class Program
     {

@@ -1,8 +1,8 @@
-﻿using GameBoy.GB;
+﻿using GeemuBoy.GB;
 using SDL2;
 using System;
 using System.IO;
-namespace GameBoy
+namespace GeemuBoy
 {
     class EmulatorSDL
     {
@@ -148,7 +148,7 @@ namespace GameBoy
         private void PrintInfoSection()
         {
             Console.SetCursorPosition(0, 0);
-            Console.WriteLine("Game Boy Emulator");
+            Console.WriteLine("Emulator");
             Console.WriteLine($"Instruction #{instructionsRun} - TURBO MODE: {(turbo ? "ON " : "OFF")}" +
                 $" PPU MODE: {ppu.CurrentMode.ToString().PadRight(20)}");
             Console.WriteLine($"Serial output:{serial}");

@@ -1,11 +1,11 @@
 ﻿using FakeItEasy;
-using GameBoy.GB;
-using GameBoy.GB.CpuUnits;
+using GeemuBoy.GB;
+using GeemuBoy.GB.CpuUnits;
 using System;
 using System.Linq.Expressions;
 using Xunit;
 
-namespace GameBoy.GB.Tests
+namespace GeemuBoy.GB.Tests
 {
     public class InstructionMappingTests
     {

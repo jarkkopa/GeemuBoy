@@ -1,7 +1,7 @@
 ﻿using FakeItEasy;
 using Xunit;
 
-namespace GameBoy.GB.Tests
+namespace GeemuBoy.GB.Tests
 {
     public class PPUTests
     {

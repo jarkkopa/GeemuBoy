@@ -1,8 +1,8 @@
-﻿using GameBoy.GB.CpuUnits;
+﻿using GeemuBoy.GB.CpuUnits;
 using System;
 using System.Collections.Generic;
 
-namespace GameBoy.GB
+namespace GeemuBoy.GB
 {
     public class CPU
     {

@@ -1,4 +1,4 @@
-﻿namespace GameBoy.GB.CpuUnits
+﻿namespace GeemuBoy.GB.CpuUnits
 {
     public interface IMiscUnit
     {

@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace GameBoy.GB
+namespace GeemuBoy.GB
 {
     public class SDLDisplay : IDisplay, IDisposable
     {

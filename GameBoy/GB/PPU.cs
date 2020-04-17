@@ -1,4 +1,4 @@
-﻿namespace GameBoy.GB
+﻿namespace GeemuBoy.GB
 {
     public class PPU
     {

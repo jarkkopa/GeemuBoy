@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29728.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameBoy", "GameBoy\GameBoy.csproj", "{8B0F3739-0138-494F-820C-1925BB8722A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeemuBoy", "GameBoy\GeemuBoy.csproj", "{8B0F3739-0138-494F-820C-1925BB8722A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameBoyTests", "GameBoyTests\GameBoyTests.csproj", "{F5A6A974-744B-48B6-8C1D-16F4F9EE8880}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeemuBoyTests", "GameBoyTests\GeemuBoyTests.csproj", "{F5A6A974-744B-48B6-8C1D-16F4F9EE8880}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
