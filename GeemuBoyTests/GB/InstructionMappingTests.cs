@@ -319,6 +319,8 @@ namespace GeemuBoy.GB.Tests
             AssertSingleCall(0xC8, () => jumpUnit.ReturnConditional(ref cpu.SP, ref cpu.PC, Flag.Z, true, cpu.F), 20);
             AssertSingleCall(0xD0, () => jumpUnit.ReturnConditional(ref cpu.SP, ref cpu.PC, Flag.C, false, cpu.F), 20);
             AssertSingleCall(0xD8, () => jumpUnit.ReturnConditional(ref cpu.SP, ref cpu.PC, Flag.C, true, cpu.F), 20);
+            int enableAFter = -1;
+            AssertSingleCall(0xD9, () => jumpUnit.ReturnAndEnableInterrupts(ref cpu.SP, ref cpu.PC, ref enableAFter), 16);
         }
 
         [Fact()]

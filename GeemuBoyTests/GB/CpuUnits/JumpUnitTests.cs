@@ -275,5 +275,23 @@ namespace GeemuBoy.GB.CpuUnits.Tests
             Assert.Equal(0x0100, pc);
             Assert.Equal(0xFFFA, sp);
         }
+
+        [Fact()]
+        public void ReturnAndEnableInterruptsTest()
+        {
+            var memory = new Memory(new byte[0]);
+            var jumpUnit = new JumpUnit(memory);
+            ushort pc = 0x0100;
+            ushort sp = 0xFFFA;
+            memory.WriteByte(0xFFFA, 0x23);
+            memory.WriteByte(0xFFFB, 0x01);
+            int enableAfter = -1;
+
+            jumpUnit.ReturnAndEnableInterrupts(ref sp, ref pc, ref enableAfter);
+
+            Assert.Equal(0x0123, pc);
+            Assert.Equal(0xFFFC, sp);
+            Assert.Equal(0, enableAfter);
+        }
     }
 }

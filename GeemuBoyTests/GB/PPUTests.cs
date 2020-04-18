@@ -8,6 +8,7 @@ namespace GeemuBoy.GB.Tests
         [Fact()]
         public void TimingTest()
         {
+            // TODO Assert lcd control register values
             var display = A.Fake<IDisplay>();
             var memory = new Memory();
             var ppu = new PPU(memory, display);

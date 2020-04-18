@@ -114,6 +114,27 @@ namespace GeemuBoy.GB.Tests
         }
 
         [Fact()]
+        public void RETIEnablesInterruptMasterFlagImmediately()
+        {
+            var memory = new Memory(new byte[]{
+                0xD9 // RETI
+            });
+            var cpu = new CPU(memory, display)
+            {
+                SP = 0xFFFA,
+                InterruptMasterEnableFlag = false
+            };
+            memory.WriteByte(0xFFFA, 0x23);
+            memory.WriteByte(0xFFFB, 0x01);
+            
+            cpu.RunCommand();
+
+            Assert.True(cpu.InterruptMasterEnableFlag);
+            Assert.Equal(0x0123, cpu.PC);
+            Assert.Equal(0xFFFC, cpu.SP);
+        }
+
+        [Fact()]
         public void JumpToHighestPriorityInterruptVectorTest()
         {
             var memory = new Memory(new byte[]{

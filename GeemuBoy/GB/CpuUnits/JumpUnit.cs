@@ -11,6 +11,7 @@
         public int JumpRelativeConditional(byte value, ref ushort pc, Flag flag, bool condition, byte flags);
         public int Return(ref ushort sp, ref ushort pc);
         public int ReturnConditional(ref ushort sp, ref ushort pc, Flag flag, bool condition, byte flags);
+        public int ReturnAndEnableInterrupts(ref ushort sp, ref ushort pc, ref int enableAfter);
     }
 
     public class JumpUnit : IJumpUnit
@@ -84,6 +85,13 @@
         {
             pc = memory.ReadWord(sp);
             sp = (ushort)(sp + 2);
+            return 16;
+        }
+
+        public int ReturnAndEnableInterrupts(ref ushort sp, ref ushort pc, ref int enableAfter)
+        {
+            Return(ref sp, ref pc);
+            enableAfter = 0;
             return 16;
         }
 
