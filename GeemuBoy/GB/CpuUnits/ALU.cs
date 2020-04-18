@@ -4,7 +4,7 @@
     {
         public int Add(ref byte to, byte value, ref byte flags, bool addCarryFlag = false);
         public int Add(ref byte toHigh, ref byte toLow, byte valueHigh, byte valueLow, ref byte flags);
-        public void AddSigned(ref ushort to, byte value, ref byte flags);
+        public int AddSigned(ref ushort to, byte value, ref byte flags);
         public int Subtract(ref byte from, byte value, ref byte flags, bool subtractCarryFlag = false);
         public int And(ref byte to, byte value, ref byte flags);
         public int Or(ref byte to, byte value, ref byte flags);
@@ -56,7 +56,7 @@
             return 8;
         }
 
-        public void AddSigned(ref ushort to, byte value, ref byte flags)
+        public int AddSigned(ref ushort to, byte value, ref byte flags)
         {
             ushort originalValue = to;
             sbyte valueSigned = unchecked((sbyte)value);
@@ -73,6 +73,7 @@
                 FlagUtils.SetFlag(Flag.H, (originalValue & 0x0F) < (valueSigned & 0x0F), ref flags);
                 FlagUtils.SetFlag(Flag.C, originalValue < valueSigned, ref flags);
             }
+            return 16;
         }
 
         public int Subtract(ref byte from, byte value, ref byte flags, bool subtractCarryFlag = false)

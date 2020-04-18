@@ -159,24 +159,6 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         }
 
         [Fact()]
-        public void WriteImmediateAddressTest()
-        {
-            var memory = new Memory(new byte[]
-            {
-                0xAB,
-                0xBA
-            });
-            var loadUnit = new LoadUnit(memory);
-            byte source = 0xDD;
-            ushort PC = 0x00;
-
-            loadUnit.WriteToImmediateAddress(source, ref PC);
-
-            Assert.Equal(0xDD, memory.ReadByte(0xABBA));
-            Assert.Equal(0x02, PC);
-        }
-
-        [Fact()]
         public void LoadFromAddressAndDecrementTest()
         {
             var memory = new Memory(new byte[0]);

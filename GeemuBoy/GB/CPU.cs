@@ -587,6 +587,7 @@ namespace GeemuBoy.GB
             CreateOpCode(0xC8, () => jumpUnit.ReturnConditional(ref SP, ref PC, Flag.Z, true, F), "RET Z");
             CreateOpCode(0xD0, () => jumpUnit.ReturnConditional(ref SP, ref PC, Flag.C, false, F), "RET NC");
             CreateOpCode(0xD8, () => jumpUnit.ReturnConditional(ref SP, ref PC, Flag.C, true, F), "RET C");
+            //TODO RETI
         }
 
         private void CreateBitUnitOpCodes()
