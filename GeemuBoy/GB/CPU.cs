@@ -761,6 +761,62 @@ namespace GeemuBoy.GB
                 int index = i;
                 CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref A, index, false), $"RES {i}, A");
             }
+
+            for (int i = 0; i < 8; i++)
+            {
+                byte code = (byte)(0xC0 + i * 8);
+                int index = i;
+                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref B, index, true), $"SET {i}, B");
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                byte code = (byte)(0xC0 + i * 8 + 1);
+                int index = i;
+                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref C, index, true), $"SET {i}, C");
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                byte code = (byte)(0xC0 + i * 8 + 2);
+                int index = i;
+                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref D, index, true), $"SET {i}, D");
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                byte code = (byte)(0xC0 + i * 8 + 3);
+                int index = i;
+                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref E, index, true), $"SET {i}, E");
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                byte code = (byte)(0xC0 + i * 8 + 4);
+                int index = i;
+                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref H, index, true), $"SET {i}, H");
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                byte code = (byte)(0xC0 + i * 8 + 5);
+                int index = i;
+                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref L, index, true), $"SET {i}, L");
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                byte code = (byte)(0xC0 + i * 8 + 6);
+                int index = i;
+                CreatePrefixedOpCode(code, () => bitUnit.SetBit(H, L, index, true), $"SET {i}, (HL)");
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                byte code = (byte)(0xC0 + i * 8 + 7);
+                int index = i;
+                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref A, index, true), $"SET {i}, A");
+            }
         }
 
         private void CreateOpCode(byte command, Func<int> instruction, string name)
