@@ -244,5 +244,34 @@ namespace GeemuBoy.GB.CpuUnits.Tests
             Assert.Equal(0xBA, memory.ReadByte(0xACDC));
             Assert.Equal(0x00, flags);
         }
+
+        [Fact()]
+        public void SetBitTest()
+        {
+            var memory = new Memory();
+            var bitUnit = new BitUnit(memory);
+            byte value = 0x81;
+
+            bitUnit.SetBit(ref value, 7, false);
+            Assert.Equal(0x1, value);
+
+            bitUnit.SetBit(ref value, 7, true);
+            Assert.Equal(0x81, value);
+        }
+
+        [Fact()]
+        public void SetBitInMemory()
+        {
+            var memory = new Memory();
+            var bitUnit = new BitUnit(memory);
+            memory.WriteByte(0xABCD, 0xFF);
+
+            bitUnit.SetBit(0xAB, 0xCD, 0, false);
+            Assert.Equal(0xFE, memory.ReadByte(0xABCD));
+
+            memory.WriteByte(0xABCD, 0xF1);
+            bitUnit.SetBit(0xAB, 0xCD, 1, true);
+            Assert.Equal(0xF3, memory.ReadByte(0xABCD));
+        }
     }
 }

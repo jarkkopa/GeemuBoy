@@ -589,6 +589,15 @@ namespace GeemuBoy.GB
             CreateOpCode(0xD0, () => jumpUnit.ReturnConditional(ref SP, ref PC, Flag.C, false, F), "RET NC");
             CreateOpCode(0xD8, () => jumpUnit.ReturnConditional(ref SP, ref PC, Flag.C, true, F), "RET C");
             CreateOpCode(0xD9, () => jumpUnit.ReturnAndEnableInterrupts(ref SP, ref PC, ref enableInterruptMasterAfter), "RETI");
+
+            CreateOpCode(0xC7, () => jumpUnit.Call(0x0000, ref SP, ref PC), "RST 00H");
+            CreateOpCode(0xD7, () => jumpUnit.Call(0x0010, ref SP, ref PC), "RST 10H");
+            CreateOpCode(0xE7, () => jumpUnit.Call(0x0020, ref SP, ref PC), "RST 20H");
+            CreateOpCode(0xF7, () => jumpUnit.Call(0x0030, ref SP, ref PC), "RST 30H");
+            CreateOpCode(0xCF, () => jumpUnit.Call(0x0008, ref SP, ref PC), "RST 08H");
+            CreateOpCode(0xDF, () => jumpUnit.Call(0x0018, ref SP, ref PC), "RST 18H");
+            CreateOpCode(0xEF, () => jumpUnit.Call(0x0028, ref SP, ref PC), "RST 28H");
+            CreateOpCode(0xFF, () => jumpUnit.Call(0x0038, ref SP, ref PC), "RST 38H");
         }
 
         private void CreateBitUnitOpCodes()
@@ -696,6 +705,62 @@ namespace GeemuBoy.GB
             CreatePrefixedOpCode(0x35, () => bitUnit.Swap(ref L, ref F), "SWAP L");
             CreatePrefixedOpCode(0x36, () => bitUnit.Swap(H, L, ref F), "SWAP (HL)");
             CreatePrefixedOpCode(0x37, () => bitUnit.Swap(ref A, ref F), "SWAP A");
+
+            for (int i = 0; i < 8; i++)
+            {
+                byte code = (byte)(0x80 + i * 8);
+                int index = i; // Make copy to avoid using scoped value
+                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref B, index, false), $"RES {i}, B");
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                byte code = (byte)(0x80 + i * 8 + 1);
+                int index = i;
+                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref C, index, false), $"RES {i}, C");
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                byte code = (byte)(0x80 + i * 8 + 2);
+                int index = i;
+                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref D, index, false), $"RES {i}, D");
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                byte code = (byte)(0x80 + i * 8 + 3);
+                int index = i;
+                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref E, index, false), $"RES {i}, E");
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                byte code = (byte)(0x80 + i * 8 + 4);
+                int index = i;
+                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref H, index, false), $"RES {i}, H");
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                byte code = (byte)(0x80 + i * 8 + 5);
+                int index = i;
+                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref L, index, false), $"RES {i}, L");
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                byte code = (byte)(0x80 + i * 8 + 6);
+                int index = i;
+                CreatePrefixedOpCode(code, () => bitUnit.SetBit(H, L, index, false), $"RES {i}, (HL)");
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                byte code = (byte)(0x80 + i * 8 + 7);
+                int index = i;
+                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref A, index, false), $"RES {i}, A");
+            }
         }
 
         private void CreateOpCode(byte command, Func<int> instruction, string name)

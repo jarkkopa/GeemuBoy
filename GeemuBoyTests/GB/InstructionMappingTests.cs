@@ -322,6 +322,15 @@ namespace GeemuBoy.GB.Tests
             AssertSingleCall(0xD8, () => jumpUnit.ReturnConditional(ref cpu.SP, ref cpu.PC, Flag.C, true, cpu.F), 20);
             int enableAFter = -1;
             AssertSingleCall(0xD9, () => jumpUnit.ReturnAndEnableInterrupts(ref cpu.SP, ref cpu.PC, ref enableAFter), 16);
+
+            AssertSingleCall(0xC7, () => jumpUnit.Call(0x0000, ref cpu.SP, ref cpu.PC), 16);
+            AssertSingleCall(0xD7, () => jumpUnit.Call(0x0010, ref cpu.SP, ref cpu.PC), 16);
+            AssertSingleCall(0xE7, () => jumpUnit.Call(0x0020, ref cpu.SP, ref cpu.PC), 16);
+            AssertSingleCall(0xF7, () => jumpUnit.Call(0x0030, ref cpu.SP, ref cpu.PC), 16);
+            AssertSingleCall(0xCF, () => jumpUnit.Call(0x0008, ref cpu.SP, ref cpu.PC), 16);
+            AssertSingleCall(0xDF, () => jumpUnit.Call(0x0018, ref cpu.SP, ref cpu.PC), 16);
+            AssertSingleCall(0xEF, () => jumpUnit.Call(0x0028, ref cpu.SP, ref cpu.PC), 16);
+            AssertSingleCall(0xFF, () => jumpUnit.Call(0x0038, ref cpu.SP, ref cpu.PC), 16);
         }
 
         [Fact()]
@@ -430,6 +439,74 @@ namespace GeemuBoy.GB.Tests
             AssertSinglePrefixedCall(0x35, () => bitUnit.Swap(ref cpu.L, ref cpu.F), 12);
             AssertSinglePrefixedCall(0x36, () => bitUnit.Swap(cpu.H, cpu.L, ref cpu.F), 20);
             AssertSinglePrefixedCall(0x37, () => bitUnit.Swap(ref cpu.A, ref cpu.F), 12);
+
+            AssertSinglePrefixedCall(0x80, () => bitUnit.SetBit(ref cpu.B, 0, false), 12);
+            AssertSinglePrefixedCall(0x81, () => bitUnit.SetBit(ref cpu.C, 0, false), 12);
+            AssertSinglePrefixedCall(0x82, () => bitUnit.SetBit(ref cpu.D, 0, false), 12);
+            AssertSinglePrefixedCall(0x83, () => bitUnit.SetBit(ref cpu.E, 0, false), 12);
+            AssertSinglePrefixedCall(0x84, () => bitUnit.SetBit(ref cpu.H, 0, false), 12);
+            AssertSinglePrefixedCall(0x85, () => bitUnit.SetBit(ref cpu.L, 0, false), 12);
+            AssertSinglePrefixedCall(0x86, () => bitUnit.SetBit(cpu.H, cpu.L, 0, false), 20);
+            AssertSinglePrefixedCall(0x87, () => bitUnit.SetBit(ref cpu.A, 0, false), 12);
+            AssertSinglePrefixedCall(0x88, () => bitUnit.SetBit(ref cpu.B, 1, false), 12);
+            AssertSinglePrefixedCall(0x89, () => bitUnit.SetBit(ref cpu.C, 1, false), 12);
+            AssertSinglePrefixedCall(0x8A, () => bitUnit.SetBit(ref cpu.D, 1, false), 12);
+            AssertSinglePrefixedCall(0x8B, () => bitUnit.SetBit(ref cpu.E, 1, false), 12);
+            AssertSinglePrefixedCall(0x8C, () => bitUnit.SetBit(ref cpu.H, 1, false), 12);
+            AssertSinglePrefixedCall(0x8D, () => bitUnit.SetBit(ref cpu.L, 1, false), 12);
+            AssertSinglePrefixedCall(0x8E, () => bitUnit.SetBit(cpu.H, cpu.L, 1, false), 20);
+            AssertSinglePrefixedCall(0x8F, () => bitUnit.SetBit(ref cpu.A, 1, false), 12);
+
+            AssertSinglePrefixedCall(0x90, () => bitUnit.SetBit(ref cpu.B, 2, false), 12);
+            AssertSinglePrefixedCall(0x91, () => bitUnit.SetBit(ref cpu.C, 2, false), 12);
+            AssertSinglePrefixedCall(0x92, () => bitUnit.SetBit(ref cpu.D, 2, false), 12);
+            AssertSinglePrefixedCall(0x93, () => bitUnit.SetBit(ref cpu.E, 2, false), 12);
+            AssertSinglePrefixedCall(0x94, () => bitUnit.SetBit(ref cpu.H, 2, false), 12);
+            AssertSinglePrefixedCall(0x95, () => bitUnit.SetBit(ref cpu.L, 2, false), 12);
+            AssertSinglePrefixedCall(0x96, () => bitUnit.SetBit(cpu.H, cpu.L, 2, false), 20);
+            AssertSinglePrefixedCall(0x97, () => bitUnit.SetBit(ref cpu.A, 2, false), 12);
+            AssertSinglePrefixedCall(0x98, () => bitUnit.SetBit(ref cpu.B, 3, false), 12);
+            AssertSinglePrefixedCall(0x99, () => bitUnit.SetBit(ref cpu.C, 3, false), 12);
+            AssertSinglePrefixedCall(0x9A, () => bitUnit.SetBit(ref cpu.D, 3, false), 12);
+            AssertSinglePrefixedCall(0x9B, () => bitUnit.SetBit(ref cpu.E, 3, false), 12);
+            AssertSinglePrefixedCall(0x9C, () => bitUnit.SetBit(ref cpu.H, 3, false), 12);
+            AssertSinglePrefixedCall(0x9D, () => bitUnit.SetBit(ref cpu.L, 3, false), 12);
+            AssertSinglePrefixedCall(0x9E, () => bitUnit.SetBit(cpu.H, cpu.L, 3, false), 20);
+            AssertSinglePrefixedCall(0x9F, () => bitUnit.SetBit(ref cpu.A, 3, false), 12);
+
+            AssertSinglePrefixedCall(0xA0, () => bitUnit.SetBit(ref cpu.B, 4, false), 12);
+            AssertSinglePrefixedCall(0xA1, () => bitUnit.SetBit(ref cpu.C, 4, false), 12);
+            AssertSinglePrefixedCall(0xA2, () => bitUnit.SetBit(ref cpu.D, 4, false), 12);
+            AssertSinglePrefixedCall(0xA3, () => bitUnit.SetBit(ref cpu.E, 4, false), 12);
+            AssertSinglePrefixedCall(0xA4, () => bitUnit.SetBit(ref cpu.H, 4, false), 12);
+            AssertSinglePrefixedCall(0xA5, () => bitUnit.SetBit(ref cpu.L, 4, false), 12);
+            AssertSinglePrefixedCall(0xA6, () => bitUnit.SetBit(cpu.H, cpu.L, 4, false), 20);
+            AssertSinglePrefixedCall(0xA7, () => bitUnit.SetBit(ref cpu.A, 4, false), 12);
+            AssertSinglePrefixedCall(0xA8, () => bitUnit.SetBit(ref cpu.B, 5, false), 12);
+            AssertSinglePrefixedCall(0xA9, () => bitUnit.SetBit(ref cpu.C, 5, false), 12);
+            AssertSinglePrefixedCall(0xAA, () => bitUnit.SetBit(ref cpu.D, 5, false), 12);
+            AssertSinglePrefixedCall(0xAB, () => bitUnit.SetBit(ref cpu.E, 5, false), 12);
+            AssertSinglePrefixedCall(0xAC, () => bitUnit.SetBit(ref cpu.H, 5, false), 12);
+            AssertSinglePrefixedCall(0xAD, () => bitUnit.SetBit(ref cpu.L, 5, false), 12);
+            AssertSinglePrefixedCall(0xAE, () => bitUnit.SetBit(cpu.H, cpu.L, 5, false), 20);
+            AssertSinglePrefixedCall(0xAF, () => bitUnit.SetBit(ref cpu.A, 5, false), 12);
+
+            AssertSinglePrefixedCall(0xB0, () => bitUnit.SetBit(ref cpu.B, 6, false), 12);
+            AssertSinglePrefixedCall(0xB1, () => bitUnit.SetBit(ref cpu.C, 6, false), 12);
+            AssertSinglePrefixedCall(0xB2, () => bitUnit.SetBit(ref cpu.D, 6, false), 12);
+            AssertSinglePrefixedCall(0xB3, () => bitUnit.SetBit(ref cpu.E, 6, false), 12);
+            AssertSinglePrefixedCall(0xB4, () => bitUnit.SetBit(ref cpu.H, 6, false), 12);
+            AssertSinglePrefixedCall(0xB5, () => bitUnit.SetBit(ref cpu.L, 6, false), 12);
+            AssertSinglePrefixedCall(0xB6, () => bitUnit.SetBit(cpu.H, cpu.L, 6, false), 20);
+            AssertSinglePrefixedCall(0xB7, () => bitUnit.SetBit(ref cpu.A, 6, false), 12);
+            AssertSinglePrefixedCall(0xB8, () => bitUnit.SetBit(ref cpu.B, 7, false), 12);
+            AssertSinglePrefixedCall(0xB9, () => bitUnit.SetBit(ref cpu.C, 7, false), 12);
+            AssertSinglePrefixedCall(0xBA, () => bitUnit.SetBit(ref cpu.D, 7, false), 12);
+            AssertSinglePrefixedCall(0xBB, () => bitUnit.SetBit(ref cpu.E, 7, false), 12);
+            AssertSinglePrefixedCall(0xBC, () => bitUnit.SetBit(ref cpu.H, 7, false), 12);
+            AssertSinglePrefixedCall(0xBD, () => bitUnit.SetBit(ref cpu.L, 7, false), 12);
+            AssertSinglePrefixedCall(0xBE, () => bitUnit.SetBit(cpu.H, cpu.L, 7, false), 20);
+            AssertSinglePrefixedCall(0xBF, () => bitUnit.SetBit(ref cpu.A, 7, false), 12);
         }
 
         [Fact()]
