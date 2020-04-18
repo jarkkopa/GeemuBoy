@@ -54,8 +54,6 @@ namespace GeemuBoy
             }
 
             Run();
-
-            PrintDebugger();
         }
 
         private void Run()
