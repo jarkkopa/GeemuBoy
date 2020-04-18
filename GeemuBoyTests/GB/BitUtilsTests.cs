@@ -1,5 +1,4 @@
-﻿using GeemuBoy.GB;
-using Xunit;
+﻿using Xunit;
 
 namespace GeemuBoy.GB.Tests
 {

@@ -687,6 +687,15 @@ namespace GeemuBoy.GB
             CreatePrefixedOpCode(0x15, () => bitUnit.RotateLeftThroughCarry(ref L, ref F, false), "RL L");
             CreatePrefixedOpCode(0x16, () => bitUnit.RotateLeftThroughCarry(H, L, ref F), "RL (HL)");
             CreatePrefixedOpCode(0x17, () => bitUnit.RotateLeftThroughCarry(ref A, ref F, false), "RL A");
+
+            CreatePrefixedOpCode(0x30, () => bitUnit.Swap(ref B, ref F), "SWAP B");
+            CreatePrefixedOpCode(0x31, () => bitUnit.Swap(ref C, ref F), "SWAP C");
+            CreatePrefixedOpCode(0x32, () => bitUnit.Swap(ref D, ref F), "SWAP D");
+            CreatePrefixedOpCode(0x33, () => bitUnit.Swap(ref E, ref F), "SWAP E");
+            CreatePrefixedOpCode(0x34, () => bitUnit.Swap(ref H, ref F), "SWAP H");
+            CreatePrefixedOpCode(0x35, () => bitUnit.Swap(ref L, ref F), "SWAP L");
+            CreatePrefixedOpCode(0x36, () => bitUnit.Swap(H, L, ref F), "SWAP (HL)");
+            CreatePrefixedOpCode(0x37, () => bitUnit.Swap(ref A, ref F), "SWAP A");
         }
 
         private void CreateOpCode(byte command, Func<int> instruction, string name)

@@ -2,12 +2,14 @@
 {
     public interface IBitUnit
     {
+        public int Complement(ref byte value, ref byte flags);
         public int RotateLeft(ref byte register, ref byte flags, bool alwaysResetZero);
         public int RotateLeft(byte addrHigh, byte addrLow, ref byte flags);
         public int RotateLeftThroughCarry(ref byte register, ref byte flags, bool alwaysResetZero);
         public int RotateLeftThroughCarry(byte addrHigh, byte addrLow, ref byte flags);
+        public int Swap(ref byte register, ref byte flags);
+        public int Swap(byte addrHigh, byte addrLow, ref byte flags);
         public int TestBit(byte register, byte index, ref byte flags);
-        public int Complement(ref byte value, ref byte flags);
     }
 
     public class BitUnit : IBitUnit
@@ -80,6 +82,24 @@
             ushort address = BitUtils.BytesToUshort(addrHigh, addrLow);
             byte data = memory.ReadByte(address);
             RotateLeftThroughCarry(ref data, ref flags, false);
+            memory.WriteByte(address, data);
+            return 20;
+        }
+
+        public int Swap(ref byte register, ref byte flags)
+        {
+            int lower = register & 0xF;
+            int higher = register & 0xF0;
+            register = (byte)(higher >> 4 | lower << 4);
+            FlagUtils.SetFlags(ref flags, register == 0, false, false, false);
+            return 12;
+        }
+
+        public int Swap(byte addrHigh, byte addrLow, ref byte flags)
+        {
+            ushort address = BitUtils.BytesToUshort(addrHigh, addrLow);
+            byte data = memory.ReadByte(address);
+            Swap(ref data, ref flags);
             memory.WriteByte(address, data);
             return 20;
         }

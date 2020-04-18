@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using GeemuBoy.GB.CpuUnits;
+using Xunit;
 
 namespace GeemuBoy.GB.CpuUnits.Tests
 {
@@ -200,6 +201,48 @@ namespace GeemuBoy.GB.CpuUnits.Tests
             bitUnit.Complement(ref value, ref flags);
             Assert.Equal(0xF0, value);
             Assert.Equal(0b01100000, flags);
+        }
+
+        [Fact()]
+        public void SwapChangesNibbles()
+        {
+            var memory = new Memory();
+            var bitUnit = new BitUnit(memory);
+            byte flags = 0b11110000;
+            byte register = 0xAC;
+
+            bitUnit.Swap(ref register, ref flags);
+
+            Assert.Equal(0xCA, register);
+            Assert.Equal(0x00, flags);
+        }
+
+        [Fact()]
+        public void SwapSetsZeroFlag()
+        {
+            var memory = new Memory();
+            var bitUnit = new BitUnit(memory);
+            byte flags = 0b01110000;
+            byte register = 0x00;
+
+            bitUnit.Swap(ref register, ref flags);
+
+            Assert.Equal(0x00, register);
+            Assert.Equal(0b10000000, flags);
+        }
+
+        [Fact()]
+        public void SwapChangesNibblesInMemory()
+        {
+            var memory = new Memory();
+            var bitUnit = new BitUnit(memory);
+            byte flags = 0b11110000;
+            memory.WriteByte(0xACDC, 0xAB);
+
+            bitUnit.Swap(0xAC, 0xDC, ref flags);
+
+            Assert.Equal(0xBA, memory.ReadByte(0xACDC));
+            Assert.Equal(0x00, flags);
         }
     }
 }
