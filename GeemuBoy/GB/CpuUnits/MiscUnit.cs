@@ -5,6 +5,7 @@
         public int EnableInterruptMasterFlag(ref int enableAfter);
         public int DisableInterruptMasterFlag(ref bool flag);
         public int Nop();
+        public int SetCarry(ref byte flags);
     }
 
     public class MiscUnit : IMiscUnit
@@ -29,6 +30,14 @@
         public int DisableInterruptMasterFlag(ref bool flag)
         {
             flag = false;
+            return 4;
+        }
+
+        public int SetCarry(ref byte flags)
+        {
+            FlagUtils.SetFlag(Flag.C, true, ref flags);
+            FlagUtils.SetFlag(Flag.N, false, ref flags);
+            FlagUtils.SetFlag(Flag.H, false, ref flags);
             return 4;
         }
     }

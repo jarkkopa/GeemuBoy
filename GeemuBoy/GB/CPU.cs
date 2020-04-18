@@ -490,6 +490,7 @@ namespace GeemuBoy.GB
             CreateOpCode(0x00, () => miscUnit.Nop(), "NOP");
             CreateOpCode(0xF3, () => miscUnit.DisableInterruptMasterFlag(ref InterruptMasterEnableFlag), "DI");
             CreateOpCode(0xFB, () => miscUnit.EnableInterruptMasterFlag(ref enableInterruptMasterAfter), "EI");
+            CreateOpCode(0x37, () => miscUnit.SetCarry(ref F), "SCF");
         }
 
         private void CreateJumpOpCodes()
@@ -594,6 +595,8 @@ namespace GeemuBoy.GB
         {
             CreateOpCode(0x07, () => { bitUnit.RotateLeft(ref A, ref F, true); return 4; }, "RLCA");
             CreateOpCode(0x17, () => { bitUnit.RotateLeftThroughCarry(ref A, ref F, true); return 4; }, "RLA");
+
+            CreateOpCode(0x2F, () => bitUnit.Complement(ref A, ref F), "CPL");
 
             CreatePrefixedOpCode(0x47, () => bitUnit.TestBit(A, 0, ref F), "BIT 0, A");
             CreatePrefixedOpCode(0x4F, () => bitUnit.TestBit(A, 1, ref F), "BIT 1, A");

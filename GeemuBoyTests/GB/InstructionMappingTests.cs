@@ -289,6 +289,7 @@ namespace GeemuBoy.GB.Tests
             AssertSingleCall(0x00, () => miscUnit.Nop(), 4);
             AssertSingleCall(0xF3, () => miscUnit.DisableInterruptMasterFlag(ref cpu.InterruptMasterEnableFlag), 4);
             AssertSingleCall(0xFB, () => miscUnit.EnableInterruptMasterFlag(ref ENABLE_IME_AFTER), 4);
+            AssertSingleCall(0x37, () => miscUnit.SetCarry(ref cpu.F), 4);
         }
 
         [Fact()]
@@ -328,6 +329,8 @@ namespace GeemuBoy.GB.Tests
         {
             AssertSingleCall(0x07, () => bitUnit.RotateLeft(ref cpu.A, ref cpu.F, true), 4);
             AssertSingleCall(0x17, () => bitUnit.RotateLeftThroughCarry(ref cpu.A, ref cpu.F, true), 4);
+
+            AssertSingleCall(0x2F, () => bitUnit.Complement(ref cpu.A, ref cpu.F), 4);
 
             AssertSinglePrefixedCall(0x47, () => bitUnit.TestBit(cpu.A, 0, ref cpu.F), 12);
             AssertSinglePrefixedCall(0x4F, () => bitUnit.TestBit(cpu.A, 1, ref cpu.F), 12);

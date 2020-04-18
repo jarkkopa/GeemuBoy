@@ -176,5 +176,30 @@ namespace GeemuBoy.GB.CpuUnits.Tests
             Assert.Equal(0b11111101, memory.ReadByte(0xABBA));
             Assert.Equal(0b00010000, flags);
         }
+
+        [Fact()]
+        public void ComplementTest()
+        {
+            var memory = new Memory();
+            var bitUnit = new BitUnit(memory);
+            byte value = 0xFF;
+            byte flags = 0x00;
+
+            bitUnit.Complement(ref value, ref flags);
+            Assert.Equal(0x00, value);
+            Assert.Equal(0b01100000, flags);
+
+            value = 0x00;
+            flags = 0x00;
+            bitUnit.Complement(ref value, ref flags);
+            Assert.Equal(0xFF, value);
+            Assert.Equal(0b01100000, flags);
+
+            value = 0x0F;
+            flags = 0x00;
+            bitUnit.Complement(ref value, ref flags);
+            Assert.Equal(0xF0, value);
+            Assert.Equal(0b01100000, flags);
+        }
     }
 }

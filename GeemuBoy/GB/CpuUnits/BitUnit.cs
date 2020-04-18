@@ -7,6 +7,7 @@
         public int RotateLeftThroughCarry(ref byte register, ref byte flags, bool alwaysResetZero);
         public int RotateLeftThroughCarry(byte addrHigh, byte addrLow, ref byte flags);
         public int TestBit(byte register, byte index, ref byte flags);
+        public int Complement(ref byte value, ref byte flags);
     }
 
     public class BitUnit : IBitUnit
@@ -16,6 +17,14 @@
         public BitUnit(Memory memory)
         {
             this.memory = memory;
+        }
+
+        public int Complement(ref byte value, ref byte flags)
+        {
+            value = (byte)~value;
+            FlagUtils.SetFlag(Flag.N, true, ref flags);
+            FlagUtils.SetFlag(Flag.H, true, ref flags);
+            return 4;
         }
 
         public int RotateLeft(ref byte register, ref byte flags, bool alwaysResetZero)
