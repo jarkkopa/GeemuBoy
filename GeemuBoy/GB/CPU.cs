@@ -1,6 +1,7 @@
 ﻿using GeemuBoy.GB.CpuUnits;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GeemuBoy.GB
 {
@@ -706,116 +707,23 @@ namespace GeemuBoy.GB
             CreatePrefixedOpCode(0x36, () => bitUnit.Swap(H, L, ref F), "SWAP (HL)");
             CreatePrefixedOpCode(0x37, () => bitUnit.Swap(ref A, ref F), "SWAP A");
 
-            for (int i = 0; i < 8; i++)
+            // RES and SET instructions all share the same pattern
+            foreach (byte code in Enumerable.Range(0x80, 0x80))
             {
-                byte code = (byte)(0x80 + i * 8);
-                int index = i; // Make copy to avoid using scoped value
-                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref B, index, false), $"RES {i}, B");
-            }
-
-            for (int i = 0; i < 8; i++)
-            {
-                byte code = (byte)(0x80 + i * 8 + 1);
-                int index = i;
-                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref C, index, false), $"RES {i}, C");
-            }
-
-            for (int i = 0; i < 8; i++)
-            {
-                byte code = (byte)(0x80 + i * 8 + 2);
-                int index = i;
-                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref D, index, false), $"RES {i}, D");
-            }
-
-            for (int i = 0; i < 8; i++)
-            {
-                byte code = (byte)(0x80 + i * 8 + 3);
-                int index = i;
-                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref E, index, false), $"RES {i}, E");
-            }
-
-            for (int i = 0; i < 8; i++)
-            {
-                byte code = (byte)(0x80 + i * 8 + 4);
-                int index = i;
-                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref H, index, false), $"RES {i}, H");
-            }
-
-            for (int i = 0; i < 8; i++)
-            {
-                byte code = (byte)(0x80 + i * 8 + 5);
-                int index = i;
-                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref L, index, false), $"RES {i}, L");
-            }
-
-            for (int i = 0; i < 8; i++)
-            {
-                byte code = (byte)(0x80 + i * 8 + 6);
-                int index = i;
-                CreatePrefixedOpCode(code, () => bitUnit.SetBit(H, L, index, false), $"RES {i}, (HL)");
-            }
-
-            for (int i = 0; i < 8; i++)
-            {
-                byte code = (byte)(0x80 + i * 8 + 7);
-                int index = i;
-                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref A, index, false), $"RES {i}, A");
-            }
-
-            for (int i = 0; i < 8; i++)
-            {
-                byte code = (byte)(0xC0 + i * 8);
-                int index = i;
-                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref B, index, true), $"SET {i}, B");
-            }
-
-            for (int i = 0; i < 8; i++)
-            {
-                byte code = (byte)(0xC0 + i * 8 + 1);
-                int index = i;
-                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref C, index, true), $"SET {i}, C");
-            }
-
-            for (int i = 0; i < 8; i++)
-            {
-                byte code = (byte)(0xC0 + i * 8 + 2);
-                int index = i;
-                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref D, index, true), $"SET {i}, D");
-            }
-
-            for (int i = 0; i < 8; i++)
-            {
-                byte code = (byte)(0xC0 + i * 8 + 3);
-                int index = i;
-                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref E, index, true), $"SET {i}, E");
-            }
-
-            for (int i = 0; i < 8; i++)
-            {
-                byte code = (byte)(0xC0 + i * 8 + 4);
-                int index = i;
-                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref H, index, true), $"SET {i}, H");
-            }
-
-            for (int i = 0; i < 8; i++)
-            {
-                byte code = (byte)(0xC0 + i * 8 + 5);
-                int index = i;
-                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref L, index, true), $"SET {i}, L");
-            }
-
-            for (int i = 0; i < 8; i++)
-            {
-                byte code = (byte)(0xC0 + i * 8 + 6);
-                int index = i;
-                CreatePrefixedOpCode(code, () => bitUnit.SetBit(H, L, index, true), $"SET {i}, (HL)");
-            }
-
-            for (int i = 0; i < 8; i++)
-            {
-                byte code = (byte)(0xC0 + i * 8 + 7);
-                int index = i;
-                CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref A, index, true), $"SET {i}, A");
+                bool bitValue = code >= 0xC0;
+                int target = (code - 0x80) % 8;
+                int index = (code - (bitValue == true ? 0xC0 : 0x80)) / 8;
+                switch (target)
+                {
+                    case 0: CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref B, index, bitValue), $"{(bitValue ? "SET" : "RES")} {index}, B"); break;
+                    case 1: CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref C, index, bitValue), $"{(bitValue ? "SET" : "RES")} {index}, C"); break;
+                    case 2: CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref D, index, bitValue), $"{(bitValue ? "SET" : "RES")} {index}, D"); break;
+                    case 3: CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref E, index, bitValue), $"{(bitValue ? "SET" : "RES")} {index}, E"); break;
+                    case 4: CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref H, index, bitValue), $"{(bitValue ? "SET" : "RES")} {index}, H"); break;
+                    case 5: CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref L, index, bitValue), $"{(bitValue ? "SET" : "RES")} {index}, L"); break;
+                    case 6: CreatePrefixedOpCode(code, () => bitUnit.SetBit(H, L, index, bitValue), $"{(bitValue ? "SET" : "RES")} {index}, (HL)"); break;
+                    case 7: CreatePrefixedOpCode(code, () => bitUnit.SetBit(ref A, index, bitValue), $"{(bitValue ? "SET" : "RES")} {index}, A"); break;
+                };
             }
         }
 
