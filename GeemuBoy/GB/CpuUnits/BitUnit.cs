@@ -11,7 +11,7 @@
         public int SetBit(byte addrHigh, byte addrLow, int index, bool bit);
         public int Swap(ref byte register, ref byte flags);
         public int Swap(byte addrHigh, byte addrLow, ref byte flags);
-        public int TestBit(byte register, byte index, ref byte flags);
+        public int TestBit(byte register, int index, ref byte flags);
     }
 
     public class BitUnit : IBitUnit
@@ -121,7 +121,7 @@
             return 20;
         }
 
-        public int TestBit(byte register, byte index, ref byte flags)
+        public int TestBit(byte register, int index, ref byte flags)
         {
             FlagUtils.SetFlag(Flag.Z, register.IsBitSet(index) == false, ref flags);
             FlagUtils.SetFlag(Flag.N, false, ref flags);

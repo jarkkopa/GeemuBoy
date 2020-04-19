@@ -608,77 +608,22 @@ namespace GeemuBoy.GB
 
             CreateOpCode(0x2F, () => bitUnit.Complement(ref A, ref F), "CPL");
 
-            CreatePrefixedOpCode(0x47, () => bitUnit.TestBit(A, 0, ref F), "BIT 0, A");
-            CreatePrefixedOpCode(0x4F, () => bitUnit.TestBit(A, 1, ref F), "BIT 1, A");
-            CreatePrefixedOpCode(0x57, () => bitUnit.TestBit(A, 2, ref F), "BIT 2, A");
-            CreatePrefixedOpCode(0x5F, () => bitUnit.TestBit(A, 3, ref F), "BIT 3, A");
-            CreatePrefixedOpCode(0x67, () => bitUnit.TestBit(A, 4, ref F), "BIT 4, A");
-            CreatePrefixedOpCode(0x6f, () => bitUnit.TestBit(A, 5, ref F), "BIT 5, A");
-            CreatePrefixedOpCode(0x77, () => bitUnit.TestBit(A, 6, ref F), "BIT 6, A");
-            CreatePrefixedOpCode(0x7F, () => bitUnit.TestBit(A, 7, ref F), "BIT 7, A");
-
-            CreatePrefixedOpCode(0x40, () => bitUnit.TestBit(B, 0, ref F), "BIT 0, B");
-            CreatePrefixedOpCode(0x48, () => bitUnit.TestBit(B, 1, ref F), "BIT 1, B");
-            CreatePrefixedOpCode(0x50, () => bitUnit.TestBit(B, 2, ref F), "BIT 2, B");
-            CreatePrefixedOpCode(0x58, () => bitUnit.TestBit(B, 3, ref F), "BIT 3, B");
-            CreatePrefixedOpCode(0x60, () => bitUnit.TestBit(B, 4, ref F), "BIT 4, B");
-            CreatePrefixedOpCode(0x68, () => bitUnit.TestBit(B, 5, ref F), "BIT 5, B");
-            CreatePrefixedOpCode(0x70, () => bitUnit.TestBit(B, 6, ref F), "BIT 6, B");
-            CreatePrefixedOpCode(0x78, () => bitUnit.TestBit(B, 7, ref F), "BIT 7, B");
-
-            CreatePrefixedOpCode(0x41, () => bitUnit.TestBit(C, 0, ref F), "BIT 0, C");
-            CreatePrefixedOpCode(0x49, () => bitUnit.TestBit(C, 1, ref F), "BIT 1, C");
-            CreatePrefixedOpCode(0x51, () => bitUnit.TestBit(C, 2, ref F), "BIT 2, C");
-            CreatePrefixedOpCode(0x59, () => bitUnit.TestBit(C, 3, ref F), "BIT 3, C");
-            CreatePrefixedOpCode(0x61, () => bitUnit.TestBit(C, 4, ref F), "BIT 4, C");
-            CreatePrefixedOpCode(0x69, () => bitUnit.TestBit(C, 5, ref F), "BIT 5, C");
-            CreatePrefixedOpCode(0x71, () => bitUnit.TestBit(C, 6, ref F), "BIT 6, C");
-            CreatePrefixedOpCode(0x79, () => bitUnit.TestBit(C, 7, ref F), "BIT 7, C");
-
-            CreatePrefixedOpCode(0x42, () => bitUnit.TestBit(D, 0, ref F), "BIT 0, D");
-            CreatePrefixedOpCode(0x4A, () => bitUnit.TestBit(D, 1, ref F), "BIT 1, D");
-            CreatePrefixedOpCode(0x52, () => bitUnit.TestBit(D, 2, ref F), "BIT 2, D");
-            CreatePrefixedOpCode(0x5A, () => bitUnit.TestBit(D, 3, ref F), "BIT 3, D");
-            CreatePrefixedOpCode(0x62, () => bitUnit.TestBit(D, 4, ref F), "BIT 4, D");
-            CreatePrefixedOpCode(0x6A, () => bitUnit.TestBit(D, 5, ref F), "BIT 5, D");
-            CreatePrefixedOpCode(0x72, () => bitUnit.TestBit(D, 6, ref F), "BIT 6, D");
-            CreatePrefixedOpCode(0x7A, () => bitUnit.TestBit(D, 7, ref F), "BIT 7, D");
-
-            CreatePrefixedOpCode(0x43, () => bitUnit.TestBit(E, 0, ref F), "BIT 0, E");
-            CreatePrefixedOpCode(0x4B, () => bitUnit.TestBit(E, 1, ref F), "BIT 1, E");
-            CreatePrefixedOpCode(0x53, () => bitUnit.TestBit(E, 2, ref F), "BIT 2, E");
-            CreatePrefixedOpCode(0x5B, () => bitUnit.TestBit(E, 3, ref F), "BIT 3, E");
-            CreatePrefixedOpCode(0x63, () => bitUnit.TestBit(E, 4, ref F), "BIT 4, E");
-            CreatePrefixedOpCode(0x6B, () => bitUnit.TestBit(E, 5, ref F), "BIT 5, E");
-            CreatePrefixedOpCode(0x73, () => bitUnit.TestBit(E, 6, ref F), "BIT 6, E");
-            CreatePrefixedOpCode(0x7B, () => bitUnit.TestBit(E, 7, ref F), "BIT 7, E");
-
-            CreatePrefixedOpCode(0x44, () => bitUnit.TestBit(H, 0, ref F), "BIT 0, H");
-            CreatePrefixedOpCode(0x4C, () => bitUnit.TestBit(H, 1, ref F), "BIT 1, H");
-            CreatePrefixedOpCode(0x54, () => bitUnit.TestBit(H, 2, ref F), "BIT 2, H");
-            CreatePrefixedOpCode(0x5C, () => bitUnit.TestBit(H, 3, ref F), "BIT 3, H");
-            CreatePrefixedOpCode(0x64, () => bitUnit.TestBit(H, 4, ref F), "BIT 4, H");
-            CreatePrefixedOpCode(0x6C, () => bitUnit.TestBit(H, 5, ref F), "BIT 5, H");
-            CreatePrefixedOpCode(0x74, () => bitUnit.TestBit(H, 6, ref F), "BIT 6, H");
-            CreatePrefixedOpCode(0x7C, () => bitUnit.TestBit(H, 7, ref F), "BIT 7, H");
-
-            CreatePrefixedOpCode(0x45, () => bitUnit.TestBit(L, 0, ref F), "BIT 0, L");
-            CreatePrefixedOpCode(0x4D, () => bitUnit.TestBit(L, 1, ref F), "BIT 1, L");
-            CreatePrefixedOpCode(0x55, () => bitUnit.TestBit(L, 2, ref F), "BIT 2, L");
-            CreatePrefixedOpCode(0x5D, () => bitUnit.TestBit(L, 3, ref F), "BIT 3, L");
-            CreatePrefixedOpCode(0x65, () => bitUnit.TestBit(L, 4, ref F), "BIT 4, L");
-            CreatePrefixedOpCode(0x6D, () => bitUnit.TestBit(L, 5, ref F), "BIT 5, L");
-            CreatePrefixedOpCode(0x75, () => bitUnit.TestBit(L, 6, ref F), "BIT 6, L");
-            CreatePrefixedOpCode(0x7D, () => bitUnit.TestBit(L, 7, ref F), "BIT 7, L");
-
-            CreatePrefixedOpCode(0x46, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 0, ref F); return 16; }, "BIT 0, (HL)");
-            CreatePrefixedOpCode(0x4E, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 1, ref F); return 16; }, "BIT 1, (HL)");
-            CreatePrefixedOpCode(0x56, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 2, ref F); return 16; }, "BIT 2, (HL)");
-            CreatePrefixedOpCode(0x5E, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 3, ref F); return 16; }, "BIT 3, (HL)");
-            CreatePrefixedOpCode(0x66, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 4, ref F); return 16; }, "BIT 4, (HL)");
-            CreatePrefixedOpCode(0x6E, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 5, ref F); return 16; }, "BIT 5, (HL)");
-            CreatePrefixedOpCode(0x76, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 6, ref F); return 16; }, "BIT 6, (HL)");
-            CreatePrefixedOpCode(0x7E, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, 7, ref F); return 16; }, "BIT 7, (HL)");
+            foreach (byte code in Enumerable.Range(0x40, 0x40))
+            {
+                int target = (code - 0x40) % 8;
+                int index = (code - 0x40) / 8;
+                switch (target)
+                {
+                    case 0: CreatePrefixedOpCode(code, () => bitUnit.TestBit(B, index, ref F), $"BIT {index}, B"); break;
+                    case 1: CreatePrefixedOpCode(code, () => bitUnit.TestBit(C, index, ref F), $"BIT {index}, C"); break;
+                    case 2: CreatePrefixedOpCode(code, () => bitUnit.TestBit(D, index, ref F), $"BIT {index}, D"); break;
+                    case 3: CreatePrefixedOpCode(code, () => bitUnit.TestBit(E, index, ref F), $"BIT {index}, E"); break;
+                    case 4: CreatePrefixedOpCode(code, () => bitUnit.TestBit(H, index, ref F), $"BIT {index}, H"); break;
+                    case 5: CreatePrefixedOpCode(code, () => bitUnit.TestBit(L, index, ref F), $"BIT {index}, L"); break;
+                    case 6: CreatePrefixedOpCode(code, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, index, ref F); return 16; }, $"BIT {index}, (HL)"); break;
+                    case 7: CreatePrefixedOpCode(code, () => bitUnit.TestBit(A, index, ref F), $"BIT {index}, A"); break;
+                };
+            }
 
             CreatePrefixedOpCode(0x00, () => bitUnit.RotateLeft(ref B, ref F, false), "RLC B");
             CreatePrefixedOpCode(0x01, () => bitUnit.RotateLeft(ref C, ref F, false), "RLC C");
