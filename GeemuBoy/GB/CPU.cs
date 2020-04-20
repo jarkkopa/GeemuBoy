@@ -643,6 +643,15 @@ namespace GeemuBoy.GB
             CreatePrefixedOpCode(0x16, () => bitUnit.RotateLeftThroughCarry(H, L, ref F), "RL (HL)");
             CreatePrefixedOpCode(0x17, () => bitUnit.RotateLeftThroughCarry(ref A, ref F, false), "RL A");
 
+            CreatePrefixedOpCode(0x18, () => bitUnit.RotateRightThroughCarry(ref B, ref F), "RR B");
+            CreatePrefixedOpCode(0x19, () => bitUnit.RotateRightThroughCarry(ref C, ref F), "RR C");
+            CreatePrefixedOpCode(0x1A, () => bitUnit.RotateRightThroughCarry(ref D, ref F), "RR D");
+            CreatePrefixedOpCode(0x1B, () => bitUnit.RotateRightThroughCarry(ref E, ref F), "RR E");
+            CreatePrefixedOpCode(0x1C, () => bitUnit.RotateRightThroughCarry(ref H, ref F), "RR H");
+            CreatePrefixedOpCode(0x1D, () => bitUnit.RotateRightThroughCarry(ref L, ref F), "RR L");
+            CreatePrefixedOpCode(0x1E, () => bitUnit.RotateRightThroughCarry(H, L, ref F), "RR (HL)");
+            CreatePrefixedOpCode(0x1F, () => bitUnit.RotateRightThroughCarry(ref A, ref F), "RR A");
+
             CreatePrefixedOpCode(0x30, () => bitUnit.Swap(ref B, ref F), "SWAP B");
             CreatePrefixedOpCode(0x31, () => bitUnit.Swap(ref C, ref F), "SWAP C");
             CreatePrefixedOpCode(0x32, () => bitUnit.Swap(ref D, ref F), "SWAP D");

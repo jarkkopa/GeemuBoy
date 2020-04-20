@@ -84,7 +84,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
             Assert.Equal(0b11111101, value);
             Assert.Equal(0b00010000, flags);
 
-            // Resutl zero
+            // Result zero
             value = 0x0;
             flags = 0x0;
 
@@ -322,6 +322,68 @@ namespace GeemuBoy.GB.CpuUnits.Tests
             var memory = new Memory();
             var bitUnit = new BitUnit(memory);
             memory.WriteByte(0xABCD, 0xFF);
+            byte flags = 0b11100000;
+
+            bitUnit.ShiftRight(0xAB, 0xCD, ref flags);
+
+            Assert.Equal(0b01111111, memory.ReadByte(0xABCD));
+            Assert.Equal(0b00010000, flags);
+        }
+
+        [Fact()]
+        public void RotateRightThroughCarry()
+        {
+            // No carry
+            var bitUnit = new BitUnit(new Memory());
+            byte value = 0b01111110;
+            byte flags = 0b01100000;
+
+            bitUnit.RotateRightThroughCarry(ref value, ref flags);
+
+            Assert.Equal(0b00111111, value);
+            Assert.Equal(0b00000000, flags);
+
+            // From carry
+            value = 0b01111110;
+            flags = 0b01110000;
+
+            bitUnit.RotateRightThroughCarry(ref value, ref flags);
+
+            Assert.Equal(0b10111111, value);
+            Assert.Equal(0b00000000, flags);
+
+            // To carry
+            value = 0b01111101;
+            flags = 0b01100000;
+
+            bitUnit.RotateRightThroughCarry(ref value, ref flags);
+
+            Assert.Equal(0b00111110, value);
+            Assert.Equal(0b00010000, flags);
+
+            // From and to carry
+            value = 0b00000001;
+            flags = 0b01110000;
+
+            bitUnit.RotateRightThroughCarry(ref value, ref flags);
+
+            Assert.Equal(0b10000000, value);
+            Assert.Equal(0b00010000, flags);
+
+            // Set zero flag
+            value = 0x1;
+            flags = 0b01100000;
+
+            bitUnit.RotateRightThroughCarry(ref value, ref flags);
+
+            Assert.Equal(0x0, value);
+            Assert.Equal(0b10010000, flags);
+        }
+
+        [Fact()]
+        public void RotateRightThroughCarryInMemory()
+        {
+
         }
     }
 }

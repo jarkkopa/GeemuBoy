@@ -7,6 +7,8 @@
         public int RotateLeft(byte addrHigh, byte addrLow, ref byte flags);
         public int RotateLeftThroughCarry(ref byte register, ref byte flags, bool alwaysResetZero);
         public int RotateLeftThroughCarry(byte addrHigh, byte addrLow, ref byte flags);
+        public int RotateRightThroughCarry(ref byte register, ref byte flags);
+        public int RotateRightThroughCarry(byte addrHigh, byte addrLow, ref byte flags);
         public int SetBit(ref byte target, int index, bool bit);
         public int SetBit(byte addrHigh, byte addrLow, int index, bool bit);
         public int ShiftRight(ref byte target, ref byte flags);
@@ -86,6 +88,24 @@
             ushort address = BitUtils.BytesToUshort(addrHigh, addrLow);
             byte data = memory.ReadByte(address);
             RotateLeftThroughCarry(ref data, ref flags, false);
+            memory.WriteByte(address, data);
+            return 20;
+        }
+
+        public int RotateRightThroughCarry(ref byte register, ref byte flags)
+        {
+            int carry = FlagUtils.GetFlag(Flag.C, flags) ? 0x80 : 0x0;
+            bool setCarry = register.IsBitSet(0);
+            register = (byte)((register >> 1) | carry);
+            FlagUtils.SetFlags(ref flags, register == 0, false, false, setCarry);
+            return 12;
+        }
+
+        public int RotateRightThroughCarry(byte addrHigh, byte addrLow, ref byte flags)
+        {
+            ushort address = BitUtils.BytesToUshort(addrHigh, addrLow);
+            byte data = memory.ReadByte(address);
+            RotateRightThroughCarry(ref data, ref flags);
             memory.WriteByte(address, data);
             return 20;
         }
