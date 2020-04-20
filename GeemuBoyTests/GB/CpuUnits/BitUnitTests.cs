@@ -402,7 +402,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
             byte value = 0b01111110;
             byte flags = 0b01110000;
 
-            bitUnit.RotateRight(ref value, ref flags);
+            bitUnit.RotateRight(ref value, ref flags, false);
 
             Assert.Equal(0b00111111, value);
             Assert.Equal(0x0, flags);
@@ -411,7 +411,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
             value = 0b10000001;
             flags = 0b01100000;
 
-            bitUnit.RotateRight(ref value, ref flags);
+            bitUnit.RotateRight(ref value, ref flags, false);
 
             Assert.Equal(0b11000000, value);
             Assert.Equal(0b00010000, flags);
@@ -420,10 +420,19 @@ namespace GeemuBoy.GB.CpuUnits.Tests
             value = 0x0;
             flags = 0b01110000;
 
-            bitUnit.RotateRight(ref value, ref flags);
+            bitUnit.RotateRight(ref value, ref flags, false);
 
             Assert.Equal(0x0, value);
             Assert.Equal(0b10000000, flags);
+
+            // Reset zero forced
+            value = 0x0;
+            flags = 0b11110000;
+
+            bitUnit.RotateRight(ref value, ref flags, true);
+
+            Assert.Equal(0x0, value);
+            Assert.Equal(0b00000000, flags);
         }
 
         [Fact()]
