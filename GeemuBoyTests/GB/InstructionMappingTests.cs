@@ -421,6 +421,15 @@ namespace GeemuBoy.GB.Tests
             AssertSinglePrefixedCall(0x06, () => bitUnit.RotateLeft(cpu.H, cpu.L, ref cpu.F), 20);
             AssertSinglePrefixedCall(0x07, () => bitUnit.RotateLeft(ref cpu.A, ref cpu.F, false), 12);
 
+            AssertSinglePrefixedCall(0x08, () => bitUnit.RotateRight(ref cpu.B, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x09, () => bitUnit.RotateRight(ref cpu.C, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x0A, () => bitUnit.RotateRight(ref cpu.D, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x0B, () => bitUnit.RotateRight(ref cpu.E, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x0C, () => bitUnit.RotateRight(ref cpu.H, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x0D, () => bitUnit.RotateRight(ref cpu.L, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x0E, () => bitUnit.RotateRight(cpu.H, cpu.L, ref cpu.F), 20);
+            AssertSinglePrefixedCall(0x0F, () => bitUnit.RotateRight(ref cpu.A, ref cpu.F), 12);
+
             AssertSinglePrefixedCall(0x10, () => bitUnit.RotateLeftThroughCarry(ref cpu.B, ref cpu.F, false), 12);
             AssertSinglePrefixedCall(0x11, () => bitUnit.RotateLeftThroughCarry(ref cpu.C, ref cpu.F, false), 12);
             AssertSinglePrefixedCall(0x12, () => bitUnit.RotateLeftThroughCarry(ref cpu.D, ref cpu.F, false), 12);

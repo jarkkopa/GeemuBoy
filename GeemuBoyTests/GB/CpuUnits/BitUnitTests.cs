@@ -138,11 +138,11 @@ namespace GeemuBoy.GB.CpuUnits.Tests
 
             // Set carry
             flags = 0b11100000;
-            register = 0b11010000;
+            register = 0b10010000;
 
             bitUnit.RotateLeft(ref register, ref flags, false);
 
-            Assert.Equal(0b10100001, register);
+            Assert.Equal(0b00100001, register);
             Assert.Equal(0b00010000, flags);
 
             // Sets zero when result is zero
@@ -383,7 +383,61 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void RotateRightThroughCarryInMemory()
         {
+            Memory memory = new Memory();
+            var bitUnit = new BitUnit(memory);
+            memory.WriteByte(0xACDC, 0x1);
+            byte flags = 0b01110000;
 
+            bitUnit.RotateRightThroughCarry(0xAC, 0xDC, ref flags);
+
+            Assert.Equal(0b10000000, memory.ReadByte(0xACDC));
+            Assert.Equal(0b00010000, flags);
+        }
+
+        [Fact()]
+        public void RotateRight()
+        {
+            // No carry
+            var bitUnit = new BitUnit(new Memory());
+            byte value = 0b01111110;
+            byte flags = 0b01110000;
+
+            bitUnit.RotateRight(ref value, ref flags);
+
+            Assert.Equal(0b00111111, value);
+            Assert.Equal(0x0, flags);
+
+            // Set carry
+            value = 0b10000001;
+            flags = 0b01100000;
+
+            bitUnit.RotateRight(ref value, ref flags);
+
+            Assert.Equal(0b11000000, value);
+            Assert.Equal(0b00010000, flags);
+
+            // Set zero
+            value = 0x0;
+            flags = 0b01110000;
+
+            bitUnit.RotateRight(ref value, ref flags);
+
+            Assert.Equal(0x0, value);
+            Assert.Equal(0b10000000, flags);
+        }
+
+        [Fact()]
+        public void RotateRightInMemory()
+        {
+            Memory memory = new Memory();
+            var bitUnit = new BitUnit(memory);
+            memory.WriteByte(0xACDC, 0b00000011);
+            byte flags = 0b01100000;
+
+            bitUnit.RotateRight(0xAC, 0xDC, ref flags);
+
+            Assert.Equal(0b10000001, memory.ReadByte(0xACDC));
+            Assert.Equal(0b00010000, flags);
         }
     }
 }

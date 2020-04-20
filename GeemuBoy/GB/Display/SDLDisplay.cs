@@ -102,11 +102,11 @@ namespace GeemuBoy.GB
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
+                    // Dispose managed state (managed objects).
                 }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
+                // Free unmanaged resources (unmanaged objects) and override a finalizer below.
+                // Set large fields to null.
                 SDL.SDL_DestroyWindow(window);
                 SDL.SDL_DestroyRenderer(renderer);
                 SDL.SDL_DestroyTexture(texture);
@@ -117,7 +117,7 @@ namespace GeemuBoy.GB
             }
         }
 
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+        // Override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
         ~SDLDisplay()
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
@@ -129,7 +129,7 @@ namespace GeemuBoy.GB
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
+            // Uncomment the following line if the finalizer is overridden above.
             GC.SuppressFinalize(this);
         }
         #endregion
