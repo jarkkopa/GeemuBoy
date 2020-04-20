@@ -1,5 +1,4 @@
 ﻿using FakeItEasy;
-using GeemuBoy.GB;
 using GeemuBoy.GB.CpuUnits;
 using System;
 using System.Linq.Expressions;
@@ -439,6 +438,15 @@ namespace GeemuBoy.GB.Tests
             AssertSinglePrefixedCall(0x35, () => bitUnit.Swap(ref cpu.L, ref cpu.F), 12);
             AssertSinglePrefixedCall(0x36, () => bitUnit.Swap(cpu.H, cpu.L, ref cpu.F), 20);
             AssertSinglePrefixedCall(0x37, () => bitUnit.Swap(ref cpu.A, ref cpu.F), 12);
+
+            AssertSinglePrefixedCall(0x38, () => bitUnit.ShiftRight(ref cpu.B, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x39, () => bitUnit.ShiftRight(ref cpu.C, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x3A, () => bitUnit.ShiftRight(ref cpu.D, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x3B, () => bitUnit.ShiftRight(ref cpu.E, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x3C, () => bitUnit.ShiftRight(ref cpu.H, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x3D, () => bitUnit.ShiftRight(ref cpu.L, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x3E, () => bitUnit.ShiftRight(cpu.H, cpu.L, ref cpu.F), 20);
+            AssertSinglePrefixedCall(0x3F, () => bitUnit.ShiftRight(ref cpu.A, ref cpu.F), 12);
 
             AssertSinglePrefixedCall(0x80, () => bitUnit.SetBit(ref cpu.B, 0, false), 12);
             AssertSinglePrefixedCall(0x81, () => bitUnit.SetBit(ref cpu.C, 0, false), 12);

@@ -273,5 +273,55 @@ namespace GeemuBoy.GB.CpuUnits.Tests
             bitUnit.SetBit(0xAB, 0xCD, 1, true);
             Assert.Equal(0xF3, memory.ReadByte(0xABCD));
         }
+
+        [Fact()]
+        public void ShiftRightResetsCarry()
+        {
+            var memory = new Memory();
+            var bitUnit = new BitUnit(memory);
+            byte value = 0b10101110;
+            byte flags = 0b01110000;
+
+            bitUnit.ShiftRight(ref value, ref flags);
+
+            Assert.Equal(0b01010111, value);
+            Assert.Equal(0x0, flags);
+        }
+
+        [Fact()]
+        public void ShiftRightSetsCarry()
+        {
+            var memory = new Memory();
+            var bitUnit = new BitUnit(memory);
+            byte value = 0b10101111;
+            byte flags = 0b01100000;
+
+            bitUnit.ShiftRight(ref value, ref flags);
+
+            Assert.Equal(0b01010111, value);
+            Assert.Equal(0b00010000, flags);
+        }
+
+        [Fact()]
+        public void ShiftRightSetsZero()
+        {
+            var memory = new Memory();
+            var bitUnit = new BitUnit(memory);
+            byte value = 0x1;
+            byte flags = 0b01100000;
+
+            bitUnit.ShiftRight(ref value, ref flags);
+
+            Assert.Equal(0x00, value);
+            Assert.Equal(0b10010000, flags);
+        }
+
+        [Fact()]
+        public void ShiftRightInMemory()
+        {
+            var memory = new Memory();
+            var bitUnit = new BitUnit(memory);
+            memory.WriteByte(0xABCD, 0xFF);
+        }
     }
 }

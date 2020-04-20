@@ -652,6 +652,15 @@ namespace GeemuBoy.GB
             CreatePrefixedOpCode(0x36, () => bitUnit.Swap(H, L, ref F), "SWAP (HL)");
             CreatePrefixedOpCode(0x37, () => bitUnit.Swap(ref A, ref F), "SWAP A");
 
+            CreatePrefixedOpCode(0x38, () => bitUnit.ShiftRight(ref B, ref F), "SRL B");
+            CreatePrefixedOpCode(0x39, () => bitUnit.ShiftRight(ref C, ref F), "SRL C");
+            CreatePrefixedOpCode(0x3A, () => bitUnit.ShiftRight(ref D, ref F), "SRL D");
+            CreatePrefixedOpCode(0x3B, () => bitUnit.ShiftRight(ref E, ref F), "SRL E");
+            CreatePrefixedOpCode(0x3C, () => bitUnit.ShiftRight(ref H, ref F), "SRL H");
+            CreatePrefixedOpCode(0x3D, () => bitUnit.ShiftRight(ref L, ref F), "SRL L");
+            CreatePrefixedOpCode(0x3E, () => bitUnit.ShiftRight(H, L, ref F), "SRL (HL)");
+            CreatePrefixedOpCode(0x3F, () => bitUnit.ShiftRight(ref A, ref F), "SRL A");
+
             // RES and SET instructions all share the same pattern
             foreach (byte code in Enumerable.Range(0x80, 0x80))
             {
