@@ -542,5 +542,22 @@ namespace GeemuBoy.GB.CpuUnits.Tests
             Assert.Equal(0b11000000, memory.ReadByte(0xACDC));
             Assert.Equal(0b00010000, flags);
         }
+
+        [Fact()]
+        public void ComplementCarryTest()
+        {
+            var bitUnit = new BitUnit(new Memory());
+            byte flags = 0b00010000;
+
+            bitUnit.ComplementCarry(ref flags);
+
+            Assert.Equal(0b00000000, flags);
+
+            flags = 0b10100000;
+
+            bitUnit.ComplementCarry(ref flags);
+
+            Assert.Equal(0b10110000, flags);
+        }
     }
 }

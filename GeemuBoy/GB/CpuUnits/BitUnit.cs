@@ -3,6 +3,7 @@
     public interface IBitUnit
     {
         public int Complement(ref byte value, ref byte flags);
+        public int ComplementCarry(ref byte flags);
         public int RotateLeft(ref byte register, ref byte flags, bool alwaysResetZero);
         public int RotateLeft(byte addrHigh, byte addrLow, ref byte flags);
         public int RotateLeftThroughCarry(ref byte register, ref byte flags, bool alwaysResetZero);
@@ -38,6 +39,12 @@
             value = (byte)~value;
             FlagUtils.SetFlag(Flag.N, true, ref flags);
             FlagUtils.SetFlag(Flag.H, true, ref flags);
+            return 4;
+        }
+
+        public int ComplementCarry(ref byte flags)
+        {
+            FlagUtils.SetFlag(Flag.C, !FlagUtils.GetFlag(Flag.C, flags), ref flags);
             return 4;
         }
 

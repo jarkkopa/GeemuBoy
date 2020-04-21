@@ -609,6 +609,7 @@ namespace GeemuBoy.GB
             CreateOpCode(0x1F, () => { bitUnit.RotateRightThroughCarry(ref A, ref F, true); return 4; }, "RRA");
 
             CreateOpCode(0x2F, () => bitUnit.Complement(ref A, ref F), "CPL");
+            CreateOpCode(0x3F, () => bitUnit.ComplementCarry(ref F), "CCF");
 
             foreach (byte code in Enumerable.Range(0x40, 0x40))
             {

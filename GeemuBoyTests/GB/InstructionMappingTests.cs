@@ -341,6 +341,7 @@ namespace GeemuBoy.GB.Tests
             AssertSingleCall(0x1F, () => bitUnit.RotateRightThroughCarry(ref cpu.A, ref cpu.F, true), 4);
 
             AssertSingleCall(0x2F, () => bitUnit.Complement(ref cpu.A, ref cpu.F), 4);
+            AssertSingleCall(0x3F, () => bitUnit.ComplementCarry(ref cpu.F), 4);
 
             AssertSinglePrefixedCall(0x47, () => bitUnit.TestBit(cpu.A, 0, ref cpu.F), 12);
             AssertSinglePrefixedCall(0x4F, () => bitUnit.TestBit(cpu.A, 1, ref cpu.F), 12);
