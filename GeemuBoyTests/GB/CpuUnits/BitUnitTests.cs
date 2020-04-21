@@ -338,7 +338,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
             byte value = 0b01111110;
             byte flags = 0b01100000;
 
-            bitUnit.RotateRightThroughCarry(ref value, ref flags);
+            bitUnit.RotateRightThroughCarry(ref value, ref flags, false);
 
             Assert.Equal(0b00111111, value);
             Assert.Equal(0b00000000, flags);
@@ -347,7 +347,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
             value = 0b01111110;
             flags = 0b01110000;
 
-            bitUnit.RotateRightThroughCarry(ref value, ref flags);
+            bitUnit.RotateRightThroughCarry(ref value, ref flags, false);
 
             Assert.Equal(0b10111111, value);
             Assert.Equal(0b00000000, flags);
@@ -356,7 +356,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
             value = 0b01111101;
             flags = 0b01100000;
 
-            bitUnit.RotateRightThroughCarry(ref value, ref flags);
+            bitUnit.RotateRightThroughCarry(ref value, ref flags, false);
 
             Assert.Equal(0b00111110, value);
             Assert.Equal(0b00010000, flags);
@@ -365,7 +365,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
             value = 0b00000001;
             flags = 0b01110000;
 
-            bitUnit.RotateRightThroughCarry(ref value, ref flags);
+            bitUnit.RotateRightThroughCarry(ref value, ref flags, false);
 
             Assert.Equal(0b10000000, value);
             Assert.Equal(0b00010000, flags);
@@ -374,7 +374,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
             value = 0x1;
             flags = 0b01100000;
 
-            bitUnit.RotateRightThroughCarry(ref value, ref flags);
+            bitUnit.RotateRightThroughCarry(ref value, ref flags, false);
 
             Assert.Equal(0x0, value);
             Assert.Equal(0b10010000, flags);

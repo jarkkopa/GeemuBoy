@@ -338,6 +338,7 @@ namespace GeemuBoy.GB.Tests
             AssertSingleCall(0x07, () => bitUnit.RotateLeft(ref cpu.A, ref cpu.F, true), 4);
             AssertSingleCall(0x17, () => bitUnit.RotateLeftThroughCarry(ref cpu.A, ref cpu.F, true), 4);
             AssertSingleCall(0x0F, () => bitUnit.RotateRight(ref cpu.A, ref cpu.F, true), 4);
+            AssertSingleCall(0x1F, () => bitUnit.RotateRightThroughCarry(ref cpu.A, ref cpu.F, true), 4);
 
             AssertSingleCall(0x2F, () => bitUnit.Complement(ref cpu.A, ref cpu.F), 4);
 
@@ -440,14 +441,14 @@ namespace GeemuBoy.GB.Tests
             AssertSinglePrefixedCall(0x16, () => bitUnit.RotateLeftThroughCarry(cpu.H, cpu.L, ref cpu.F), 20);
             AssertSinglePrefixedCall(0x17, () => bitUnit.RotateLeftThroughCarry(ref cpu.A, ref cpu.F, false), 12);
 
-            AssertSinglePrefixedCall(0x18, () => bitUnit.RotateRightThroughCarry(ref cpu.B, ref cpu.F), 12);
-            AssertSinglePrefixedCall(0x19, () => bitUnit.RotateRightThroughCarry(ref cpu.C, ref cpu.F), 12);
-            AssertSinglePrefixedCall(0x1A, () => bitUnit.RotateRightThroughCarry(ref cpu.D, ref cpu.F), 12);
-            AssertSinglePrefixedCall(0x1B, () => bitUnit.RotateRightThroughCarry(ref cpu.E, ref cpu.F), 12);
-            AssertSinglePrefixedCall(0x1C, () => bitUnit.RotateRightThroughCarry(ref cpu.H, ref cpu.F), 12);
-            AssertSinglePrefixedCall(0x1D, () => bitUnit.RotateRightThroughCarry(ref cpu.L, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x18, () => bitUnit.RotateRightThroughCarry(ref cpu.B, ref cpu.F, false), 12);
+            AssertSinglePrefixedCall(0x19, () => bitUnit.RotateRightThroughCarry(ref cpu.C, ref cpu.F, false), 12);
+            AssertSinglePrefixedCall(0x1A, () => bitUnit.RotateRightThroughCarry(ref cpu.D, ref cpu.F, false), 12);
+            AssertSinglePrefixedCall(0x1B, () => bitUnit.RotateRightThroughCarry(ref cpu.E, ref cpu.F, false), 12);
+            AssertSinglePrefixedCall(0x1C, () => bitUnit.RotateRightThroughCarry(ref cpu.H, ref cpu.F, false), 12);
+            AssertSinglePrefixedCall(0x1D, () => bitUnit.RotateRightThroughCarry(ref cpu.L, ref cpu.F, false), 12);
             AssertSinglePrefixedCall(0x1E, () => bitUnit.RotateRightThroughCarry(cpu.H, cpu.L, ref cpu.F), 20);
-            AssertSinglePrefixedCall(0x1F, () => bitUnit.RotateRightThroughCarry(ref cpu.A, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x1F, () => bitUnit.RotateRightThroughCarry(ref cpu.A, ref cpu.F, false), 12);
 
             AssertSinglePrefixedCall(0x20, () => bitUnit.ShiftLeftArithmetic(ref cpu.B, ref cpu.F), 12);
             AssertSinglePrefixedCall(0x21, () => bitUnit.ShiftLeftArithmetic(ref cpu.C, ref cpu.F), 12);

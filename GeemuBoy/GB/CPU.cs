@@ -606,6 +606,7 @@ namespace GeemuBoy.GB
             CreateOpCode(0x07, () => { bitUnit.RotateLeft(ref A, ref F, true); return 4; }, "RLCA");
             CreateOpCode(0x17, () => { bitUnit.RotateLeftThroughCarry(ref A, ref F, true); return 4; }, "RLA");
             CreateOpCode(0x0F, () => { bitUnit.RotateRight(ref A, ref F, true); return 4; }, "RRCA");
+            CreateOpCode(0x1F, () => { bitUnit.RotateRightThroughCarry(ref A, ref F, true); return 4; }, "RRA");
 
             CreateOpCode(0x2F, () => bitUnit.Complement(ref A, ref F), "CPL");
 
@@ -653,14 +654,14 @@ namespace GeemuBoy.GB
             CreatePrefixedOpCode(0x16, () => bitUnit.RotateLeftThroughCarry(H, L, ref F), "RL (HL)");
             CreatePrefixedOpCode(0x17, () => bitUnit.RotateLeftThroughCarry(ref A, ref F, false), "RL A");
 
-            CreatePrefixedOpCode(0x18, () => bitUnit.RotateRightThroughCarry(ref B, ref F), "RR B");
-            CreatePrefixedOpCode(0x19, () => bitUnit.RotateRightThroughCarry(ref C, ref F), "RR C");
-            CreatePrefixedOpCode(0x1A, () => bitUnit.RotateRightThroughCarry(ref D, ref F), "RR D");
-            CreatePrefixedOpCode(0x1B, () => bitUnit.RotateRightThroughCarry(ref E, ref F), "RR E");
-            CreatePrefixedOpCode(0x1C, () => bitUnit.RotateRightThroughCarry(ref H, ref F), "RR H");
-            CreatePrefixedOpCode(0x1D, () => bitUnit.RotateRightThroughCarry(ref L, ref F), "RR L");
+            CreatePrefixedOpCode(0x18, () => bitUnit.RotateRightThroughCarry(ref B, ref F, false), "RR B");
+            CreatePrefixedOpCode(0x19, () => bitUnit.RotateRightThroughCarry(ref C, ref F, false), "RR C");
+            CreatePrefixedOpCode(0x1A, () => bitUnit.RotateRightThroughCarry(ref D, ref F, false), "RR D");
+            CreatePrefixedOpCode(0x1B, () => bitUnit.RotateRightThroughCarry(ref E, ref F, false), "RR E");
+            CreatePrefixedOpCode(0x1C, () => bitUnit.RotateRightThroughCarry(ref H, ref F, false), "RR H");
+            CreatePrefixedOpCode(0x1D, () => bitUnit.RotateRightThroughCarry(ref L, ref F, false), "RR L");
             CreatePrefixedOpCode(0x1E, () => bitUnit.RotateRightThroughCarry(H, L, ref F), "RR (HL)");
-            CreatePrefixedOpCode(0x1F, () => bitUnit.RotateRightThroughCarry(ref A, ref F), "RR A");
+            CreatePrefixedOpCode(0x1F, () => bitUnit.RotateRightThroughCarry(ref A, ref F, false), "RR A");
 
             CreatePrefixedOpCode(0x20, () => bitUnit.ShiftLeftArithmetic(ref B, ref F), "SLA B");
             CreatePrefixedOpCode(0x21, () => bitUnit.ShiftLeftArithmetic(ref C, ref F), "SLA C");
