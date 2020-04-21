@@ -13,8 +13,12 @@
         public int RotateRightThroughCarry(byte addrHigh, byte addrLow, ref byte flags);
         public int SetBit(ref byte target, int index, bool bit);
         public int SetBit(byte addrHigh, byte addrLow, int index, bool bit);
-        public int ShiftRight(ref byte target, ref byte flags);
-        public int ShiftRight(byte addrHigh, byte addrLow, ref byte flags);
+        public int ShiftLeftArithmetic(ref byte target, ref byte flags);
+        public int ShiftLeftArithmetic(byte addrHigh, byte addrLow, ref byte flags);
+        public int ShiftRightArithmetic(ref byte target, ref byte flags);
+        public int ShiftRightArithmetic(byte addrHigh, byte addrLow, ref byte flags);
+        public int ShiftRightLogic(ref byte target, ref byte flags);
+        public int ShiftRightLogic(byte addrHigh, byte addrLow, ref byte flags);
         public int Swap(ref byte register, ref byte flags);
         public int Swap(byte addrHigh, byte addrLow, ref byte flags);
         public int TestBit(byte register, int index, ref byte flags);
@@ -151,7 +155,42 @@
             return 20;
         }
 
-        public int ShiftRight(ref byte target, ref byte flags)
+        public int ShiftLeftArithmetic(ref byte target, ref byte flags)
+        {
+            bool setCarry = (target & 0x80) > 0;
+            target = (byte)((target << 1) & 0xFF);
+            FlagUtils.SetFlags(ref flags, target == 0, false, false, setCarry);
+            return 12;
+        }
+
+        public int ShiftLeftArithmetic(byte addrHigh, byte addrLow, ref byte flags)
+        {
+            ushort address = BitUtils.BytesToUshort(addrHigh, addrLow);
+            byte data = memory.ReadByte(address);
+            ShiftLeftArithmetic(ref data, ref flags);
+            memory.WriteByte(address, data);
+            return 20;
+        }
+
+        public int ShiftRightArithmetic(ref byte target, ref byte flags)
+        {
+            byte msb = (byte)(target & 0x80);
+            bool setCarry = (target & 1) > 0;
+            target = (byte)((target >> 1) | msb);
+            FlagUtils.SetFlags(ref flags, target == 0, false, false, setCarry);
+            return 12;
+        }
+
+        public int ShiftRightArithmetic(byte addrHigh, byte addrLow, ref byte flags)
+        {
+            ushort address = BitUtils.BytesToUshort(addrHigh, addrLow);
+            byte data = memory.ReadByte(address);
+            ShiftRightArithmetic(ref data, ref flags);
+            memory.WriteByte(address, data);
+            return 20;
+        }
+
+        public int ShiftRightLogic(ref byte target, ref byte flags)
         {
             bool carry = (target & 1) > 0;
             target = (byte)(target >> 1);
@@ -159,11 +198,11 @@
             return 12;
         }
 
-        public int ShiftRight(byte addrHigh, byte addrLow, ref byte flags)
+        public int ShiftRightLogic(byte addrHigh, byte addrLow, ref byte flags)
         {
             ushort address = BitUtils.BytesToUshort(addrHigh, addrLow);
             byte data = memory.ReadByte(address);
-            ShiftRight(ref data, ref flags);
+            ShiftRightLogic(ref data, ref flags);
             memory.WriteByte(address, data);
             return 20;
         }

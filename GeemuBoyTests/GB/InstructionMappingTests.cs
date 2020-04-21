@@ -449,6 +449,24 @@ namespace GeemuBoy.GB.Tests
             AssertSinglePrefixedCall(0x1E, () => bitUnit.RotateRightThroughCarry(cpu.H, cpu.L, ref cpu.F), 20);
             AssertSinglePrefixedCall(0x1F, () => bitUnit.RotateRightThroughCarry(ref cpu.A, ref cpu.F), 12);
 
+            AssertSinglePrefixedCall(0x20, () => bitUnit.ShiftLeftArithmetic(ref cpu.B, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x21, () => bitUnit.ShiftLeftArithmetic(ref cpu.C, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x22, () => bitUnit.ShiftLeftArithmetic(ref cpu.D, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x23, () => bitUnit.ShiftLeftArithmetic(ref cpu.E, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x24, () => bitUnit.ShiftLeftArithmetic(ref cpu.H, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x25, () => bitUnit.ShiftLeftArithmetic(ref cpu.L, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x26, () => bitUnit.ShiftLeftArithmetic(cpu.H, cpu.L, ref cpu.F), 20);
+            AssertSinglePrefixedCall(0x27, () => bitUnit.ShiftLeftArithmetic(ref cpu.A, ref cpu.F), 12);
+
+            AssertSinglePrefixedCall(0x28, () => bitUnit.ShiftRightArithmetic(ref cpu.B, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x29, () => bitUnit.ShiftRightArithmetic(ref cpu.C, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x2A, () => bitUnit.ShiftRightArithmetic(ref cpu.D, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x2B, () => bitUnit.ShiftRightArithmetic(ref cpu.E, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x2C, () => bitUnit.ShiftRightArithmetic(ref cpu.H, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x2D, () => bitUnit.ShiftRightArithmetic(ref cpu.L, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x2E, () => bitUnit.ShiftRightArithmetic(cpu.H, cpu.L, ref cpu.F), 20);
+            AssertSinglePrefixedCall(0x2F, () => bitUnit.ShiftRightArithmetic(ref cpu.A, ref cpu.F), 12);
+
             AssertSinglePrefixedCall(0x30, () => bitUnit.Swap(ref cpu.B, ref cpu.F), 12);
             AssertSinglePrefixedCall(0x31, () => bitUnit.Swap(ref cpu.C, ref cpu.F), 12);
             AssertSinglePrefixedCall(0x32, () => bitUnit.Swap(ref cpu.D, ref cpu.F), 12);
@@ -458,14 +476,14 @@ namespace GeemuBoy.GB.Tests
             AssertSinglePrefixedCall(0x36, () => bitUnit.Swap(cpu.H, cpu.L, ref cpu.F), 20);
             AssertSinglePrefixedCall(0x37, () => bitUnit.Swap(ref cpu.A, ref cpu.F), 12);
 
-            AssertSinglePrefixedCall(0x38, () => bitUnit.ShiftRight(ref cpu.B, ref cpu.F), 12);
-            AssertSinglePrefixedCall(0x39, () => bitUnit.ShiftRight(ref cpu.C, ref cpu.F), 12);
-            AssertSinglePrefixedCall(0x3A, () => bitUnit.ShiftRight(ref cpu.D, ref cpu.F), 12);
-            AssertSinglePrefixedCall(0x3B, () => bitUnit.ShiftRight(ref cpu.E, ref cpu.F), 12);
-            AssertSinglePrefixedCall(0x3C, () => bitUnit.ShiftRight(ref cpu.H, ref cpu.F), 12);
-            AssertSinglePrefixedCall(0x3D, () => bitUnit.ShiftRight(ref cpu.L, ref cpu.F), 12);
-            AssertSinglePrefixedCall(0x3E, () => bitUnit.ShiftRight(cpu.H, cpu.L, ref cpu.F), 20);
-            AssertSinglePrefixedCall(0x3F, () => bitUnit.ShiftRight(ref cpu.A, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x38, () => bitUnit.ShiftRightLogic(ref cpu.B, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x39, () => bitUnit.ShiftRightLogic(ref cpu.C, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x3A, () => bitUnit.ShiftRightLogic(ref cpu.D, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x3B, () => bitUnit.ShiftRightLogic(ref cpu.E, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x3C, () => bitUnit.ShiftRightLogic(ref cpu.H, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x3D, () => bitUnit.ShiftRightLogic(ref cpu.L, ref cpu.F), 12);
+            AssertSinglePrefixedCall(0x3E, () => bitUnit.ShiftRightLogic(cpu.H, cpu.L, ref cpu.F), 20);
+            AssertSinglePrefixedCall(0x3F, () => bitUnit.ShiftRightLogic(ref cpu.A, ref cpu.F), 12);
 
             AssertSinglePrefixedCall(0x80, () => bitUnit.SetBit(ref cpu.B, 0, false), 12);
             AssertSinglePrefixedCall(0x81, () => bitUnit.SetBit(ref cpu.C, 0, false), 12);

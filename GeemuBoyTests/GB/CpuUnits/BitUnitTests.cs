@@ -275,56 +275,56 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         }
 
         [Fact()]
-        public void ShiftRightResetsCarry()
+        public void ShiftRightLogicResetsCarry()
         {
             var memory = new Memory();
             var bitUnit = new BitUnit(memory);
             byte value = 0b10101110;
             byte flags = 0b01110000;
 
-            bitUnit.ShiftRight(ref value, ref flags);
+            bitUnit.ShiftRightLogic(ref value, ref flags);
 
             Assert.Equal(0b01010111, value);
             Assert.Equal(0x0, flags);
         }
 
         [Fact()]
-        public void ShiftRightSetsCarry()
+        public void ShiftRightLogicSetsCarry()
         {
             var memory = new Memory();
             var bitUnit = new BitUnit(memory);
             byte value = 0b10101111;
             byte flags = 0b01100000;
 
-            bitUnit.ShiftRight(ref value, ref flags);
+            bitUnit.ShiftRightLogic(ref value, ref flags);
 
             Assert.Equal(0b01010111, value);
             Assert.Equal(0b00010000, flags);
         }
 
         [Fact()]
-        public void ShiftRightSetsZero()
+        public void ShiftRightLogicSetsZero()
         {
             var memory = new Memory();
             var bitUnit = new BitUnit(memory);
             byte value = 0x1;
             byte flags = 0b01100000;
 
-            bitUnit.ShiftRight(ref value, ref flags);
+            bitUnit.ShiftRightLogic(ref value, ref flags);
 
             Assert.Equal(0x00, value);
             Assert.Equal(0b10010000, flags);
         }
 
         [Fact()]
-        public void ShiftRightInMemory()
+        public void ShiftRightLogicInMemory()
         {
             var memory = new Memory();
             var bitUnit = new BitUnit(memory);
             memory.WriteByte(0xABCD, 0xFF);
             byte flags = 0b11100000;
 
-            bitUnit.ShiftRight(0xAB, 0xCD, ref flags);
+            bitUnit.ShiftRightLogic(0xAB, 0xCD, ref flags);
 
             Assert.Equal(0b01111111, memory.ReadByte(0xABCD));
             Assert.Equal(0b00010000, flags);
@@ -446,6 +446,100 @@ namespace GeemuBoy.GB.CpuUnits.Tests
             bitUnit.RotateRight(0xAC, 0xDC, ref flags);
 
             Assert.Equal(0b10000001, memory.ReadByte(0xACDC));
+            Assert.Equal(0b00010000, flags);
+        }
+
+        [Fact()]
+        public void ShiftLeftArithmetic()
+        {
+            Memory memory = new Memory();
+            var bitUnit = new BitUnit(memory);
+            byte value = 0b01110000;
+            byte flags = 0b01100000;
+
+            // Reset carry
+            bitUnit.ShiftLeftArithmetic(ref value, ref flags);
+
+            Assert.Equal(0b11100000, value);
+            Assert.Equal(0x0, flags);
+
+            // Set carry
+            value = 0b10101010;
+            flags = 0b01100000;
+
+            bitUnit.ShiftLeftArithmetic(ref value, ref flags);
+
+            Assert.Equal(0b01010100, value);
+            Assert.Equal(0b00010000, flags);
+
+            // Set zero
+            value = 0b10000000;
+            flags = 0b01100000;
+
+            bitUnit.ShiftLeftArithmetic(ref value, ref flags);
+
+            Assert.Equal(0x0, value);
+            Assert.Equal(0b10010000, flags);
+        }
+
+        [Fact()]
+        public void ShiftLeftArithmeticInMemory()
+        {
+            Memory memory = new Memory();
+            var bitUnit = new BitUnit(memory);
+            memory.WriteByte(0xACDC, 0b10000001);
+            byte flags = 0b01100000;
+
+            bitUnit.ShiftLeftArithmetic(0xAC, 0xDC, ref flags);
+
+            Assert.Equal(0b00000010, memory.ReadByte(0xACDC));
+            Assert.Equal(0b00010000, flags);
+        }
+
+        [Fact()]
+        public void ShiftRightArithmetic()
+        {
+            Memory memory = new Memory();
+            var bitUnit = new BitUnit(memory);
+            byte value = 0b11110000;
+            byte flags = 0b01100000;
+
+            // Reset carry
+            bitUnit.ShiftRightArithmetic(ref value, ref flags);
+
+            Assert.Equal(0b11111000, value);
+            Assert.Equal(0x0, flags);
+
+            // Set carry
+            value = 0b00001111;
+            flags = 0b01100000;
+
+            bitUnit.ShiftRightArithmetic(ref value, ref flags);
+
+            Assert.Equal(0b00000111, value);
+            Assert.Equal(0b00010000, flags);
+
+            //Set zero
+            value = 0b00000001;
+            flags = 0b01100000;
+
+            bitUnit.ShiftRightArithmetic(ref value, ref flags);
+
+            Assert.Equal(0x0, value);
+            Assert.Equal(0b10010000, flags);
+        }
+
+        [Fact()]
+        public void ShiftRightArithmeticInMemory()
+        {
+            Memory memory = new Memory();
+            var bitUnit = new BitUnit(memory);
+            memory.WriteByte(0xACDC, 0b10000001);
+            byte flags = 0b11100000;
+
+            bitUnit.ShiftRightArithmetic(0xAC, 0xDC, ref flags);
+
+            Assert.Equal(0b11000000, memory.ReadByte(0xACDC));
             Assert.Equal(0b00010000, flags);
         }
     }

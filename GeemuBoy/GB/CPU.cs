@@ -662,6 +662,24 @@ namespace GeemuBoy.GB
             CreatePrefixedOpCode(0x1E, () => bitUnit.RotateRightThroughCarry(H, L, ref F), "RR (HL)");
             CreatePrefixedOpCode(0x1F, () => bitUnit.RotateRightThroughCarry(ref A, ref F), "RR A");
 
+            CreatePrefixedOpCode(0x20, () => bitUnit.ShiftLeftArithmetic(ref B, ref F), "SLA B");
+            CreatePrefixedOpCode(0x21, () => bitUnit.ShiftLeftArithmetic(ref C, ref F), "SLA C");
+            CreatePrefixedOpCode(0x22, () => bitUnit.ShiftLeftArithmetic(ref D, ref F), "SLA D");
+            CreatePrefixedOpCode(0x23, () => bitUnit.ShiftLeftArithmetic(ref E, ref F), "SLA E");
+            CreatePrefixedOpCode(0x24, () => bitUnit.ShiftLeftArithmetic(ref H, ref F), "SLA H");
+            CreatePrefixedOpCode(0x25, () => bitUnit.ShiftLeftArithmetic(ref L, ref F), "SLA L");
+            CreatePrefixedOpCode(0x26, () => bitUnit.ShiftLeftArithmetic(H, L, ref F), "SLA (HL)");
+            CreatePrefixedOpCode(0x27, () => bitUnit.ShiftLeftArithmetic(ref A, ref F), "SLA A");
+
+            CreatePrefixedOpCode(0x28, () => bitUnit.ShiftRightArithmetic(ref B, ref F), "SRA B");
+            CreatePrefixedOpCode(0x29, () => bitUnit.ShiftRightArithmetic(ref C, ref F), "SRA C");
+            CreatePrefixedOpCode(0x2A, () => bitUnit.ShiftRightArithmetic(ref D, ref F), "SRA D");
+            CreatePrefixedOpCode(0x2B, () => bitUnit.ShiftRightArithmetic(ref E, ref F), "SRA E");
+            CreatePrefixedOpCode(0x2C, () => bitUnit.ShiftRightArithmetic(ref H, ref F), "SRA H");
+            CreatePrefixedOpCode(0x2D, () => bitUnit.ShiftRightArithmetic(ref L, ref F), "SRA L");
+            CreatePrefixedOpCode(0x2E, () => bitUnit.ShiftRightArithmetic(H, L, ref F), "SRA (HL)");
+            CreatePrefixedOpCode(0x2F, () => bitUnit.ShiftRightArithmetic(ref A, ref F), "SRA A");
+
             CreatePrefixedOpCode(0x30, () => bitUnit.Swap(ref B, ref F), "SWAP B");
             CreatePrefixedOpCode(0x31, () => bitUnit.Swap(ref C, ref F), "SWAP C");
             CreatePrefixedOpCode(0x32, () => bitUnit.Swap(ref D, ref F), "SWAP D");
@@ -671,14 +689,14 @@ namespace GeemuBoy.GB
             CreatePrefixedOpCode(0x36, () => bitUnit.Swap(H, L, ref F), "SWAP (HL)");
             CreatePrefixedOpCode(0x37, () => bitUnit.Swap(ref A, ref F), "SWAP A");
 
-            CreatePrefixedOpCode(0x38, () => bitUnit.ShiftRight(ref B, ref F), "SRL B");
-            CreatePrefixedOpCode(0x39, () => bitUnit.ShiftRight(ref C, ref F), "SRL C");
-            CreatePrefixedOpCode(0x3A, () => bitUnit.ShiftRight(ref D, ref F), "SRL D");
-            CreatePrefixedOpCode(0x3B, () => bitUnit.ShiftRight(ref E, ref F), "SRL E");
-            CreatePrefixedOpCode(0x3C, () => bitUnit.ShiftRight(ref H, ref F), "SRL H");
-            CreatePrefixedOpCode(0x3D, () => bitUnit.ShiftRight(ref L, ref F), "SRL L");
-            CreatePrefixedOpCode(0x3E, () => bitUnit.ShiftRight(H, L, ref F), "SRL (HL)");
-            CreatePrefixedOpCode(0x3F, () => bitUnit.ShiftRight(ref A, ref F), "SRL A");
+            CreatePrefixedOpCode(0x38, () => bitUnit.ShiftRightLogic(ref B, ref F), "SRL B");
+            CreatePrefixedOpCode(0x39, () => bitUnit.ShiftRightLogic(ref C, ref F), "SRL C");
+            CreatePrefixedOpCode(0x3A, () => bitUnit.ShiftRightLogic(ref D, ref F), "SRL D");
+            CreatePrefixedOpCode(0x3B, () => bitUnit.ShiftRightLogic(ref E, ref F), "SRL E");
+            CreatePrefixedOpCode(0x3C, () => bitUnit.ShiftRightLogic(ref H, ref F), "SRL H");
+            CreatePrefixedOpCode(0x3D, () => bitUnit.ShiftRightLogic(ref L, ref F), "SRL L");
+            CreatePrefixedOpCode(0x3E, () => bitUnit.ShiftRightLogic(H, L, ref F), "SRL (HL)");
+            CreatePrefixedOpCode(0x3F, () => bitUnit.ShiftRightLogic(ref A, ref F), "SRL A");
 
             // RES and SET instructions all share the same pattern
             foreach (byte code in Enumerable.Range(0x80, 0x80))
