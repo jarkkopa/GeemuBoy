@@ -178,7 +178,7 @@
             ushort tileMapAddress = (ushort)(controlRegister.IsBitSet(renderWindow ? 6 : 3) ? 0x9C00 : 0x9800);
 
             int y = renderWindow ? CurrentLine - windowY : scrollY + CurrentLine;
-            int tileY = y / 8;
+            int tileY = (y / 8) % 32;
             uint[] linePixels = new uint[160];
             for (int pixel = 0; pixel < WIDTH; pixel++)
             {

@@ -1,5 +1,4 @@
-﻿using GeemuBoy.GB.CpuUnits;
-using Xunit;
+﻿using Xunit;
 
 namespace GeemuBoy.GB.CpuUnits.Tests
 {
@@ -8,7 +7,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void CallTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var jumpUnit = new JumpUnit(memory);
             ushort pc = 0x0123;
             ushort sp = 0xFFFE;
@@ -23,7 +22,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void CallWhenSetConditionTrueTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var jumpUnit = new JumpUnit(memory);
             ushort pc = 0x0123;
             ushort sp = 0xFFFE;
@@ -39,7 +38,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void CallWhenResetConditionTrueTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var jumpUnit = new JumpUnit(memory);
             ushort pc = 0x0123;
             ushort sp = 0xFFFE;
@@ -55,7 +54,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void DoesNotCallWhenConditionFalseTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var jumpUnit = new JumpUnit(memory);
             ushort pc = 0x0123;
             ushort sp = 0xFFFE;
@@ -70,7 +69,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void JumpToAddressTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var jumpUnit = new JumpUnit(memory);
             ushort pc = 0x0000;
 
@@ -82,7 +81,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void JumpToAddressWhenSetConditionTrueTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var jumpUnit = new JumpUnit(memory);
             ushort pc = 0x0123;
             byte flags = 0b10000000;
@@ -95,7 +94,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void JumpToAddressWhenResetConditionTrueTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var jumpUnit = new JumpUnit(memory);
             ushort pc = 0x0123;
             byte flags = 0b11100000;
@@ -109,7 +108,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void JumpToAddressWhenConditionTrueTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var jumpUnit = new JumpUnit(memory);
             ushort pc = 0x0123;
             byte flags = 0b10000000;
@@ -122,7 +121,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void DoesNotJumpToAddressWhenConditionFalseTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var jumpUnit = new JumpUnit(memory);
             ushort pc = 0x0123;
             byte flags = 0b01110000;
@@ -135,7 +134,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void JumpRelativeNegativeTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var jumpUnit = new JumpUnit(memory);
             ushort pc = 0x0A0B;
 
@@ -147,7 +146,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void JumpRelativePositiveTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var jumpUnit = new JumpUnit(memory);
             ushort pc = 0x0A0B;
 
@@ -159,7 +158,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void JumpRelativeWhenSetConditionTrueTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var jumpUnit = new JumpUnit(memory);
             ushort pc = 0x0123;
             byte flags = 0b10000000;
@@ -172,7 +171,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void JumpRelativeWhenResetConditionTrueTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var jumpUnit = new JumpUnit(memory);
             ushort pc = 0x0123;
             byte flags = 0b01110000;
@@ -185,7 +184,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void DontJumpRelativeWhenSetConditionFalseTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var jumpUnit = new JumpUnit(memory);
             ushort pc = 0x0123;
             byte flags = 0b00000000;
@@ -198,7 +197,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void JumpToAddressCombinedTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var jumpUnit = new JumpUnit(memory);
             ushort pc = 0x0000;
             byte high = 0xAB;
@@ -212,7 +211,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void ReturnTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var jumpUnit = new JumpUnit(memory);
             ushort pc = 0x0100;
             ushort sp = 0xFFFA;
@@ -228,7 +227,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void ReturnWhenSetConditionTrue()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var jumpUnit = new JumpUnit(memory);
             ushort pc = 0x0100;
             ushort sp = 0xFFFA;
@@ -245,7 +244,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void ReturnWhenResetConditionTrue()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var jumpUnit = new JumpUnit(memory);
             ushort pc = 0x0100;
             ushort sp = 0xFFFA;
@@ -262,7 +261,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void DontReturnWhenSetConditionFalse()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var jumpUnit = new JumpUnit(memory);
             ushort pc = 0x0100;
             ushort sp = 0xFFFA;
@@ -279,7 +278,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void ReturnAndEnableInterruptsTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var jumpUnit = new JumpUnit(memory);
             ushort pc = 0x0100;
             ushort sp = 0xFFFA;

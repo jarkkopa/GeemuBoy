@@ -101,6 +101,8 @@ namespace GeemuBoy
                 if (breakpoint.HasValue && cpu.PC == breakpoint.Value)
                 {
                     state = State.Stop;
+                    printDebug = true;
+                    breakpoint = null;
                     PrintDebugger();
                 }
 
@@ -158,7 +160,7 @@ namespace GeemuBoy
             var prefixed = false;
             var linesBeforePc = 4;
             var linesAfterPc = 6;
-            for (short i = (short)(cpu.PC - linesBeforePc); i < cpu.PC + linesAfterPc; i++)
+            for (int i = cpu.PC - linesBeforePc; i < cpu.PC + linesAfterPc && i < 0xFFFF; i++)
             {
                 if (i < 0)
                 {
