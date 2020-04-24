@@ -6,9 +6,11 @@
 
         static void Main(string[] args)
         {
-            string cartridgePath = $"{romFolderPath}/Game.gb";
+            //string cartridgePath = $"{romFolderPath}/Game.gb";
+            //string cartridgePath = $"{romFolderPath}/04-op r,imm.gb";
+            string cartridgePath = $"{romFolderPath}/03-op sp,hl.gb";
             string bootRomPath = $"{romFolderPath}/Boot.bin";
-            new EmulatorSDL(cartridgePath, bootRomPath);
+            new EmulatorSDL(cartridgePath, null);
         }
     }
 }

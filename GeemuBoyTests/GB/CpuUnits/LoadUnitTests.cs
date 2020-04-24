@@ -7,7 +7,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void LoadTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var loadUnit = new LoadUnit(memory);
             byte to = 0x00;
             byte from = 0xFF;
@@ -20,7 +20,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void LoadWordTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var loadUnit = new LoadUnit(memory);
             byte high = 0x00;
             byte low = 0x00;
@@ -35,7 +35,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void LoadWordToWord()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var loadUnit = new LoadUnit(memory);
             ushort to = 0x00;
             ushort from = 0xABCD;
@@ -48,7 +48,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void LoadBytesToWord()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var loadUnit = new LoadUnit(memory);
             ushort to = 0x00;
             byte fromHigh = 0xAB;
@@ -62,43 +62,263 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void LoadAdjustedPositiveTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var loadUnit = new LoadUnit(memory);
-            byte toHigh = 0xF0;
-            byte toLow = 0xF0;
-            ushort from = 0xABFF;
-            byte addValue = 0x01;
-            byte flags = 0b11000000;
+            byte H = 0xF0;
+            byte L = 0xF0;
+            ushort SP = 0x0000;
+            byte flags = 0x0;
 
-            loadUnit.LoadAdjusted(ref toHigh, ref toLow, from, addValue, ref flags);
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0x01, ref flags);
 
-            Assert.Equal(0xAC, toHigh);
-            Assert.Equal(0x00, toLow);
+            Assert.Equal(0x0001, BitUtils.BytesToUshort(H,L));
+            Assert.Equal(0x0, flags);
+
+            SP = 0x0001;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0x01, ref flags);
+
+            Assert.Equal(0x0002, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0x0, flags);
+
+            SP = 0x000F;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0x01, ref flags);
+
+            Assert.Equal(0x0010, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0b00100000, flags);
+
+            SP = 0x0010;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0x01, ref flags);
+
+            Assert.Equal(0x0011, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0x0, flags);
+
+            SP = 0x001F;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0x01, ref flags);
+
+            Assert.Equal(0x0020, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0b00100000, flags);
+
+            SP = 0x007F;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0x01, ref flags);
+
+            Assert.Equal(0x0080, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0b00100000, flags);
+
+            SP = 0x0080;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0x01, ref flags);
+
+            Assert.Equal(0x0081, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0x0, flags);
+
+            SP = 0x00FF;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0x01, ref flags);
+
+            Assert.Equal(0x0100, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0b00110000, flags);
+
+            SP = 0x0100;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0x01, ref flags);
+
+            Assert.Equal(0x0101, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0x0, flags);
+
+            SP = 0x0F00;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0x01, ref flags);
+
+            Assert.Equal(0x0F01, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0x0, flags);
+
+            SP = 0x1F00;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0x01, ref flags);
+
+            Assert.Equal(0x1F01, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0x0, flags);
+
+            SP = 0x1000;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0x01, ref flags);
+
+            Assert.Equal(0x1001, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0x0, flags);
+
+            SP = 0x7FFF;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0x01, ref flags);
+
+            Assert.Equal(0x8000, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0b00110000, flags);
+
+            SP = 0x8000;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0x01, ref flags);
+
+            Assert.Equal(0x8001, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0x0, flags);
+
+            SP = 0xFFFF;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0x01, ref flags);
+
+            Assert.Equal(0x0000, BitUtils.BytesToUshort(H, L));
             Assert.Equal(0b00110000, flags);
         }
 
         [Fact()]
         public void LoadAdjustedNegativeTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var loadUnit = new LoadUnit(memory);
-            byte toHigh = 0xF0;
-            byte toLow = 0xF0;
-            ushort from = 0xAC00;
-            byte addValue = 0xFF; // signed -1
-            byte flags = 0b11000000;
+            byte H = 0xF0;
+            byte L = 0xF0;
+            byte flags = 0x0;
+             ushort SP = 0x0000;
 
-            loadUnit.LoadAdjusted(ref toHigh, ref toLow, from, addValue, ref flags);
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0xFF, ref flags);
 
-            Assert.Equal(0xAB, toHigh);
-            Assert.Equal(0xFF, toLow);
-            Assert.Equal(0b00100000, flags);
+            Assert.Equal(0xFFFF, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0x0, flags);
+
+            SP = 0x0001;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0xFF, ref flags);
+
+            Assert.Equal(0x0000, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0b00110000, flags);
+
+            SP = 0x000F;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0xFF, ref flags);
+
+            Assert.Equal(0x000E, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0b00110000, flags);
+
+            SP = 0x0010;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0xFF, ref flags);
+
+            Assert.Equal(0x000F, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0b00010000, flags);
+
+            SP = 0x001F;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0xFF, ref flags);
+
+            Assert.Equal(0x001E, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0b00110000, flags);
+
+            SP = 0x007F;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0xFF, ref flags);
+
+            Assert.Equal(0x007E, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0b00110000, flags);
+
+            SP = 0x0080;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0xFF, ref flags);
+
+            Assert.Equal(0x007F, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0b00010000, flags);
+
+            SP = 0x00FF;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0xFF, ref flags);
+
+            Assert.Equal(0x00FE, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0b00110000, flags);
+
+            SP = 0x0100;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0xFF, ref flags);
+
+            Assert.Equal(0x00FF, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0x0, flags);
+
+            SP = 0x0F00;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0xFF, ref flags);
+
+            Assert.Equal(0x0EFF, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0x0, flags);
+
+            SP = 0x1F00;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0xFF, ref flags);
+
+            Assert.Equal(0x1EFF, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0x0, flags);
+
+            SP = 0x1000;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0xFF, ref flags);
+
+            Assert.Equal(0x0FFF, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0x0, flags);
+
+            SP = 0x7FFF;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0xFF, ref flags);
+
+            Assert.Equal(0x7FFE, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0b00110000, flags);
+
+            SP = 0x8000;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0xFF, ref flags);
+
+            Assert.Equal(0x7FFF, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0x0, flags);
+
+            SP = 0xFFFF;
+            flags = 0x0;
+
+            loadUnit.LoadAdjusted(ref H, ref L, SP, 0xFF, ref flags);
+
+            Assert.Equal(0xFFFE, BitUtils.BytesToUshort(H, L));
+            Assert.Equal(0b00110000, flags);
         }
 
         [Fact()]
         public void LoadFromCombinedAddressTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var loadUnit = new LoadUnit(memory);
             byte to = 0x00;
             memory.WriteByte(0xABBA, 0x10);
@@ -111,7 +331,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void LoadFromAddressTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var loadUnit = new LoadUnit(memory);
             byte to = 0x00;
             memory.WriteByte(0xABBA, 0x10);
@@ -124,7 +344,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void WriteToCombinedAddressTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var loadUnit = new LoadUnit(memory);
             byte source = 0x66;
 
@@ -136,7 +356,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void WriteToAddressTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var loadUnit = new LoadUnit(memory);
             byte source = 0x66;
 
@@ -148,7 +368,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void WriteWordToAddressTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var loadUnit = new LoadUnit(memory);
             ushort value = 0xABCD;
 
@@ -161,7 +381,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void LoadFromAddressAndDecrementTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var loadUnit = new LoadUnit(memory);
 
             byte dest = 0x00;
@@ -179,7 +399,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void LoadFromAddressAndIncrementTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var loadUnit = new LoadUnit(memory);
 
             byte dest = 0x00;
@@ -197,7 +417,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void WriteToAddressAndDecrementTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var loadUnit = new LoadUnit(memory);
 
             byte source = 0xDD;
@@ -213,7 +433,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void WriteToAddressAndIncrementTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var loadUnit = new LoadUnit(memory);
 
             byte source = 0xDD;
@@ -229,7 +449,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void PushTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var loadUnit = new LoadUnit(memory);
             ushort pointer = 0xDFFF;
             byte valueHigh = 0xAB;
@@ -244,7 +464,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void PopTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var loadUnit = new LoadUnit(memory);
             byte destHigh = 0x00;
             byte destLow = 0x00;

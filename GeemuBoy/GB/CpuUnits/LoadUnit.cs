@@ -56,16 +56,8 @@
         {
             ushort originalValue = value;
             sbyte signed = unchecked((sbyte)addValue);
-            if (signed > 0)
-            {
-                FlagUtils.SetFlag(Flag.C, (originalValue + signed) > 0xFF, ref flags);
-                FlagUtils.SetFlag(Flag.H, (originalValue & 0x0F) + (signed & 0x0F) > 0xF, ref flags);
-            }
-            else
-            {
-                FlagUtils.SetFlag(Flag.C, originalValue < addValue, ref flags);
-                FlagUtils.SetFlag(Flag.H, (originalValue & 0x0F) < (addValue & 0x0F), ref flags);
-            }
+            FlagUtils.SetFlag(Flag.C, ((originalValue & 0xFF) + addValue) > 0xFF, ref flags);
+            FlagUtils.SetFlag(Flag.H, (originalValue & 0x0F) + (addValue & 0x0F) > 0xF, ref flags);
             ushort result = (ushort)(value + signed);
             destHigh = BitUtils.MostSignificantByte(result);
             destLow = BitUtils.LeastSignificantByte(result);
