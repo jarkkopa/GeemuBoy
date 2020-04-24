@@ -130,12 +130,124 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         {
             var memory = new Memory(new byte[0]);
             var alu = new ALU(memory);
-            ushort to = 0x0123;
-            byte flags = 0b00000000;
+            ushort to = 0x0000;
+            byte flags = 0x0;
 
-            alu.AddSigned(ref to, 0x7F, ref flags);
+            alu.AddSigned(ref to, 0x01, ref flags);
 
-            Assert.Equal(0x01A2, to);
+            Assert.Equal(0x0001, to);
+            Assert.Equal(0x0, flags);
+
+            to = 0x0001;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0x01, ref flags);
+
+            Assert.Equal(0x0002, to);
+            Assert.Equal(0x0, flags);
+
+            to = 0x000F;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0x01, ref flags);
+
+            Assert.Equal(0x0010, to);
+            Assert.Equal(0b00100000, flags);
+
+            to = 0x0010;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0x01, ref flags);
+
+            Assert.Equal(0x0011, to);
+            Assert.Equal(0x0, flags);
+
+            to = 0x001F;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0x01, ref flags);
+
+            Assert.Equal(0x0020, to);
+            Assert.Equal(0b00100000, flags);
+
+            to = 0x007F;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0x01, ref flags);
+
+            Assert.Equal(0x0080, to);
+            Assert.Equal(0b00100000, flags);
+
+            to = 0x0080;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0x01, ref flags);
+
+            Assert.Equal(0x0081, to);
+            Assert.Equal(0x0, flags);
+
+            to = 0x00FF;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0x01, ref flags);
+
+            Assert.Equal(0x0100, to);
+            Assert.Equal(0b00110000, flags);
+
+            to = 0x0100;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0x01, ref flags);
+
+            Assert.Equal(0x0101, to);
+            Assert.Equal(0x0, flags);
+
+            to = 0x0F00;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0x01, ref flags);
+
+            Assert.Equal(0x0F01, to);
+            Assert.Equal(0x0, flags);
+
+            to = 0x1F00;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0x01, ref flags);
+
+            Assert.Equal(0x1F01, to);
+            Assert.Equal(0x0, flags);
+
+            to = 0x1000;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0x01, ref flags);
+
+            Assert.Equal(0x1001, to);
+            Assert.Equal(0x0, flags);
+
+            to = 0x7FFF;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0x01, ref flags);
+
+            Assert.Equal(0x8000, to);
+            Assert.Equal(0b00110000, flags);
+
+            to = 0x8000;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0x01, ref flags);
+
+            Assert.Equal(0x8001, to);
+            Assert.Equal(0x0, flags);
+
+            to = 0xFFFF;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0x01, ref flags);
+
+            Assert.Equal(0x0000, to);
             Assert.Equal(0b00110000, flags);
         }
 
@@ -144,13 +256,125 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         {
             var memory = new Memory(new byte[0]);
             var alu = new ALU(memory);
-            ushort to = 0x0123;
-            byte flags = 0b00000000;
+            ushort to = 0x0000;
+            byte flags = 0x0;
 
-            alu.AddSigned(ref to, 0x80, ref flags);
+            alu.AddSigned(ref to, 0xFF, ref flags);
 
-            Assert.Equal(0x00A3, to);
-            Assert.Equal(0b00000000, flags);
+            Assert.Equal(0xFFFF, to);
+            Assert.Equal(0x0, flags);
+
+            to = 0x0001;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0xFF, ref flags);
+
+            Assert.Equal(0x0000, to);
+            Assert.Equal(0b00110000, flags);
+
+            to = 0x000F;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0xFF, ref flags);
+
+            Assert.Equal(0x000E, to);
+            Assert.Equal(0b00110000, flags);
+
+            to = 0x0010;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0xFF, ref flags);
+
+            Assert.Equal(0x000F, to);
+            Assert.Equal(0b00010000, flags);
+
+            to = 0x001F;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0xFF, ref flags);
+
+            Assert.Equal(0x001E, to);
+            Assert.Equal(0b00110000, flags);
+
+            to = 0x007F;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0xFF, ref flags);
+
+            Assert.Equal(0x007E, to);
+            Assert.Equal(0b00110000, flags);
+
+            to = 0x0080;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0xFF, ref flags);
+
+            Assert.Equal(0x007F, to);
+            Assert.Equal(0b00010000, flags);
+
+            to = 0x00FF;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0xFF, ref flags);
+
+            Assert.Equal(0x00FE, to);
+            Assert.Equal(0b00110000, flags);
+
+            to = 0x0100;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0xFF, ref flags);
+
+            Assert.Equal(0x00FF, to);
+            Assert.Equal(0x0, flags);
+
+            to = 0x0F00;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0xFF, ref flags);
+
+            Assert.Equal(0x0EFF, to);
+            Assert.Equal(0x0, flags);
+
+            to = 0x1F00;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0xFF, ref flags);
+
+            Assert.Equal(0x1EFF, to);
+            Assert.Equal(0x0, flags);
+
+            to = 0x1000;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0xFF, ref flags);
+
+            Assert.Equal(0x0FFF, to);
+            Assert.Equal(0x0, flags);
+
+            to = 0x7FFF;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0xFF, ref flags);
+
+            Assert.Equal(0x7FFE, to);
+            Assert.Equal(0b00110000, flags);
+
+            to = 0x8000;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0xFF, ref flags);
+
+            Assert.Equal(0x7FFF, to);
+            Assert.Equal(0x0, flags);
+
+            to = 0xFFFF;
+            flags = 0x0;
+
+            alu.AddSigned(ref to, 0xFF, ref flags);
+
+            Assert.Equal(0xFFFE, to);
+            Assert.Equal(0b00110000, flags);
         }
 
         [Fact()]

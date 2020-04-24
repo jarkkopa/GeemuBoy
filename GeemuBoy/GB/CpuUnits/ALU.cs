@@ -63,16 +63,8 @@
             to = (ushort)(to + valueSigned);
             FlagUtils.SetFlag(Flag.Z, false, ref flags);
             FlagUtils.SetFlag(Flag.N, false, ref flags);
-            if (valueSigned > 0)
-            {
-                FlagUtils.SetFlag(Flag.H, (originalValue & 0x0F) + (valueSigned & 0x0F) > 0x0F, ref flags);
-                FlagUtils.SetFlag(Flag.C, originalValue + valueSigned > 0xFF, ref flags);
-            }
-            else
-            {
-                FlagUtils.SetFlag(Flag.H, (originalValue & 0x0F) < (valueSigned & 0x0F), ref flags);
-                FlagUtils.SetFlag(Flag.C, originalValue < valueSigned, ref flags);
-            }
+            FlagUtils.SetFlag(Flag.H, (originalValue & 0x0F) + (value & 0x0F) > 0x0F, ref flags);
+            FlagUtils.SetFlag(Flag.C, (originalValue & 0xFF) + value > 0xFF, ref flags);
             return 16;
         }
 
