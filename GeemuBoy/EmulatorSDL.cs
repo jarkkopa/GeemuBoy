@@ -53,6 +53,9 @@ namespace GeemuBoy
                 cpu.SetInitialStateAfterBootSequence();
             }
 
+            PrintDebugger();
+            printDebug = false;
+
             Run();
         }
 

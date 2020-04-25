@@ -7,7 +7,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void AddSetsHalfCarryTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte flags = 0b11010000;
             byte to = 0xAA;
@@ -21,7 +21,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void AddSetsCarryTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte flags = 0b11000000;
             byte to = 0xFE;
@@ -35,7 +35,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void AddSetsZeroTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte flags = 0x0;
             byte to = 0x0;
@@ -49,7 +49,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void AddSetsZeroWhenSumCarriesTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte flags = 0x0;
             byte to = 0xF5;
@@ -63,7 +63,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void AddWithCarrySetsHalfCarryTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte flags = 0b11010000;
             byte to = 0xAA;
@@ -77,7 +77,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void AddWithCarrySetsCarryTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte flags = 0b11010000;
             byte to = 0xFE;
@@ -92,7 +92,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void AddWordSetsCarryTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte flags = 0b00000000;
             byte toHigh = 0xFF;
@@ -110,7 +110,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void AddWordSetsHalfCarryTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte flags = 0b00000000;
             byte toHigh = 0x0F;
@@ -128,7 +128,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void AddSignedPositiveTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             ushort to = 0x0000;
             byte flags = 0x0;
@@ -254,7 +254,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void AddSignedNegativeTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             ushort to = 0x0000;
             byte flags = 0x0;
@@ -380,7 +380,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void SubtractTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte from = 0x11;
             byte flags = 0b00000000;
@@ -394,7 +394,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void SubtractSetsCarryTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte from = 0xE0;
             byte flags = 0b00000000;
@@ -408,7 +408,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void SubtractSetsHalfCarryTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte from = 0x11;
             byte flags = 0b00000000;
@@ -422,7 +422,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void SubtractSetsZeroFlagTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte from = 0xFF;
             byte flags = 0b00000000;
@@ -436,7 +436,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void SubtractWithCarryTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte from = 0xF;
             byte flags = 0b00010000;
@@ -450,7 +450,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void SubtractWithCarrySetsCarryTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte from = 0xE1;
             byte flags = 0b00010000;
@@ -464,7 +464,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void SubtractWithCarrySetsHalfCarryTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte from = 0x11;
             byte flags = 0b00010000;
@@ -478,7 +478,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void SubtractWithCarrySetsZeroFlagTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte from = 0xFF;
             byte flags = 0b00010000;
@@ -492,7 +492,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void AndTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte to = 0xAA;
             byte flags = 0b00000000;
@@ -506,7 +506,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void OrTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte to = 0xF0;
             byte flags = 0b11110000;
@@ -520,7 +520,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void XorTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte to = 0xAF;
             byte flags = 0b11110000;
@@ -534,7 +534,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void CompareSetsZeroFlagTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte flags = 0b00000000;
 
@@ -546,7 +546,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void CompareSetsHalfCarryFlagTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte flags = 0b00000000;
 
@@ -558,7 +558,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void CompareSetsCarryFlagTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte flags = 0b00000000;
 
@@ -570,7 +570,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void IncrementSetsZeroTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte value = 0xFF;
             byte flags = 0b01010000;
@@ -584,7 +584,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void IncrementSetsHalfCarryTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte value = 0x0F;
             byte flags = 0b11000000;
@@ -598,7 +598,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void IncrementInMemoryTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte flags = 0b00000000;
             memory.WriteByte(0xACDC, 0xFF);
@@ -612,7 +612,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void IncrementCombinedWordTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte high = 0x10;
             byte low = 0xFF;
@@ -626,7 +626,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void IncrementWordTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             ushort value = 0x0123;
 
@@ -638,7 +638,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void DecrementSetsZeroTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte value = 0x01;
             byte flags = 0b00010000;
@@ -652,7 +652,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void DecrementSetsHalfCarryTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte value = 0x10;
             byte flags = 0b11000000;
@@ -666,7 +666,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void DecrementInMemoryTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte flags = 0b00000000;
             memory.WriteByte(0xACDC, 0x01);
@@ -680,7 +680,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void DecrementCombinedWordTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             byte high = 0x01;
             byte low = 0x23;
@@ -694,7 +694,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void DecrementWordTest()
         {
-            var memory = new Memory(new byte[0]);
+            var memory = new Memory();
             var alu = new ALU(memory);
             ushort target = 0xFFFF;
 

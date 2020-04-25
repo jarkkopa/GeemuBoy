@@ -36,8 +36,9 @@
             int newValue = to + value + additionalValue;
             to = (byte)(newValue & 0xFF);
             FlagUtils.SetFlags(ref flags,
-                to == 0, false,
-                (origValue & 0x0F) + (value & 0x0F) > 0x0F,
+                to == 0,
+                false,
+                (origValue & 0x0F) + (value & 0x0F) + additionalValue > 0x0F,
                 newValue > 0xFF);
             return 4;
         }
@@ -77,7 +78,7 @@
             FlagUtils.SetFlags(ref flags,
                 from == 0,
                 true,
-                (origValue & 0x0F) < ((value + additionalValue) & 0x0F),
+                (origValue & 0x0F) - (value & 0xF) - (additionalValue & 0xF) < 0,
                 origValue < (value + additionalValue));
             return 4;
         }
