@@ -10,3 +10,16 @@ What should be implemented next:
 - Input
 - Timers
 - Audio
+
+Blargg's individual CPU instruction test results
+- 01: Failed
+- 02: Failed
+- 03: Passed
+- 04: Passed
+- 05: Passed
+- 06: Passed
+- 07: Passed
+- 08: Passed
+- 09: Failed
+- 10: Passed
+- 11: Failed
