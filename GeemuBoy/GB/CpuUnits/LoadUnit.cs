@@ -16,6 +16,7 @@
         public int WriteToAddressAndIncrement(ref byte addrHigh, ref byte addrLow, byte value, short addValue);
         public int Push(ref ushort pointer, byte valueHigh, byte valueLow);
         public int Pop(ref byte valueHigh, ref byte valuelow, ref ushort pointer);
+        public int PopWithFlags(ref byte valueHigh, ref byte valueLow, ref ushort pointer, ref byte flags);
     }
 
     public class LoadUnit : ILoadUnit
@@ -129,6 +130,18 @@
             pointer += 2;
             valueHigh = BitUtils.MostSignificantByte(value);
             valueLow = BitUtils.LeastSignificantByte(value);
+            return 12;
+        }
+
+        public int PopWithFlags(ref byte valueHigh, ref byte valueLow, ref ushort pointer, ref byte flags)
+        {
+            Pop(ref valueHigh, ref valueLow, ref pointer);
+            FlagUtils.SetFlags(ref flags,
+                valueLow.IsBitSet(7),
+                valueLow.IsBitSet(6),
+                valueLow.IsBitSet(5),
+                valueLow.IsBitSet(4));
+            flags = (byte)(flags & 0xF0);
             return 12;
         }
     }

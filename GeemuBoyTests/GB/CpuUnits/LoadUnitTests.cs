@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using GeemuBoy.GB.CpuUnits;
+using Xunit;
 
 namespace GeemuBoy.GB.CpuUnits.Tests
 {
@@ -71,7 +72,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
 
             loadUnit.LoadAdjusted(ref H, ref L, SP, 0x01, ref flags);
 
-            Assert.Equal(0x0001, BitUtils.BytesToUshort(H,L));
+            Assert.Equal(0x0001, BitUtils.BytesToUshort(H, L));
             Assert.Equal(0x0, flags);
 
             SP = 0x0001;
@@ -195,7 +196,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
             byte H = 0xF0;
             byte L = 0xF0;
             byte flags = 0x0;
-             ushort SP = 0x0000;
+            ushort SP = 0x0000;
 
             loadUnit.LoadAdjusted(ref H, ref L, SP, 0xFF, ref flags);
 
@@ -475,6 +476,23 @@ namespace GeemuBoy.GB.CpuUnits.Tests
 
             Assert.Equal(0x12, destHigh);
             Assert.Equal(0x34, destLow);
+            Assert.Equal(0xC002, value);
+        }
+
+        [Fact()]
+        public void PopWithFlagsTest()
+        {
+            var memory = new Memory();
+            var loadUnit = new LoadUnit(memory);
+            byte destHigh = 0x00;
+            byte destLow = 0b10010000;
+            ushort value = 0xC000;
+            memory.WriteWord(0xC000, 0x1234);
+
+            loadUnit.PopWithFlags(ref destHigh, ref destLow, ref value, ref destLow);
+
+            Assert.Equal(0x12, destHigh);
+            Assert.Equal(0x34 & 0xF0, destLow);
             Assert.Equal(0xC002, value);
         }
     }

@@ -170,6 +170,8 @@ namespace GeemuBoy.GB
             {
                 throw new NotImplementedException($"Trying to run opcode 0x{code:X2} that is not implemented.");
             }
+            // TODO: Find more elegant way to always keep lower 4 bits of F zero
+            F = (byte)(F & 0xF0);
 
             ppu.Tick(Cycles);
 
@@ -362,7 +364,11 @@ namespace GeemuBoy.GB
             CreateOpCode(0xC5, () => loadUnit.Push(ref SP, B, C), "PUSH BC");
             CreateOpCode(0xD5, () => loadUnit.Push(ref SP, D, E), "PUSH DE");
             CreateOpCode(0xE5, () => loadUnit.Push(ref SP, H, L), "PUSH HL");
-            CreateOpCode(0xF1, () => loadUnit.Pop(ref A, ref F, ref SP), "POP AF");
+            CreateOpCode(0xF1, () =>
+            {
+                // F = (byte)(F & 0xF0);
+                return loadUnit.PopWithFlags(ref A, ref F, ref SP, ref F);
+            }, "POP AF");
             CreateOpCode(0xC1, () => loadUnit.Pop(ref B, ref C, ref SP), "POP BC");
             CreateOpCode(0xD1, () => loadUnit.Pop(ref D, ref E, ref SP), "POP DE");
             CreateOpCode(0xE1, () => loadUnit.Pop(ref H, ref L, ref SP), "POP HL");

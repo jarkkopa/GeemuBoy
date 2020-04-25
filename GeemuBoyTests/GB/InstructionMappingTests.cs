@@ -157,7 +157,7 @@ namespace GeemuBoy.GB.Tests
             AssertSingleCall(0xC5, () => loadUnit.Push(ref cpu.SP, cpu.B, cpu.C), 16);
             AssertSingleCall(0xD5, () => loadUnit.Push(ref cpu.SP, cpu.D, cpu.E), 16);
             AssertSingleCall(0xE5, () => loadUnit.Push(ref cpu.SP, cpu.H, cpu.L), 16);
-            AssertSingleCall(0xF1, () => loadUnit.Pop(ref cpu.A, ref cpu.F, ref cpu.SP), 12);
+            AssertSingleCall(0xF1, () => loadUnit.PopWithFlags(ref cpu.A, ref cpu.F, ref cpu.SP, ref cpu.F), 12);
             AssertSingleCall(0xC1, () => loadUnit.Pop(ref cpu.B, ref cpu.C, ref cpu.SP), 12);
             AssertSingleCall(0xD1, () => loadUnit.Pop(ref cpu.D, ref cpu.E, ref cpu.SP), 12);
             AssertSingleCall(0xE1, () => loadUnit.Pop(ref cpu.H, ref cpu.L, ref cpu.SP), 12);
