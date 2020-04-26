@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace GeemuBoy.GB
 {
@@ -58,12 +59,16 @@ namespace GeemuBoy.GB
         /// </summary>
         private byte interruptEnableRegister;
 
+        public StringBuilder Serial { get; private set; }
+
         public Memory(byte[]? cartridge = null, byte[]? bootRom = null)
         {
             this.cartridge = cartridge ?? new byte[0x8000];
             this.bootRom = bootRom;
 
             RomMapMode = bootRom != null ? MapMode.Boot : MapMode.Cartridge;
+
+            Serial = new StringBuilder();
         }
 
         public ushort ReadWord(ushort addr)
@@ -186,6 +191,11 @@ namespace GeemuBoy.GB
             else if (addr < 0xFF4C)
             {
                 ioRegisters[addr - 0xFF00] = data;
+
+                if (addr == 0xFF02 && data == 0x81)
+                {
+                    Serial.Append((char)ioRegisters[1]);
+                }
             }
             else if (addr < 0xFF80)
             {
