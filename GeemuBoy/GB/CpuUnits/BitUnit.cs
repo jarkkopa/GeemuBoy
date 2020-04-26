@@ -45,6 +45,8 @@
         public int ComplementCarry(ref byte flags)
         {
             FlagUtils.SetFlag(Flag.C, !FlagUtils.GetFlag(Flag.C, flags), ref flags);
+            FlagUtils.SetFlag(Flag.H, false, ref flags);
+            FlagUtils.SetFlag(Flag.N, false, ref flags);
             return 4;
         }
 

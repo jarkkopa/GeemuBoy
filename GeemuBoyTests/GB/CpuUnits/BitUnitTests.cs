@@ -1,5 +1,4 @@
-﻿using GeemuBoy.GB.CpuUnits;
-using Xunit;
+﻿using Xunit;
 
 namespace GeemuBoy.GB.CpuUnits.Tests
 {
@@ -274,46 +273,82 @@ namespace GeemuBoy.GB.CpuUnits.Tests
             Assert.Equal(0xF3, memory.ReadByte(0xABCD));
         }
 
+
         [Fact()]
-        public void ShiftRightLogicResetsCarry()
+        public void ShiftRightLogic()
         {
-            var memory = new Memory();
-            var bitUnit = new BitUnit(memory);
-            byte value = 0b10101110;
-            byte flags = 0b01110000;
+            var bitUnit = new BitUnit(new Memory());
+            byte value = 0x00;
+            byte flags = 0xF0;
 
             bitUnit.ShiftRightLogic(ref value, ref flags);
 
-            Assert.Equal(0b01010111, value);
-            Assert.Equal(0x0, flags);
-        }
+            Assert.Equal(0x0, value);
+            Assert.Equal(0b10000000, flags);
 
-        [Fact()]
-        public void ShiftRightLogicSetsCarry()
-        {
-            var memory = new Memory();
-            var bitUnit = new BitUnit(memory);
-            byte value = 0b10101111;
-            byte flags = 0b01100000;
+            value = 0x01;
+            flags = 0xF0;
 
             bitUnit.ShiftRightLogic(ref value, ref flags);
 
-            Assert.Equal(0b01010111, value);
-            Assert.Equal(0b00010000, flags);
-        }
-
-        [Fact()]
-        public void ShiftRightLogicSetsZero()
-        {
-            var memory = new Memory();
-            var bitUnit = new BitUnit(memory);
-            byte value = 0x1;
-            byte flags = 0b01100000;
-
-            bitUnit.ShiftRightLogic(ref value, ref flags);
-
-            Assert.Equal(0x00, value);
+            Assert.Equal(0x0, value);
             Assert.Equal(0b10010000, flags);
+
+            value = 0x0F;
+            flags = 0xF0;
+
+            bitUnit.ShiftRightLogic(ref value, ref flags);
+
+            Assert.Equal(0x07, value);
+            Assert.Equal(0b00010000, flags);
+
+            value = 0x10;
+            flags = 0xF0;
+
+            bitUnit.ShiftRightLogic(ref value, ref flags);
+
+            Assert.Equal(0x08, value);
+            Assert.Equal(0x0, flags);
+
+            value = 0x1F;
+            flags = 0xF0;
+
+            bitUnit.ShiftRightLogic(ref value, ref flags);
+
+            Assert.Equal(0x0F, value);
+            Assert.Equal(0b00010000, flags);
+
+            value = 0x7F;
+            flags = 0xF0;
+
+            bitUnit.ShiftRightLogic(ref value, ref flags);
+
+            Assert.Equal(0x3F, value);
+            Assert.Equal(0b00010000, flags);
+
+            value = 0x80;
+            flags = 0xF0;
+
+            bitUnit.ShiftRightLogic(ref value, ref flags);
+
+            Assert.Equal(0x40, value);
+            Assert.Equal(0x0, flags);
+
+            value = 0xF0;
+            flags = 0xF0;
+
+            bitUnit.ShiftRightLogic(ref value, ref flags);
+
+            Assert.Equal(0x78, value);
+            Assert.Equal(0x0, flags);
+
+            value = 0xFF;
+            flags = 0xF0;
+
+            bitUnit.ShiftRightLogic(ref value, ref flags);
+
+            Assert.Equal(0x7F, value);
+            Assert.Equal(0b00010000, flags);
         }
 
         [Fact()]
@@ -557,7 +592,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
 
             bitUnit.ComplementCarry(ref flags);
 
-            Assert.Equal(0b10110000, flags);
+            Assert.Equal(0b10010000, flags);
         }
     }
 }

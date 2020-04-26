@@ -20,6 +20,6 @@ Blargg's individual CPU instruction test results
 - 06: Passed
 - 07: Passed
 - 08: Passed
-- 09: Failed
+- 09: Passed
 - 10: Passed
 - 11: Failed
