@@ -31,7 +31,7 @@ namespace GeemuBoy.GB.Tests
         [Fact()]
         public void GetBitTest()
         {
-            Assert.False(BitUtils.GetBit(0b10000000, 7));
+            Assert.True(BitUtils.GetBit(0b10000000, 7));
             Assert.True(BitUtils.GetBit(0b01000000, 6));
             Assert.True(BitUtils.GetBit(0b00100000, 5));
             Assert.True(BitUtils.GetBit(0b00010000, 4));
