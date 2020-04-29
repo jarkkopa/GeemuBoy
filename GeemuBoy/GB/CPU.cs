@@ -22,8 +22,8 @@ namespace GeemuBoy.GB
         private const ushort INTERRUPT_FLAG_ADDR = 0xFF0F;
 
         private readonly Memory memory;
-
         private readonly PPU ppu;
+        private readonly Timer timer;
 
         private readonly ILoadUnit loadUnit;
         private readonly IALU alu;
@@ -72,6 +72,7 @@ namespace GeemuBoy.GB
             CreateBitUnitOpCodes();
 
             this.memory = memory;
+            this.timer = new Timer(memory);
 
             interruptVector = new Dictionary<Interrupt, ushort>
             {
@@ -173,7 +174,9 @@ namespace GeemuBoy.GB
             // TODO: Find more elegant way to always keep lower 4 bits of F zero
             F = (byte)(F & 0xF0);
 
-            ppu.Tick(Cycles);
+            ppu.Update(Cycles);
+
+            timer.Update(Cycles);
 
             HandleInterrupts();
         }

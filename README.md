@@ -8,7 +8,6 @@ What should be implemented next:
 - Memory banking
 - Sprite rendering
 - Input
-- Timers
 - Audio
 
 Blargg's individual CPU instruction test results

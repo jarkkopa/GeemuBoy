@@ -21,11 +21,11 @@ namespace GeemuBoy.GB.Tests
                 {
                     // Rendering scanlines
                     Assert.Equal(PPU.Mode.OamSearch, ppu.CurrentMode);
-                    ppu.Tick(80);
+                    ppu.Update(80);
                     Assert.Equal(PPU.Mode.PixelTransfer, ppu.CurrentMode);
-                    ppu.Tick(172);
+                    ppu.Update(172);
                     Assert.Equal(PPU.Mode.HBlank, ppu.CurrentMode);
-                    ppu.Tick(204);
+                    ppu.Update(204);
                     Assert.Equal(line + 1, memory.ReadByte(0xFF44));
                 }
                 else
@@ -37,7 +37,7 @@ namespace GeemuBoy.GB.Tests
                         Assert.True(interruptFlag.IsBitSet(0));
                     }
                     // One scanline takes 456 cycles
-                    ppu.Tick(456);
+                    ppu.Update(456);
                     if (line < 153)
                     {
                         Assert.Equal(PPU.Mode.VBlank, ppu.CurrentMode);

@@ -80,7 +80,7 @@
             CurrentMode = Mode.OamSearch;
         }
 
-        public void Tick(int cpuCycles)
+        public void Update(int cpuCycles)
         {
             byte controlRegister = memory.ReadByte(0xFF40);
             if (controlRegister.IsBitSet(7) == false)

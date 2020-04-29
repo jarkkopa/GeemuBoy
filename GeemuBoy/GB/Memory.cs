@@ -152,7 +152,7 @@ namespace GeemuBoy.GB
             WriteByte((ushort)(addr + 1), msb);
         }
 
-        public void WriteByte(ushort addr, byte data)
+        public void WriteByte(ushort addr, byte data, bool applySideEffects = true)
         {
             if (addr < 0x4000)
             {
@@ -190,16 +190,21 @@ namespace GeemuBoy.GB
             }
             else if (addr < 0xFF4C)
             {
-                ioRegisters[addr - 0xFF00] = data;
+                if (addr == 0xFF04 && applySideEffects)
+                {
+                    data = 0x00;
+                }
 
-                if (addr == 0xFF02 && data == 0x81)
+                if (addr == 0xFF02 && data == 0x81 && applySideEffects)
                 {
                     Serial.Append((char)ioRegisters[1]);
                 }
+
+                ioRegisters[addr - 0xFF00] = data;
             }
             else if (addr < 0xFF80)
             {
-                if (addr == BOOT_ROM_LOCK_ADDRESS && data == 0b1 && RomMapMode == MapMode.Boot)
+                if (addr == BOOT_ROM_LOCK_ADDRESS && data == 0b1 && RomMapMode == MapMode.Boot && applySideEffects)
                 {
                     RomMapMode = MapMode.Cartridge;
                 }
