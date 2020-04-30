@@ -1,4 +1,4 @@
-# Geemu Boy [![Build Status](https://travis-ci.org/jarkkopa/GeemuBoy.svg?branch=master)](https://travis-ci.org/jarkkopa/GeemuBoy)
+# Geemu Boy ![](https://github.com/jarkkopa/GeemuBoy/workflows/.NET%20Core/badge.svg?branch=build-action)
 Geemu Boy emulator for .NET Core 3.1.
 
 Uses [SDL2](https://www.libsdl.org/) with [SDL2-CS Bindings](https://github.com/flibitijibibo/SDL2-CS) for rendering.
