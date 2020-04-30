@@ -669,12 +669,12 @@ namespace GeemuBoy.GB.CpuUnits.Tests
             var memory = new Memory();
             var alu = new ALU(memory);
             byte flags = 0b00000000;
-            memory.WriteByte(0xACDC, 0x01);
+            memory.WriteByte(0xACDC, 0xF0);
 
             alu.DecrementInMemory(0xAC, 0xDC, ref flags);
 
-            Assert.Equal(0x0, memory.ReadByte(0xACDC));
-            Assert.Equal(0b11000000, flags);
+            Assert.Equal(0xEF, memory.ReadByte(0xACDC));
+            Assert.Equal(0b01100000, flags);
         }
 
         [Fact()]

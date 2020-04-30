@@ -184,7 +184,7 @@
             memory.WriteByte(address, (byte)(origValue - 1));
             FlagUtils.SetFlag(Flag.Z, (byte)(origValue - 1) == 0, ref flags);
             FlagUtils.SetFlag(Flag.N, true, ref flags);
-            FlagUtils.SetFlag(Flag.H, (origValue & 0x0F) > 1, ref flags);
+            FlagUtils.SetFlag(Flag.H, (origValue & 0x0F) < 1, ref flags);
             return 12;
         }
 
