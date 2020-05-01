@@ -164,7 +164,13 @@ namespace GeemuBoy.GB
             }
             else if (addr < 0xA000)
             {
-                videoRam[addr - 0x8000] = data;
+                byte lcdControl = ioRegisters[0xFF40 - 0xFF00];
+                int lcdMode = ioRegisters[0xFF41 - 0xFF00] & 3;
+                if (!lcdControl.IsBitSet(7) || lcdMode == 0 || lcdMode == 1)
+                {
+                    // VRAM accessible only when lcd is disabled or during VBlank or HBlank
+                    videoRam[addr - 0x8000] = data;
+                }
             }
             else if (addr < 0xC000)
             {
