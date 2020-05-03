@@ -61,6 +61,8 @@ namespace GeemuBoy.GB
 
         public StringBuilder Serial { get; private set; }
 
+        private InputRegister inputRegister = new InputRegister();
+
         public Memory(byte[]? cartridge = null, byte[]? bootRom = null)
         {
             this.cartridge = cartridge ?? new byte[0x8000];
@@ -123,6 +125,10 @@ namespace GeemuBoy.GB
             }
             else if (addr < 0xFF4C)
             {
+                if (addr == 0xFF00)
+                {
+                    ioRegisters[0] = inputRegister.ReadValue(ioRegisters[0]);
+                }
                 return ioRegisters[addr - 0xFF00];
             }
             else if (addr < 0xFF80)
@@ -206,6 +212,10 @@ namespace GeemuBoy.GB
                     Serial.Append((char)ioRegisters[1]);
                 }
 
+                if (addr == 0xFF00 && applySideEffects)
+                {
+                    data = (byte)((ioRegisters[0] & 0xF) | (data & 0x30));
+                }
                 ioRegisters[addr - 0xFF00] = data;
             }
             else if (addr < 0xFF80)
@@ -232,6 +242,11 @@ namespace GeemuBoy.GB
             {
                 throw new ArgumentException($"Could not write to illegal memory address: {addr:X4}");
             }
+        }
+
+        public void UpdateInputRegister(InputRegister.Keys keys)
+        {
+            inputRegister.UpdateState(keys, this);
         }
     }
 }

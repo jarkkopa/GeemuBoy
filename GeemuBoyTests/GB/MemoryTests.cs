@@ -100,7 +100,7 @@ namespace GeemuBoy.GB.Tests
             memory.WriteByte(addrStart, 0xFF);
             memory.WriteByte(addrEnd, 0xFF);
 
-            Assert.Equal(0xFF, memory.ReadByte(addrStart));
+            Assert.Equal(0x3F, memory.ReadByte(addrStart)); // Only bits 5 and 4 are writable in input register
             Assert.Equal(0xFF, memory.ReadByte(addrEnd));
         }
 

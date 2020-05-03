@@ -38,5 +38,17 @@
                 return (byte)(value & ~(1 << index));
             }
         }
+
+        public static void SetBit(ref byte value, int index, bool bit)
+        {
+            if (bit)
+            {
+                value = (byte)(value | (1 << index));
+            }
+            else
+            {
+                value = (byte)(value & ~(1 << index));
+            }
+        }
     }
 }

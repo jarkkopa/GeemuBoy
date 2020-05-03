@@ -7,7 +7,6 @@ What should be implemented next:
 - Missing opcodes (STOP, HALT and DAA)
 - Memory banking
 - Sprite rendering
-- Input
 - Audio
 
 Blargg's individual CPU instruction test results

@@ -96,21 +96,6 @@ namespace GeemuBoy.GB
 
         public CPU(Memory memory, IDisplay display) : this(memory, new PPU(memory, display)) { }
 
-        public void Reset()
-        {
-            PC = 0;
-            SP = 0;
-
-            A = 0;
-            B = 0;
-            C = 0;
-            D = 0;
-            E = 0;
-            F = 0;
-            H = 0;
-            L = 0;
-        }
-
         public void SetInitialStateAfterBootSequence()
         {
             A = 0x01; F = 0xB0;
@@ -157,7 +142,7 @@ namespace GeemuBoy.GB
         {
             var code = memory.ReadByte(PC);
             PC++;
-
+            
             if (code == PREFIX_OPCODE)
             {
                 RunPrefixedCommand();
@@ -224,6 +209,11 @@ namespace GeemuBoy.GB
             byte flag = memory.ReadByte(INTERRUPT_FLAG_ADDR);
             flag = BitUtils.SetBit(flag, (int)interrupt, true);
             memory.WriteByte(INTERRUPT_FLAG_ADDR, flag);
+        }
+
+        public void HandleInput(InputRegister.Keys keys)
+        {
+            memory.UpdateInputRegister(keys);
         }
 
         private void HandleInterrupts()
@@ -600,14 +590,14 @@ namespace GeemuBoy.GB
             CreateOpCode(0xD8, () => jumpUnit.ReturnConditional(ref SP, ref PC, Flag.C, true, F), "RET C");
             CreateOpCode(0xD9, () => jumpUnit.ReturnAndEnableInterrupts(ref SP, ref PC, ref enableInterruptMasterAfter), "RETI");
 
-            CreateOpCode(0xC7, () => jumpUnit.Call(0x0000, ref SP, ref PC), "RST 00H");
-            CreateOpCode(0xD7, () => jumpUnit.Call(0x0010, ref SP, ref PC), "RST 10H");
-            CreateOpCode(0xE7, () => jumpUnit.Call(0x0020, ref SP, ref PC), "RST 20H");
-            CreateOpCode(0xF7, () => jumpUnit.Call(0x0030, ref SP, ref PC), "RST 30H");
-            CreateOpCode(0xCF, () => jumpUnit.Call(0x0008, ref SP, ref PC), "RST 08H");
-            CreateOpCode(0xDF, () => jumpUnit.Call(0x0018, ref SP, ref PC), "RST 18H");
-            CreateOpCode(0xEF, () => jumpUnit.Call(0x0028, ref SP, ref PC), "RST 28H");
-            CreateOpCode(0xFF, () => jumpUnit.Call(0x0038, ref SP, ref PC), "RST 38H");
+            CreateOpCode(0xC7, () => { jumpUnit.Call(0x0000, ref SP, ref PC); return 16; }, "RST 00H");
+            CreateOpCode(0xD7, () => { jumpUnit.Call(0x0010, ref SP, ref PC); return 16; }, "RST 10H");
+            CreateOpCode(0xE7, () => { jumpUnit.Call(0x0020, ref SP, ref PC); return 16; }, "RST 20H");
+            CreateOpCode(0xF7, () => { jumpUnit.Call(0x0030, ref SP, ref PC); return 16; }, "RST 30H");
+            CreateOpCode(0xCF, () => { jumpUnit.Call(0x0008, ref SP, ref PC); return 16; }, "RST 08H");
+            CreateOpCode(0xDF, () => { jumpUnit.Call(0x0018, ref SP, ref PC); return 16; }, "RST 18H");
+            CreateOpCode(0xEF, () => { jumpUnit.Call(0x0028, ref SP, ref PC); return 16; }, "RST 28H");
+            CreateOpCode(0xFF, () => { jumpUnit.Call(0x0038, ref SP, ref PC); return 16; }, "RST 38H");
         }
 
         private void CreateBitUnitOpCodes()

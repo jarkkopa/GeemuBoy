@@ -72,6 +72,9 @@ namespace GeemuBoy
                         case SDL.SDL_EventType.SDL_QUIT:
                             state = State.Quit;
                             break;
+                        case SDL.SDL_EventType.SDL_KEYUP:
+                            HandleInputs();
+                            break;
                         case SDL.SDL_EventType.SDL_KEYDOWN:
                             switch (evt.key.keysym.sym)
                             {
@@ -96,6 +99,9 @@ namespace GeemuBoy
                                     state = State.SetMemoryRead;
                                     PrintDebugger();
                                     break;
+                                default:
+                                    HandleInputs();
+                                    break;
                             }
                             break;
                     }
@@ -116,6 +122,50 @@ namespace GeemuBoy
             }
 
             display.Dispose();
+        }
+
+        private void HandleInputs()
+        {
+            IntPtr state = SDL.SDL_GetKeyboardState(out var size);
+            InputRegister.Keys keys = InputRegister.Keys.None;
+            unsafe
+            {
+                byte* data = (byte*)state;
+                if (data[(int)SDL.SDL_Scancode.SDL_SCANCODE_DOWN] != 0)
+                {
+                    keys |= InputRegister.Keys.Down;
+                }
+                if (data[(int)SDL.SDL_Scancode.SDL_SCANCODE_UP] != 0)
+                {
+                    keys |= InputRegister.Keys.Up;
+                }
+                if (data[(int)SDL.SDL_Scancode.SDL_SCANCODE_LEFT] != 0)
+                {
+                    keys |= InputRegister.Keys.Left;
+                }
+                if (data[(int)SDL.SDL_Scancode.SDL_SCANCODE_RIGHT] != 0)
+                {
+                    keys |= InputRegister.Keys.Right;
+                }
+                if (data[(int)SDL.SDL_Scancode.SDL_SCANCODE_A] != 0)
+                {
+                    keys |= InputRegister.Keys.Start;
+                }
+                if (data[(int)SDL.SDL_Scancode.SDL_SCANCODE_S] != 0)
+                {
+                    keys |= InputRegister.Keys.Select;
+                }
+                if (data[(int)SDL.SDL_Scancode.SDL_SCANCODE_Z] != 0)
+                {
+                    keys |= InputRegister.Keys.A;
+                }
+                if (data[(int)SDL.SDL_Scancode.SDL_SCANCODE_X] != 0)
+                {
+                    keys |= InputRegister.Keys.B;
+                }
+            }
+
+            cpu.HandleInput(keys);
         }
 
         private void Step()
