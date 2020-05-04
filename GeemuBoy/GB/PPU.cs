@@ -223,9 +223,9 @@
 
         private uint GetPixel(int index, byte palette, byte high, byte low)
         {
-            int colorH = (high & 1 << index) >> (index - 1);
+            int colorH = (high & 1 << index) >> index;
             int colorL = (low & 1 << index) >> index;
-            int color = colorH | colorL;
+            int color = (colorH << 1) | colorL;
 
             int paletteIndex = color switch
             {

@@ -83,7 +83,6 @@ namespace GeemuBoy
                         printDebug = true;
                         breakpoint = null;
                         PrintDebugger();
-
                     }
 
                     if (printDebug)

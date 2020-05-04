@@ -154,7 +154,7 @@ namespace GeemuBoy.GB
             }
             else
             {
-                throw new NotImplementedException($"Trying to run opcode 0x{code:X2} that is not implemented.");
+                //throw new NotImplementedException($"Trying to run opcode 0x{code:X2} that is not implemented.");
             }
             // TODO: Find more elegant way to always keep lower 4 bits of F zero
             F = (byte)(F & 0xF0);
