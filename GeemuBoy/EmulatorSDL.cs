@@ -30,6 +30,8 @@ namespace GeemuBoy
 
         private bool printDebug = true;
 
+        private bool waitEventPoll = false;
+
         public EmulatorSDL(string? cartridgePath, string? bootRomPath)
         {
             byte[]? cartridge = null;
@@ -56,6 +58,9 @@ namespace GeemuBoy
             PrintDebugger();
             printDebug = false;
 
+            ppu.RenderEvent += RenderHandler;
+
+            state = State.Running;
             Run();
         }
 
@@ -65,63 +70,76 @@ namespace GeemuBoy
 
             while (state != State.Quit)
             {
-                while (SDL.SDL_PollEvent(out SDL.SDL_Event evt) != 0)
-                {
-                    switch (evt.type)
-                    {
-                        case SDL.SDL_EventType.SDL_QUIT:
-                            state = State.Quit;
-                            break;
-                        case SDL.SDL_EventType.SDL_KEYUP:
-                            HandleInputs();
-                            break;
-                        case SDL.SDL_EventType.SDL_KEYDOWN:
-                            switch (evt.key.keysym.sym)
-                            {
-                                case SDL.SDL_Keycode.SDLK_q:
-                                case SDL.SDL_Keycode.SDLK_ESCAPE:
-                                    state = State.Quit;
-                                    break;
-                                case SDL.SDL_Keycode.SDLK_n:
-                                    Step();
-                                    break;
-                                case SDL.SDL_Keycode.SDLK_SPACE:
-                                    state = state == State.Stop ? State.Running : State.Stop;
-                                    break;
-                                case SDL.SDL_Keycode.SDLK_p:
-                                    printDebug = !printDebug;
-                                    break;
-                                case SDL.SDL_Keycode.SDLK_b:
-                                    state = State.SetBreakpoint;
-                                    PrintDebugger();
-                                    break;
-                                case SDL.SDL_Keycode.SDLK_m:
-                                    state = State.SetMemoryRead;
-                                    PrintDebugger();
-                                    break;
-                                default:
-                                    HandleInputs();
-                                    break;
-                            }
-                            break;
-                    }
-                }
+                PollEvents();
+                waitEventPoll = false;
 
-                if (breakpoint.HasValue && cpu.PC == breakpoint.Value)
-                {
-                    state = State.Stop;
-                    printDebug = true;
-                    breakpoint = null;
-                    PrintDebugger();
-                }
-
-                if (state == State.Running)
+                while (state == State.Running && !waitEventPoll)
                 {
                     Step();
+
+                    if (breakpoint.HasValue && cpu.PC == breakpoint.Value)
+                    {
+                        state = State.Stop;
+                        printDebug = true;
+                        breakpoint = null;
+                        PrintDebugger();
+
+                    }
+
+                    if (printDebug)
+                    {
+                        // Poll events while printing because waiting for rendering takes too much time
+                        PollEvents();
+                    }
                 }
             }
 
             display.Dispose();
+        }
+
+        private void PollEvents()
+        {
+            while (SDL.SDL_PollEvent(out SDL.SDL_Event evt) != 0)
+            {
+                switch (evt.type)
+                {
+                    case SDL.SDL_EventType.SDL_QUIT:
+                        state = State.Quit;
+                        break;
+                    case SDL.SDL_EventType.SDL_KEYUP:
+                        HandleInputs();
+                        break;
+                    case SDL.SDL_EventType.SDL_KEYDOWN:
+                        switch (evt.key.keysym.sym)
+                        {
+                            case SDL.SDL_Keycode.SDLK_q:
+                            case SDL.SDL_Keycode.SDLK_ESCAPE:
+                                state = State.Quit;
+                                break;
+                            case SDL.SDL_Keycode.SDLK_n:
+                                Step();
+                                break;
+                            case SDL.SDL_Keycode.SDLK_SPACE:
+                                state = state == State.Stop ? State.Running : State.Stop;
+                                break;
+                            case SDL.SDL_Keycode.SDLK_p:
+                                printDebug = !printDebug;
+                                break;
+                            case SDL.SDL_Keycode.SDLK_b:
+                                state = State.SetBreakpoint;
+                                PrintDebugger();
+                                break;
+                            case SDL.SDL_Keycode.SDLK_m:
+                                state = State.SetMemoryRead;
+                                PrintDebugger();
+                                break;
+                            default:
+                                HandleInputs();
+                                break;
+                        }
+                        break;
+                }
+            }
         }
 
         private void HandleInputs()
@@ -168,19 +186,16 @@ namespace GeemuBoy
             cpu.HandleInput(keys);
         }
 
+        private void RenderHandler()
+        {
+            waitEventPoll = true;
+        }
+
         private void Step()
         {
-            try
-            {
-                cpu.RunCommand();
-                instructionsRun++;
-                PrintDebugger();
-            }
-            catch (NotImplementedException e)
-            {
-                Console.WriteLine($"Stopped to opcode that is not implemented. Error: {e.Message}");
-                state = State.Stop;
-            }
+            cpu.RunCommand();
+            instructionsRun++;
+            PrintDebugger();
         }
 
         private void PrintDebugger()

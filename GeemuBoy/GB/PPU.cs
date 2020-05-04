@@ -72,6 +72,9 @@
             }
         }
 
+        public delegate void RenderHandler();
+        public RenderHandler? RenderEvent;
+
         public PPU(Memory memory, IDisplay display)
         {
             this.memory = memory;
@@ -126,6 +129,8 @@
                             CPU.RequestInterrupt(memory, CPU.Interrupt.VBlank);
 
                             display.Render();
+
+                            RenderEvent?.Invoke();
                         }
                         else
                         {
