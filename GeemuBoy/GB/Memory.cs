@@ -172,9 +172,9 @@ namespace GeemuBoy.GB
             {
                 byte lcdControl = ioRegisters[0xFF40 - 0xFF00];
                 int lcdMode = ioRegisters[0xFF41 - 0xFF00] & 3;
-                if (!lcdControl.IsBitSet(7) || lcdMode == 0 || lcdMode == 1)
+                if (!lcdControl.IsBitSet(7) || lcdMode != (int)PPU.Mode.PixelTransfer)
                 {
-                    // VRAM accessible only when lcd is disabled or during VBlank or HBlank
+                    // VRAM is not accessible during pixel transfer if lcd is enabled
                     videoRam[addr - 0x8000] = data;
                 }
             }
