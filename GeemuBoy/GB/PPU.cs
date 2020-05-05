@@ -127,9 +127,6 @@
                             CurrentMode = Mode.VBlank;
 
                             CPU.RequestInterrupt(memory, CPU.Interrupt.VBlank);
-
-                            display.Render();
-
                             RenderEvent?.Invoke();
                         }
                         else

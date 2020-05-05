@@ -22,15 +22,18 @@ namespace GeemuBoy
         private readonly PPU ppu;
         private readonly SDLDisplay display;
 
-        private string serial = "";
+        private bool readyToRender = false;
+
+        private readonly uint targetFrameTime = 16;
+        private uint frameStartTime = 0;
+
+        private readonly string serial = "";
         private int instructionsRun = 0;
 
         private readonly int totalWidth = 100;
         private readonly int leftSectionWidth = 50;
 
         private bool printDebug = true;
-
-        private bool waitEventPoll = false;
 
         public EmulatorSDL(string? cartridgePath, string? bootRomPath)
         {
@@ -70,10 +73,12 @@ namespace GeemuBoy
 
             while (state != State.Quit)
             {
-                PollEvents();
-                waitEventPoll = false;
+                frameStartTime = SDL.SDL_GetTicks();
 
-                while (state == State.Running && !waitEventPoll)
+                PollEvents();
+                readyToRender = true;
+
+                while (state == State.Running && readyToRender)
                 {
                     Step();
 
@@ -91,6 +96,14 @@ namespace GeemuBoy
                         PollEvents();
                     }
                 }
+
+                uint frameTotal = SDL.SDL_GetTicks() - frameStartTime;
+                if (frameTotal < targetFrameTime)
+                {
+                    SDL.SDL_Delay(targetFrameTime - frameTotal);
+                }
+
+                display.Render();
             }
 
             display.Dispose();
@@ -187,7 +200,7 @@ namespace GeemuBoy
 
         private void RenderHandler()
         {
-            waitEventPoll = true;
+            readyToRender = false;
         }
 
         private void Step()
