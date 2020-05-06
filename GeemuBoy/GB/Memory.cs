@@ -193,7 +193,13 @@ namespace GeemuBoy.GB
             }
             else if (addr < 0xFEA0)
             {
-                oam[addr - 0xFE00] = data;
+                byte lcdControl = ioRegisters[0xFF40 - 0xFF00];
+                int lcdMode = ioRegisters[0xFF41 - 0xFF00] & 3;
+                if (!lcdControl.IsBitSet(7) && lcdMode != (int)PPU.Mode.OamSearch && lcdMode != (int)PPU.Mode.PixelTransfer)
+                {
+                    // OAM not accessible during OAM search and pixel transfer
+                    oam[addr - 0xFE00] = data;
+                }
             }
             else if (addr < 0xFF00)
             {
