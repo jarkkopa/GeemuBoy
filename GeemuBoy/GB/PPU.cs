@@ -20,6 +20,8 @@
 
         private Mode currentMode;
 
+        private uint[] currentDrawLine = new uint[WIDTH];
+
         public Mode CurrentMode
         {
             get { return currentMode; }
@@ -166,6 +168,8 @@
                 // Render sprites
                 RenderSpriteLine(controlRegister);
             }
+
+            display.RenderLine(CurrentLine, currentDrawLine);
         }
 
         private void RenderBackgroundLine(byte controlRegister)
@@ -181,7 +185,6 @@
 
             int y = renderWindow ? CurrentLine - windowY : scrollY + CurrentLine;
             int tileY = (y / 8) % 32;
-            uint[] linePixels = new uint[160];
             for (int pixel = 0; pixel < WIDTH; pixel++)
             {
                 // Find out which tile this pixel belongs to
@@ -208,14 +211,50 @@
                 byte tileLow = memory.ReadByte(tileDataAddress);
                 byte tileHigh = memory.ReadByte((ushort)(tileDataAddress + 1));
 
-                linePixels[pixel] = GetPixel((7 - (x % 8)), memory.ReadByte(0xFF47), tileHigh, tileLow);
+                currentDrawLine[pixel] = GetPixel((7 - (x % 8)), memory.ReadByte(0xFF47), tileHigh, tileLow);
             }
-            display.RenderLine(CurrentLine, linePixels);
         }
 
         private void RenderSpriteLine(byte controlRegister)
         {
-            // TODO
+            int spriteHeight = controlRegister.IsBitSet(2) ? 16 : 8;
+
+            int spritesPerLine = 0;
+            // TODO max 10 sprites per scanline and max 40 sprites per frame
+            for (ushort oamAddr = 0xFE00; oamAddr < 0xFEA0; oamAddr += 4)
+            {
+                // Sprite position adjusted to screen coordinates
+                byte spriteY = (byte)(memory.ReadByte(oamAddr) - 16);
+                byte spriteX = (byte)(memory.ReadByte((ushort)(oamAddr + 1)) - 8);
+                byte tileNum = memory.ReadByte((ushort)(oamAddr + 2));
+                byte attributes = memory.ReadByte((ushort)(oamAddr + 3));
+
+                if (CurrentLine < spriteY || CurrentLine >= spriteY + spriteHeight || spritesPerLine > 10)
+                {
+                    continue;
+                }
+                spritesPerLine++;
+
+                int currentSpriteLine = CurrentLine - spriteY;
+
+                ushort tileAddress = (ushort)(0x8000 + (tileNum * 16) + (currentSpriteLine * 2));
+                byte high = memory.ReadByte(tileAddress);
+                byte low = memory.ReadByte((ushort)(tileAddress + 1));
+
+                uint[] pixels = new uint[8];
+                byte palette = attributes.IsBitSet(4) ? memory.ReadByte(0xFF49) : memory.ReadByte(0xFF48);
+                for (int i = 0; i < 8; i++)
+                {
+                    // TODO: Handle transparency
+                    pixels[i] = GetPixel(i, palette, high, low);
+                }
+
+                int pixelIndex = 0;
+                for (int x = spriteX; x < spriteX + 8 && x < WIDTH && pixelIndex < 8; x++, pixelIndex++)
+                {
+                    currentDrawLine[x] = pixels[pixelIndex];
+                }
+            }
         }
 
         private uint GetPixel(int index, byte palette, byte high, byte low)

@@ -195,7 +195,7 @@ namespace GeemuBoy.GB
             {
                 byte lcdControl = ioRegisters[0xFF40 - 0xFF00];
                 int lcdMode = ioRegisters[0xFF41 - 0xFF00] & 3;
-                if (!lcdControl.IsBitSet(7) && lcdMode != (int)PPU.Mode.OamSearch && lcdMode != (int)PPU.Mode.PixelTransfer)
+                if (!lcdControl.IsBitSet(7) || (lcdMode != (int)PPU.Mode.OamSearch && lcdMode != (int)PPU.Mode.PixelTransfer))
                 {
                     // OAM not accessible during OAM search and pixel transfer
                     oam[addr - 0xFE00] = data;
@@ -204,7 +204,6 @@ namespace GeemuBoy.GB
             else if (addr < 0xFF00)
             {
                 // Empty but unusable for I/O
-                //throw new ArgumentException($"Could not write to unusable memory address: {addr}");
             }
             else if (addr < 0xFF4C)
             {
@@ -222,6 +221,10 @@ namespace GeemuBoy.GB
                 {
                     data = (byte)((ioRegisters[0] & 0xF) | (data & 0x30));
                 }
+                if (addr == 0xFF46 && applySideEffects)
+                {
+                    LaunchDMATransfer(data);
+                }
                 ioRegisters[addr - 0xFF00] = data;
             }
             else if (addr < 0xFF80)
@@ -233,7 +236,6 @@ namespace GeemuBoy.GB
                 else
                 {
                     // Empty but unusable for I/O
-                    //throw new ArgumentException($"Could not write to unusable memory address: 0x{addr:X4}");
                 }
             }
             else if (addr < 0xFFFF)
@@ -253,6 +255,17 @@ namespace GeemuBoy.GB
         public void UpdateInputRegister(InputRegister.Keys keys)
         {
             inputRegister.UpdateState(keys, this);
+        }
+
+        private void LaunchDMATransfer(byte registerValue)
+        {
+            for (ushort i = 0; i < 0xA0; i++)
+            {
+                ushort addr = (ushort)((registerValue << 8) + i);
+                byte data = ReadByte(addr);
+                WriteByte((ushort)(0xFE00 + i), data);
+
+            }
         }
     }
 }
