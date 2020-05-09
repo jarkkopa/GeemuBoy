@@ -243,10 +243,13 @@
 
                 uint[] pixels = new uint[8];
                 byte palette = attributes.IsBitSet(4) ? memory.ReadByte(0xFF49) : memory.ReadByte(0xFF48);
+                bool flipHorizontal = attributes.IsBitSet(5);
                 for (int i = 0; i < 8; i++)
                 {
+                    int adjustedIndex = flipHorizontal ? i : 7 - i;
+
                     // TODO: Handle transparency
-                    pixels[i] = GetPixel(i, palette, high, low);
+                    pixels[i] = GetPixel(adjustedIndex, palette, high, low);
                 }
 
                 int pixelIndex = 0;
