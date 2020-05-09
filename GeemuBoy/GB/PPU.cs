@@ -220,7 +220,6 @@
             int spriteHeight = controlRegister.IsBitSet(2) ? 16 : 8;
 
             int spritesPerLine = 0;
-            // TODO max 10 sprites per scanline and max 40 sprites per frame
             for (ushort oamAddr = 0xFE00; oamAddr < 0xFEA0; oamAddr += 4)
             {
                 // Sprite position adjusted to screen coordinates
@@ -236,6 +235,10 @@
                 spritesPerLine++;
 
                 int currentSpriteLine = CurrentLine - spriteY;
+                if (attributes.IsBitSet(6))
+                {
+                    currentSpriteLine = spriteHeight - currentSpriteLine - 1;
+                }
 
                 ushort tileAddress = (ushort)(0x8000 + (tileNum * 16) + (currentSpriteLine * 2));
                 byte high = memory.ReadByte(tileAddress);
@@ -247,14 +250,13 @@
                 for (int i = 0; i < 8; i++)
                 {
                     int adjustedIndex = flipHorizontal ? i : 7 - i;
-
-                    // TODO: Handle transparency
                     pixels[i] = GetPixel(adjustedIndex, palette, high, low);
                 }
 
                 int pixelIndex = 0;
                 for (int x = spriteX; x < spriteX + 8 && x < WIDTH && pixelIndex < 8; x++, pixelIndex++)
                 {
+                    // TODO: Handle transparency
                     currentDrawLine[x] = pixels[pixelIndex];
                 }
             }
