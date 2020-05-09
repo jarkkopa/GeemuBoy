@@ -10,6 +10,11 @@
             VBlank = 1
         }
 
+        private const uint BLACK = 0xFF000000;
+        private const uint DARK_GRAY = 0xFF606060;
+        private const uint LIGHT_GRAY = 0xFFA0A0A0;
+        private const uint WHITE = 0xFFFFFFFF;
+
         private const ushort LCD_STAT_ADDR = 0xFF41;
 
         private const int WIDTH = 160;
@@ -256,7 +261,10 @@
                 int pixelIndex = 0;
                 for (int x = spriteX; x < spriteX + 8 && x < WIDTH && pixelIndex < 8; x++, pixelIndex++)
                 {
-                    // TODO: Handle transparency
+                    if (pixels[pixelIndex] == WHITE || (attributes.IsBitSet(7) && currentDrawLine[x] != WHITE))
+                    {
+                        continue;
+                    }
                     currentDrawLine[x] = pixels[pixelIndex];
                 }
             }
@@ -283,11 +291,11 @@
         private uint GetColor(int index) =>
             index switch
             {
-                3 => 0xFF000000,
-                2 => 0xFF606060,
-                1 => 0xFFA0A0A0,
-                0 => 0xFFFFFFFF,
-                _ => 0xFFFFFFFF
+                3 => BLACK,
+                2 => DARK_GRAY,
+                1 => LIGHT_GRAY,
+                0 => WHITE,
+                _ => WHITE
             };
     }
 }
