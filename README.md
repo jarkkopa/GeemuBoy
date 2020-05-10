@@ -5,8 +5,7 @@ Uses [SDL2](https://www.libsdl.org/) with [SDL2-CS Bindings](https://github.com/
 
 What should be implemented next:
 - Missing opcodes (STOP, HALT and DAA)
-- Memory banking
-- Sprite rendering
+- Memory bank controller
 - Audio
 
 Blargg's individual CPU instruction test results
