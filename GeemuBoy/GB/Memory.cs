@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GeemuBoy.GB.MemoryBankControllers;
+using System;
 using System.Text;
 
 namespace GeemuBoy.GB
@@ -12,65 +13,25 @@ namespace GeemuBoy.GB
         private const ushort BOOT_ROM_LOCK_ADDRESS = 0xFF50;
 
         public MapMode RomMapMode { get; private set; }
+        public StringBuilder Serial { get; private set; } = new StringBuilder();
+
+        private readonly InputRegister inputRegister = new InputRegister();
 
         private readonly byte[]? bootRom;
-        private readonly byte[] cartridge;
-
-        /// <summary>
-        /// Video RAM
-        /// Address: 8000-9FFF
-        /// 8 kB
-        /// </summary>
+        private readonly ICartridge cartridge;
         private readonly byte[] videoRam = new byte[0x2000];
-        /// <summary>
-        /// External switchable RAM bank
-        /// Address: A000-BFFF
-        /// 8 kB
-        /// </summary>
-        private readonly byte[] ramBank = new byte[0x2000];
-        /// <summary>
-        /// Work RAM bank 0
-        /// Address: C000-DFFF
-        /// 8 kB
-        /// </summary>
         private readonly byte[] workRam = new byte[0x2000];
-        /// <summary>
-        /// Sprite attribute table (OAM)
-        /// Address: FE00-FE9F
-        /// 160 B
-        /// </summary>
         private readonly byte[] oam = new byte[0xA0];
-        /// <summary>
-        /// I/O Registers
-        /// Address: FF00-FF4B
-        /// 128 B
-        /// </summary>
         private readonly byte[] ioRegisters = new byte[0x80];
-        /// <summary>
-        /// High RAM
-        /// Address: FF80-FFFE
-        /// 127 B
-        /// </summary>
         private readonly byte[] highRam = new byte[0x7F];
-        /// <summary>
-        /// Interrupts Enable register
-        /// Address: FFFF-FFFF
-        /// 1 B
-        /// </summary>
         private byte interruptEnableRegister;
-
-        public StringBuilder Serial { get; private set; }
-
-        private InputRegister inputRegister = new InputRegister();
 
         public Memory(byte[]? cartridge = null, byte[]? bootRom = null)
         {
-            this.cartridge = cartridge ?? new byte[0x8000];
             this.bootRom = bootRom;
+            this.cartridge = CartridgeCreator.GetCartridge(cartridge);
 
             RomMapMode = bootRom != null ? MapMode.Boot : MapMode.Cartridge;
-
-            Serial = new StringBuilder();
         }
 
         public ushort ReadWord(ushort addr)
@@ -82,7 +43,7 @@ namespace GeemuBoy.GB
 
         public byte ReadByte(ushort addr)
         {
-            if (addr < 0x4000)
+            if (addr < 0x8000)
             {
                 if (RomMapMode == MapMode.Boot && addr < bootRom?.Length)
                 {
@@ -90,12 +51,8 @@ namespace GeemuBoy.GB
                 }
                 else
                 {
-                    return cartridge[addr];
+                    return cartridge.ReadByte(addr);
                 }
-            }
-            else if (addr < 0x8000)
-            {
-                return cartridge[addr];
             }
             else if (addr < 0xA000)
             {
@@ -103,7 +60,7 @@ namespace GeemuBoy.GB
             }
             else if (addr < 0xC000)
             {
-                return ramBank[addr - 0xA000];
+                return cartridge.ReadByte(addr);
             }
             else if (addr < 0xE000)
             {
@@ -160,13 +117,9 @@ namespace GeemuBoy.GB
 
         public void WriteByte(ushort addr, byte data, bool applySideEffects = true)
         {
-            if (addr < 0x4000)
+            if (addr < 0x8000)
             {
-                // throw new ArgumentException($"Could not write to read only memory address: {addr:x4}");
-            }
-            else if (addr < 0x8000)
-            {
-                // throw new ArgumentException($"Could not write to read only memory address: {addr}");
+                cartridge.WriteByte(addr, data);
             }
             else if (addr < 0xA000)
             {
@@ -180,7 +133,7 @@ namespace GeemuBoy.GB
             }
             else if (addr < 0xC000)
             {
-                ramBank[addr - 0xA000] = data;
+                cartridge.WriteByte(addr, data);
             }
             else if (addr < 0xE000)
             {

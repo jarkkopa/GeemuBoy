@@ -51,7 +51,9 @@ namespace GeemuBoy.GB.Tests
         [Fact]
         public void RamBankReadWriteTest()
         {
-            var memory = new Memory(new byte[0x8000]);
+            var data = new byte[0x8000];
+            data[0x149] = 0x2; // ram size
+            var memory = new Memory(data);
             ushort addrStart = 0xA000;
             ushort addrEnd = 0xBFFF;
 
@@ -134,6 +136,7 @@ namespace GeemuBoy.GB.Tests
         {
             byte[] bootRom = Enumerable.Repeat((byte)0x10, 0x80).ToArray();
             byte[] cartridge = Enumerable.Repeat((byte)0xFF, 0x8000).ToArray();
+            cartridge[0x147] = 0x0; // cartridge type
 
             var memory = new Memory(cartridge, bootRom);
 
@@ -146,6 +149,5 @@ namespace GeemuBoy.GB.Tests
             // Should now read from cartridge
             Assert.Equal(0xFF, memory.ReadByte(0x7F));
         }
-
     }
 }
