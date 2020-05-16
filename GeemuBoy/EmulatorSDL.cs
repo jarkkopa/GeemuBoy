@@ -145,6 +145,12 @@ namespace GeemuBoy
                                 state = State.SetMemoryRead;
                                 PrintDebugger();
                                 break;
+                            case SDL.SDL_Keycode.SDLK_1:
+                                ppu.PrintBackgroundTileNumbers();
+                                break;
+                            case SDL.SDL_Keycode.SDLK_2:
+                                ppu.PrintBackgroundTileAddresses();
+                                break;
                             default:
                                 HandleInputs();
                                 break;

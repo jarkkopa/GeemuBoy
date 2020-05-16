@@ -1,4 +1,6 @@
-﻿namespace GeemuBoy.GB
+﻿using System;
+
+namespace GeemuBoy.GB
 {
     public class PPU
     {
@@ -195,19 +197,9 @@
                 // Find out which tile this pixel belongs to
                 int x = renderWindow && pixel >= windowX ? pixel - windowX : pixel + scrollX;
                 int tileX = x / 8;
-                ushort tileAddress = (ushort)(tileMapAddress + tileX + (tileY * 32));
-                byte tileNumber = memory.ReadByte(tileAddress);
+                byte tileNumber = GetTileNumber(tileX, tileY, tileMapAddress);
                 // Find out tile address
-                ushort tileDataAddress;
-                if (controlRegister.IsBitSet(4))
-                {
-                    tileDataAddress = (ushort)(0x8000 + (tileNumber * 16));
-                }
-                else
-                {
-                    // 0x8800 addressing mode uses signed tile numbers unlike 0x8000 address mode
-                    tileDataAddress = (ushort)(0x8800 + (((sbyte)tileNumber) * 16));
-                }
+                ushort tileDataAddress = GetTileDataAddress(tileNumber, controlRegister.IsBitSet(4));
 
                 // Find out which tile line are we in
                 int tileLine = (y % 8) * 2;
@@ -297,5 +289,58 @@
                 0 => WHITE,
                 _ => WHITE
             };
+
+        private byte GetTileNumber(int column, int row, ushort tileMapAddress)
+        {
+            ushort tileAddress = (ushort)(tileMapAddress + column + (row * 32));
+            return memory.ReadByte(tileAddress);
+        }
+
+        private ushort GetTileDataAddress(byte tileNumber, bool unsignedAddressingMode)
+        {
+            if (unsignedAddressingMode)
+            {
+                return (ushort)(0x8000 + (tileNumber * 16));
+            }
+            else
+            {
+                // 0x8800 addressing mode uses signed tile numbers and that's why +0x80
+                return (ushort)(0x8800 + (((sbyte)tileNumber + 0x80) * 16));
+            }
+        }
+
+        public void PrintBackgroundTileNumbers()
+        {
+            byte controlRegister = memory.ReadByte(0xFF40);
+            int windowY = memory.ReadByte(0xFF4A);
+            bool renderWindow = controlRegister.IsBitSet(5) && windowY <= CurrentLine;
+            ushort mapAddr = (ushort)(controlRegister.IsBitSet(renderWindow ? 6 : 3) ? 0x9C00 : 0x9800);
+            for (int y = 0; y < 0x11; y++)
+            {
+                for (int x = 0; x < 0x13; x++)
+                {
+                    Console.Write($" 0x{GetTileNumber(x, y, mapAddr):X2}");
+                }
+                Console.WriteLine("");
+            }
+        }
+
+        public void PrintBackgroundTileAddresses()
+        {
+            byte controlRegister = memory.ReadByte(0xFF40);
+            int windowY = memory.ReadByte(0xFF4A);
+            bool renderWindow = controlRegister.IsBitSet(5) && windowY <= CurrentLine;
+            ushort mapAddr = (ushort)(controlRegister.IsBitSet(renderWindow ? 6 : 3) ? 0x9C00 : 0x9800);
+            for (int y = 0; y < 0x11; y++)
+            {
+                for (int x = 0; x < 0x13; x++)
+                {
+                    byte tileNumber = GetTileNumber(x, y, mapAddr);
+                    ushort tileDataAddress = GetTileDataAddress(tileNumber, controlRegister.IsBitSet(4));
+                    Console.Write($" 0x{tileDataAddress:X4}");
+                }
+                Console.WriteLine("");
+            }
+        }
     }
 }
