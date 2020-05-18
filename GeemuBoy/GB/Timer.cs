@@ -2,8 +2,6 @@
 {
     public class Timer
     {
-        private const int CLOCKSPEED = 4194304;
-
         private const ushort DIV = 0xFF04;
         private const ushort TIMA = 0xFF05;
         private const ushort TMA = 0xFF06;
@@ -11,8 +9,8 @@
 
         private readonly Memory memory;
 
-        private int cycles = 0;
-        private int dividerCycles = 0;
+        private ushort counter = 0;
+        private ushort previousCounter = 0;
 
         public Timer(Memory memory)
         {
@@ -21,49 +19,48 @@
 
         public void Update(int cpuCycles)
         {
-            UpdateDivider(cpuCycles);
+            UpdateCounter(cpuCycles);
+            UpdateTIMA();
+            previousCounter = counter;
+        }
 
-            if (memory.ReadByte(TAC).IsBitSet(2))
+        private void UpdateTIMA()
+        {
+            int bit = (memory.ReadByte(TAC) & 0x3) switch
             {
-                cycles += cpuCycles;
-                int clock = (memory.ReadByte(TAC) & 0x3) switch
-                {
-                    0 => 1024,
-                    1 => 16,
-                    2 => 64,
-                    _ => 256
-                };
+                0 => 9,
+                1 => 3,
+                2 => 5,
+                3 => 7,
+                _ => 7
+            };
 
-                if (cycles >= clock)
+            if (previousCounter.IsBitSet(bit) && !(counter.IsBitSet(bit) & memory.ReadByte(TAC).IsBitSet(2)))
+            {
+                byte value = memory.ReadByte(TIMA);
+                if (value == 0xFF)
                 {
-                    byte value = memory.ReadByte(TIMA);
-                    if (value == 0xFF)
-                    {
-                        CPU.RequestInterrupt(memory, CPU.Interrupt.Timer);
-                        byte timerModulo = memory.ReadByte(TMA);
-                        memory.WriteByte(TIMA, timerModulo);
-                    }
-                    else
-                    {
-                        memory.WriteByte(TIMA, (byte)(value + 1));
-                    }
-
-                    cycles = 0;
+                    byte timerModulo = memory.ReadByte(TMA);
+                    memory.WriteByte(TIMA, timerModulo);
+                    CPU.RequestInterrupt(memory, CPU.Interrupt.Timer);
+                }
+                else
+                {
+                    memory.WriteByte(TIMA, (byte)(value + 1));
                 }
             }
         }
 
-        private void UpdateDivider(int cpuCycles)
+        public void ResetCounter()
         {
-            dividerCycles += cpuCycles;
+            counter = 0;
+        }
 
-            if (dividerCycles >= 255)
-            {
-                dividerCycles = 0;
-                byte value = memory.ReadByte(DIV);
-                value = (byte)(value == 0xFF ? 0 : value + 1);
-                memory.WriteByte(DIV, value, false);
-            }
+        private void UpdateCounter(int cpuCycles)
+        {
+            counter = (ushort)(cpuCycles + counter);
+
+            memory.WriteByte(DIV, (byte)((counter & 0xFF00) >> 8), false);
         }
     }
 }

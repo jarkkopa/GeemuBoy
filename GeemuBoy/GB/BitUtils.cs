@@ -7,6 +7,11 @@
             return GetBit(value, index);
         }
 
+        public static bool IsBitSet(this ushort value, int index)
+        {
+            return GetBit(value, index);
+        }
+
         public static ushort BytesToUshort(byte mostSignificant, byte leastSignificant)
         {
             return (ushort)(mostSignificant << 8 | leastSignificant);
@@ -22,7 +27,7 @@
             return (byte)(value & 0xFF);
         }
 
-        public static bool GetBit(byte value, int index)
+        public static bool GetBit(ushort value, int index)
         {
             return (value & 1 << index) > 0;
         }

@@ -26,6 +26,9 @@ namespace GeemuBoy.GB
         private readonly byte[] highRam = new byte[0x7F];
         private byte interruptEnableRegister;
 
+        public delegate void DivCounterReset();
+        public DivCounterReset? DivResetEvent;
+
         public Memory(byte[]? cartridge = null, byte[]? bootRom = null)
         {
             this.bootRom = bootRom;
@@ -163,6 +166,7 @@ namespace GeemuBoy.GB
                 if (addr == 0xFF04 && applySideEffects)
                 {
                     data = 0x00;
+                    DivResetEvent?.Invoke();
                 }
 
                 if (addr == 0xFF02 && data == 0x81 && applySideEffects)

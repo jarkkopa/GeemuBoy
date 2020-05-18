@@ -73,6 +73,7 @@ namespace GeemuBoy.GB
 
             this.memory = memory;
             this.timer = new Timer(memory);
+            this.memory.DivResetEvent += DivResetHandler;
 
             interruptVector = new Dictionary<Interrupt, ushort>
             {
@@ -142,7 +143,7 @@ namespace GeemuBoy.GB
         {
             var code = memory.ReadByte(PC);
             PC++;
-            
+
             if (code == PREFIX_OPCODE)
             {
                 RunPrefixedCommand();
@@ -161,9 +162,9 @@ namespace GeemuBoy.GB
 
             ppu.Update(Cycles);
 
-            timer.Update(Cycles);
-
             HandleInterrupts();
+
+            timer.Update(Cycles);
         }
 
         public void RunPrefixedCommand()
@@ -357,11 +358,7 @@ namespace GeemuBoy.GB
             CreateOpCode(0xC5, () => loadUnit.Push(ref SP, B, C), "PUSH BC");
             CreateOpCode(0xD5, () => loadUnit.Push(ref SP, D, E), "PUSH DE");
             CreateOpCode(0xE5, () => loadUnit.Push(ref SP, H, L), "PUSH HL");
-            CreateOpCode(0xF1, () =>
-            {
-                // F = (byte)(F & 0xF0);
-                return loadUnit.PopWithFlags(ref A, ref F, ref SP, ref F);
-            }, "POP AF");
+            CreateOpCode(0xF1, () => loadUnit.PopWithFlags(ref A, ref F, ref SP, ref F), "POP AF");
             CreateOpCode(0xC1, () => loadUnit.Pop(ref B, ref C, ref SP), "POP BC");
             CreateOpCode(0xD1, () => loadUnit.Pop(ref D, ref E, ref SP), "POP DE");
             CreateOpCode(0xE1, () => loadUnit.Pop(ref H, ref L, ref SP), "POP HL");
@@ -727,6 +724,11 @@ namespace GeemuBoy.GB
         private void CreatePrefixedOpCode(byte command, Func<int> instruction, string name)
         {
             OpCodesPrefixed.Add(command, new OpCode(instruction, name));
+        }
+
+        private void DivResetHandler()
+        {
+            timer.ResetCounter();
         }
     }
 }
