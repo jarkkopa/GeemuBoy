@@ -147,6 +147,7 @@ namespace GeemuBoy.GB
             if (code == PREFIX_OPCODE)
             {
                 RunPrefixedCommand();
+                Cycles -= 4; // TODO: Fix prefix cycles
             }
             else if (OpCodes.ContainsKey(code))
             {
@@ -160,9 +161,9 @@ namespace GeemuBoy.GB
             // TODO: Find more elegant way to always keep lower 4 bits of F zero
             F = (byte)(F & 0xF0);
 
-            ppu.Update(Cycles);
-
             HandleInterrupts();
+
+            ppu.Update(Cycles);
 
             timer.Update(Cycles);
         }
@@ -488,6 +489,7 @@ namespace GeemuBoy.GB
             CreateOpCode(0xF3, () => miscUnit.DisableInterruptMasterFlag(ref InterruptMasterEnableFlag), "DI");
             CreateOpCode(0xFB, () => miscUnit.EnableInterruptMasterFlag(ref enableInterruptMasterAfter), "EI");
             CreateOpCode(0x37, () => miscUnit.SetCarry(ref F), "SCF");
+            CreateOpCode(0x27, () => miscUnit.DecimalAdjust(ref A), "DAA");
         }
 
         private void CreateJumpOpCodes()
@@ -528,7 +530,8 @@ namespace GeemuBoy.GB
             }, "JP a16");
             CreateOpCode(0x18, () =>
             {
-                ReadImmediateByte(out var value); return jumpUnit.JumpRelative(value, ref PC);
+                ReadImmediateByte(out var value);
+                return jumpUnit.JumpRelative(value, ref PC);
             }, "JR a8");
             CreateOpCode(0xE9, () => jumpUnit.JumpToAddress(H, L, ref PC), "JP (HL)");
 

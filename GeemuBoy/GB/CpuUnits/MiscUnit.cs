@@ -6,6 +6,7 @@
         public int DisableInterruptMasterFlag(ref bool flag);
         public int Nop();
         public int SetCarry(ref byte flags);
+        public int DecimalAdjust(ref byte register);
     }
 
     public class MiscUnit : IMiscUnit
@@ -17,7 +18,8 @@
             this.memory = memory;
         }
 
-        public int Nop() {
+        public int Nop()
+        {
             return 4;
         }
 
@@ -38,6 +40,12 @@
             FlagUtils.SetFlag(Flag.C, true, ref flags);
             FlagUtils.SetFlag(Flag.N, false, ref flags);
             FlagUtils.SetFlag(Flag.H, false, ref flags);
+            return 4;
+        }
+
+        public int DecimalAdjust(ref byte register)
+        {
+            // TODO
             return 4;
         }
     }

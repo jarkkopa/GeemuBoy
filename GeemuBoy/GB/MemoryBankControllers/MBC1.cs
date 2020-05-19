@@ -18,9 +18,13 @@ namespace GeemuBoy.GB.MemoryBankControllers
         public MBC1(byte[] cartridge, int ramSize)
         {
             this.cartridge = cartridge;
+            if (ramSize > 0)
+            {
+                // For some test roms that don't have RAM size data set correctly
+                ramSize = 0x2000;
+            }
             ram = new byte[ramSize];
             ramBankSize = ramSize >= 0x2000 ? 0x2000 : ramSize;
-
         }
 
         public byte ReadByte(ushort addr)

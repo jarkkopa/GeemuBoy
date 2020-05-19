@@ -19,14 +19,18 @@
 
         public void Update(int cpuCycles)
         {
-            UpdateCounter(cpuCycles);
-            UpdateTIMA();
-            previousCounter = counter;
+            for (int i = 0; i < cpuCycles; i++)
+            {
+                UpdateCounter(1);
+                UpdateTIMA();
+                previousCounter = counter;
+            }
         }
 
         private void UpdateTIMA()
         {
-            int bit = (memory.ReadByte(TAC) & 0x3) switch
+            byte tacValue = memory.ReadByte(TAC);
+            int counterBit = (tacValue & 0x3) switch
             {
                 0 => 9,
                 1 => 3,
@@ -35,7 +39,7 @@
                 _ => 7
             };
 
-            if (previousCounter.IsBitSet(bit) && !(counter.IsBitSet(bit) & memory.ReadByte(TAC).IsBitSet(2)))
+            if (previousCounter.IsBitSet(counterBit) && !(counter.IsBitSet(counterBit) & tacValue.IsBitSet(2)))
             {
                 byte value = memory.ReadByte(TIMA);
                 if (value == 0xFF)
