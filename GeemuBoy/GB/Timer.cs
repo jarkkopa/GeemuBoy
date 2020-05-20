@@ -23,7 +23,6 @@
             {
                 UpdateCounter(1);
                 UpdateTIMA();
-                previousCounter = counter;
             }
         }
 
@@ -52,6 +51,10 @@
                 {
                     memory.WriteByte(TIMA, (byte)(value + 1));
                 }
+            }
+            if (tacValue.IsBitSet(2))
+            {
+                previousCounter = counter;
             }
         }
 
