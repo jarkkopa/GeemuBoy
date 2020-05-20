@@ -17,7 +17,7 @@ namespace GeemuBoy.GB.Tests
             memory.WriteByte(0xFF04, 0xFF);
             Assert.Equal(0x00, memory.ReadByte(0xFF04));
 
-            timer.Update(254);
+            timer.Update(255);
             Assert.Equal(0x0, memory.ReadByte(0xFF04));
 
             timer.Update(1);
@@ -25,11 +25,11 @@ namespace GeemuBoy.GB.Tests
 
             for (int i = 1; i < 255; i++)
             {
-                timer.Update(255);
+                timer.Update(256);
                 Assert.Equal(i + 1, memory.ReadByte(0xFF04));
             }
 
-            timer.Update(255);
+            timer.Update(256);
             Assert.Equal(0x00, memory.ReadByte(0xFF04));
         }
 
