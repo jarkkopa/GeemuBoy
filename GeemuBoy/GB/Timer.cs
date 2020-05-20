@@ -19,9 +19,9 @@
 
         public void Update(int cpuCycles)
         {
-            for (int i = 0; i < cpuCycles; i++)
+            for (int i = 0; i < cpuCycles; i += 4)
             {
-                UpdateCounter(1);
+                UpdateCounter(4);
                 UpdateTIMA();
             }
         }
