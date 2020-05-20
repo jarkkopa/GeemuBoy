@@ -2,6 +2,8 @@
 using SDL2;
 using System;
 using System.IO;
+using System.Text;
+
 namespace GeemuBoy
 {
     class EmulatorSDL
@@ -27,7 +29,6 @@ namespace GeemuBoy
         private readonly uint targetFrameTime = 16;
         private uint frameStartTime = 0;
 
-        private readonly string serial = "";
         private int instructionsRun = 0;
 
         private readonly int totalWidth = 100;
@@ -63,6 +64,7 @@ namespace GeemuBoy
 
             ppu.RenderEvent += RenderHandler;
 
+            //state = State.Stop;
             state = State.Running;
             Run();
         }
@@ -235,7 +237,17 @@ namespace GeemuBoy
             Console.WriteLine("Emulator");
             Console.WriteLine($"Instruction #{instructionsRun}" +
                 $" PPU MODE: {ppu.CurrentMode.ToString().PadRight(20)}");
-            Console.WriteLine($"Serial output:{serial}");
+            Console.WriteLine($"Serial output: {SerialAsString()}");
+        }
+
+        private string SerialAsString()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (byte b in memory.Serial)
+            {
+                sb.Append($"{b:X2} ");
+            }
+            return sb.ToString();
         }
 
         private void PrintMemorySection()
@@ -314,6 +326,9 @@ namespace GeemuBoy
             Console.WriteLine($"{border}Z: {(FlagUtils.GetFlag(Flag.Z, cpu.F) ? "1" : "0")} N: {(FlagUtils.GetFlag(Flag.N, cpu.F) ? "1" : "0")}");
             Console.SetCursorPosition(leftSectionWidth, 16);
             Console.WriteLine($"{border}H: { (FlagUtils.GetFlag(Flag.H, cpu.F) ? "1" : "0")} C: { (FlagUtils.GetFlag(Flag.C, cpu.F) ? "1" : "0")}");
+
+            Console.SetCursorPosition(leftSectionWidth, 17);
+            Console.WriteLine($"{border}DIV: 0x{ memory.ReadByte(0xFF04):X2} TIMA: 0x{ memory.ReadByte(0xFF05):X2}");
         }
 
         private ushort lastMemoryPeekAddress = 0;

@@ -1,6 +1,6 @@
 ﻿using GeemuBoy.GB.MemoryBankControllers;
 using System;
-using System.Text;
+using System.Collections.Generic;
 
 namespace GeemuBoy.GB
 {
@@ -13,7 +13,7 @@ namespace GeemuBoy.GB
         private const ushort BOOT_ROM_LOCK_ADDRESS = 0xFF50;
 
         public MapMode RomMapMode { get; private set; }
-        public StringBuilder Serial { get; private set; } = new StringBuilder();
+        public List<byte> Serial { get; private set; } = new List<byte>();
 
         private readonly InputRegister inputRegister = new InputRegister();
 
@@ -171,7 +171,7 @@ namespace GeemuBoy.GB
 
                 if (addr == 0xFF02 && data == 0x81 && applySideEffects)
                 {
-                    Serial.Append((char)ioRegisters[1]);
+                    Serial.Add(ioRegisters[1]);
                 }
 
                 if (addr == 0xFF00 && applySideEffects)
