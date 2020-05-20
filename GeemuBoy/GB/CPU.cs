@@ -147,7 +147,6 @@ namespace GeemuBoy.GB
             if (code == PREFIX_OPCODE)
             {
                 RunPrefixedCommand();
-                Cycles -= 4; // TODO: Fix prefix cycles
             }
             else if (OpCodes.ContainsKey(code))
             {
@@ -622,7 +621,7 @@ namespace GeemuBoy.GB
                     case 3: CreatePrefixedOpCode(code, () => bitUnit.TestBit(E, index, ref F), $"BIT {index}, E"); break;
                     case 4: CreatePrefixedOpCode(code, () => bitUnit.TestBit(H, index, ref F), $"BIT {index}, H"); break;
                     case 5: CreatePrefixedOpCode(code, () => bitUnit.TestBit(L, index, ref F), $"BIT {index}, L"); break;
-                    case 6: CreatePrefixedOpCode(code, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, index, ref F); return 16; }, $"BIT {index}, (HL)"); break;
+                    case 6: CreatePrefixedOpCode(code, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, index, ref F); return 12; }, $"BIT {index}, (HL)"); break;
                     case 7: CreatePrefixedOpCode(code, () => bitUnit.TestBit(A, index, ref F), $"BIT {index}, A"); break;
                 };
             }

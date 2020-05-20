@@ -67,7 +67,7 @@
             FlagUtils.SetFlag(Flag.N, false, ref flags);
             FlagUtils.SetFlag(Flag.H, false, ref flags);
             FlagUtils.SetFlag(Flag.C, setCarry, ref flags);
-            return 12;
+            return 8;
         }
 
         public int RotateLeft(byte addrHigh, byte addrLow, ref byte flags)
@@ -76,7 +76,7 @@
             byte data = memory.ReadByte(address);
             RotateLeft(ref data, ref flags, false);
             memory.WriteByte(address, data);
-            return 20;
+            return 16;
         }
 
         public int RotateLeftThroughCarry(ref byte register, ref byte flags, bool alwaysResetZero)
@@ -95,7 +95,7 @@
             FlagUtils.SetFlag(Flag.N, false, ref flags);
             FlagUtils.SetFlag(Flag.H, false, ref flags);
             FlagUtils.SetFlag(Flag.C, setCarry, ref flags);
-            return 12;
+            return 8;
         }
 
         public int RotateLeftThroughCarry(byte addrHigh, byte addrLow, ref byte flags)
@@ -104,7 +104,7 @@
             byte data = memory.ReadByte(address);
             RotateLeftThroughCarry(ref data, ref flags, false);
             memory.WriteByte(address, data);
-            return 20;
+            return 16;
         }
 
         public int RotateRight(ref byte register, ref byte flags, bool alwaysResetZero)
@@ -119,7 +119,7 @@
             {
                 FlagUtils.SetFlags(ref flags, register == 0, false, false, setCarry);
             }
-            return 12;
+            return 8;
         }
 
         public int RotateRight(byte addrHigh, byte addrLow, ref byte flags)
@@ -128,7 +128,7 @@
             byte data = memory.ReadByte(address);
             RotateRight(ref data, ref flags, false);
             memory.WriteByte(address, data);
-            return 20;
+            return 16;
         }
 
         public int RotateRightThroughCarry(ref byte register, ref byte flags, bool alwaysResetZero)
@@ -137,7 +137,7 @@
             bool setCarry = register.IsBitSet(0);
             register = (byte)((register >> 1) | carry);
             FlagUtils.SetFlags(ref flags, !alwaysResetZero && register == 0, false, false, setCarry);
-            return 12;
+            return 8;
         }
 
         public int RotateRightThroughCarry(byte addrHigh, byte addrLow, ref byte flags)
@@ -146,13 +146,13 @@
             byte data = memory.ReadByte(address);
             RotateRightThroughCarry(ref data, ref flags, false);
             memory.WriteByte(address, data);
-            return 20;
+            return 16;
         }
 
         public int SetBit(ref byte target, int index, bool bit)
         {
             target = BitUtils.SetBit(target, index, bit);
-            return 12;
+            return 8;
         }
 
         public int SetBit(byte addrHigh, byte addrLow, int index, bool bit)
@@ -161,7 +161,7 @@
             byte data = memory.ReadByte(address);
             SetBit(ref data, index, bit);
             memory.WriteByte(address, data);
-            return 20;
+            return 16;
         }
 
         public int ShiftLeftArithmetic(ref byte target, ref byte flags)
@@ -169,7 +169,7 @@
             bool setCarry = (target & 0x80) > 0;
             target = (byte)((target << 1) & 0xFF);
             FlagUtils.SetFlags(ref flags, target == 0, false, false, setCarry);
-            return 12;
+            return 8;
         }
 
         public int ShiftLeftArithmetic(byte addrHigh, byte addrLow, ref byte flags)
@@ -178,7 +178,7 @@
             byte data = memory.ReadByte(address);
             ShiftLeftArithmetic(ref data, ref flags);
             memory.WriteByte(address, data);
-            return 20;
+            return 16;
         }
 
         public int ShiftRightArithmetic(ref byte target, ref byte flags)
@@ -187,7 +187,7 @@
             bool setCarry = (target & 1) > 0;
             target = (byte)((target >> 1) | msb);
             FlagUtils.SetFlags(ref flags, target == 0, false, false, setCarry);
-            return 12;
+            return 8;
         }
 
         public int ShiftRightArithmetic(byte addrHigh, byte addrLow, ref byte flags)
@@ -196,7 +196,7 @@
             byte data = memory.ReadByte(address);
             ShiftRightArithmetic(ref data, ref flags);
             memory.WriteByte(address, data);
-            return 20;
+            return 16;
         }
 
         public int ShiftRightLogic(ref byte target, ref byte flags)
@@ -204,7 +204,7 @@
             bool carry = (target & 1) > 0;
             target = (byte)(target >> 1);
             FlagUtils.SetFlags(ref flags, target == 0, false, false, carry);
-            return 12;
+            return 8;
         }
 
         public int ShiftRightLogic(byte addrHigh, byte addrLow, ref byte flags)
@@ -213,7 +213,7 @@
             byte data = memory.ReadByte(address);
             ShiftRightLogic(ref data, ref flags);
             memory.WriteByte(address, data);
-            return 20;
+            return 16;
         }
 
         public int Swap(ref byte register, ref byte flags)
@@ -222,7 +222,7 @@
             int higher = register & 0xF0;
             register = (byte)(higher >> 4 | lower << 4);
             FlagUtils.SetFlags(ref flags, register == 0, false, false, false);
-            return 12;
+            return 8;
         }
 
         public int Swap(byte addrHigh, byte addrLow, ref byte flags)
@@ -231,7 +231,7 @@
             byte data = memory.ReadByte(address);
             Swap(ref data, ref flags);
             memory.WriteByte(address, data);
-            return 20;
+            return 16;
         }
 
         public int TestBit(byte register, int index, ref byte flags)
@@ -239,7 +239,7 @@
             FlagUtils.SetFlag(Flag.Z, register.IsBitSet(index) == false, ref flags);
             FlagUtils.SetFlag(Flag.N, false, ref flags);
             FlagUtils.SetFlag(Flag.H, true, ref flags);
-            return 12;
+            return 8;
         }
 
         private void RotateLeft(ref byte register, bool setLastBit)
