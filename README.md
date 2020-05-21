@@ -6,12 +6,12 @@ Uses [SDL2](https://www.libsdl.org/) with [SDL2-CS Bindings](https://github.com/
 Integration tests in `/GeemuBoyRomTests` uses Gekkio's compiled test roms from [Mooneye GB](https://github.com/Gekkio/mooneye-gb)
 
 What should be implemented next:
-- Missing opcodes (STOP, HALT and DAA)
+- Missing opcodes (STOP and HALT)
 - More precise clock handling
 - Audio
 
 Blargg's individual CPU instruction test results
-- 01: Failed
+- 01: Passed
 - 02: Failed
 - 03: Passed
 - 04: Passed
@@ -21,4 +21,4 @@ Blargg's individual CPU instruction test results
 - 08: Passed
 - 09: Passed
 - 10: Passed
-- 11: Failed
+- 11: Passed

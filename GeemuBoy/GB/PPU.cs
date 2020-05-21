@@ -27,7 +27,7 @@ namespace GeemuBoy.GB
 
         private Mode currentMode;
 
-        private uint[] currentDrawLine = new uint[WIDTH];
+        private readonly uint[] currentDrawLine = new uint[WIDTH];
 
         public Mode CurrentMode
         {
@@ -166,13 +166,11 @@ namespace GeemuBoy.GB
         {
             if (controlRegister.IsBitSet(0))
             {
-                // Render background
                 RenderBackgroundLine(controlRegister);
             }
 
             if (controlRegister.IsBitSet(1))
             {
-                // Render sprites
                 RenderSpriteLine(controlRegister);
             }
 
@@ -198,7 +196,6 @@ namespace GeemuBoy.GB
                 int x = renderWindow && pixel >= windowX ? pixel - windowX : pixel + scrollX;
                 int tileX = x / 8;
                 byte tileNumber = GetTileNumber(tileX, tileY, tileMapAddress);
-                // Find out tile address
                 ushort tileDataAddress = GetTileDataAddress(tileNumber, controlRegister.IsBitSet(4));
 
                 // Find out which tile line are we in

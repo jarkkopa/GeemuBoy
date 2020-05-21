@@ -488,7 +488,7 @@ namespace GeemuBoy.GB
             CreateOpCode(0xF3, () => miscUnit.DisableInterruptMasterFlag(ref InterruptMasterEnableFlag), "DI");
             CreateOpCode(0xFB, () => miscUnit.EnableInterruptMasterFlag(ref enableInterruptMasterAfter), "EI");
             CreateOpCode(0x37, () => miscUnit.SetCarry(ref F), "SCF");
-            CreateOpCode(0x27, () => miscUnit.DecimalAdjust(ref A), "DAA");
+            CreateOpCode(0x27, () => miscUnit.DecimalAdjust(ref A, ref F), "DAA");
         }
 
         private void CreateJumpOpCodes()
