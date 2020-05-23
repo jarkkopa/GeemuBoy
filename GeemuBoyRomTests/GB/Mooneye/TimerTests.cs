@@ -1,7 +1,7 @@
 ﻿using GeemuBoyRomTests.GB;
 using Xunit;
 
-namespace GeemuBoy.GB.Mooneye.Tests
+namespace GeemuBoy.GB.Mooneye
 {
     public class TimerTests
     {
@@ -86,9 +86,7 @@ namespace GeemuBoy.GB.Mooneye.Tests
         private void RunTest(string path, ushort stopAddress)
         {
             var emulator = new TestEmulator(path, stopAddress);
-            emulator.Run();
-
-            AssertResult(emulator.Memory);
+            emulator.Run(AssertResult);
         }
 
         private void AssertResult(Memory memory)
