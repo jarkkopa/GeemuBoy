@@ -73,6 +73,7 @@ namespace GeemuBoy.GB
 
             this.memory = memory;
             this.timer = new Timer(memory);
+            this.memory.DivResetEvent += DivResetHandler;
 
             interruptVector = new Dictionary<Interrupt, ushort>
             {
@@ -95,21 +96,6 @@ namespace GeemuBoy.GB
         { }
 
         public CPU(Memory memory, IDisplay display) : this(memory, new PPU(memory, display)) { }
-
-        public void Reset()
-        {
-            PC = 0;
-            SP = 0;
-
-            A = 0;
-            B = 0;
-            C = 0;
-            D = 0;
-            E = 0;
-            F = 0;
-            H = 0;
-            L = 0;
-        }
 
         public void SetInitialStateAfterBootSequence()
         {
@@ -169,16 +155,16 @@ namespace GeemuBoy.GB
             }
             else
             {
-                throw new NotImplementedException($"Trying to run opcode 0x{code:X2} that is not implemented.");
+                //throw new NotImplementedException($"Trying to run opcode 0x{code:X2} that is not implemented.");
             }
             // TODO: Find more elegant way to always keep lower 4 bits of F zero
             F = (byte)(F & 0xF0);
 
+            HandleInterrupts();
+
             ppu.Update(Cycles);
 
             timer.Update(Cycles);
-
-            HandleInterrupts();
         }
 
         public void RunPrefixedCommand()
@@ -224,6 +210,11 @@ namespace GeemuBoy.GB
             byte flag = memory.ReadByte(INTERRUPT_FLAG_ADDR);
             flag = BitUtils.SetBit(flag, (int)interrupt, true);
             memory.WriteByte(INTERRUPT_FLAG_ADDR, flag);
+        }
+
+        public void HandleInput(InputRegister.Keys keys)
+        {
+            memory.UpdateInputRegister(keys);
         }
 
         private void HandleInterrupts()
@@ -367,11 +358,7 @@ namespace GeemuBoy.GB
             CreateOpCode(0xC5, () => loadUnit.Push(ref SP, B, C), "PUSH BC");
             CreateOpCode(0xD5, () => loadUnit.Push(ref SP, D, E), "PUSH DE");
             CreateOpCode(0xE5, () => loadUnit.Push(ref SP, H, L), "PUSH HL");
-            CreateOpCode(0xF1, () =>
-            {
-                // F = (byte)(F & 0xF0);
-                return loadUnit.PopWithFlags(ref A, ref F, ref SP, ref F);
-            }, "POP AF");
+            CreateOpCode(0xF1, () => loadUnit.PopWithFlags(ref A, ref F, ref SP, ref F), "POP AF");
             CreateOpCode(0xC1, () => loadUnit.Pop(ref B, ref C, ref SP), "POP BC");
             CreateOpCode(0xD1, () => loadUnit.Pop(ref D, ref E, ref SP), "POP DE");
             CreateOpCode(0xE1, () => loadUnit.Pop(ref H, ref L, ref SP), "POP HL");
@@ -501,6 +488,7 @@ namespace GeemuBoy.GB
             CreateOpCode(0xF3, () => miscUnit.DisableInterruptMasterFlag(ref InterruptMasterEnableFlag), "DI");
             CreateOpCode(0xFB, () => miscUnit.EnableInterruptMasterFlag(ref enableInterruptMasterAfter), "EI");
             CreateOpCode(0x37, () => miscUnit.SetCarry(ref F), "SCF");
+            CreateOpCode(0x27, () => miscUnit.DecimalAdjust(ref A, ref F), "DAA");
         }
 
         private void CreateJumpOpCodes()
@@ -541,7 +529,8 @@ namespace GeemuBoy.GB
             }, "JP a16");
             CreateOpCode(0x18, () =>
             {
-                ReadImmediateByte(out var value); return jumpUnit.JumpRelative(value, ref PC);
+                ReadImmediateByte(out var value);
+                return jumpUnit.JumpRelative(value, ref PC);
             }, "JR a8");
             CreateOpCode(0xE9, () => jumpUnit.JumpToAddress(H, L, ref PC), "JP (HL)");
 
@@ -600,14 +589,14 @@ namespace GeemuBoy.GB
             CreateOpCode(0xD8, () => jumpUnit.ReturnConditional(ref SP, ref PC, Flag.C, true, F), "RET C");
             CreateOpCode(0xD9, () => jumpUnit.ReturnAndEnableInterrupts(ref SP, ref PC, ref enableInterruptMasterAfter), "RETI");
 
-            CreateOpCode(0xC7, () => jumpUnit.Call(0x0000, ref SP, ref PC), "RST 00H");
-            CreateOpCode(0xD7, () => jumpUnit.Call(0x0010, ref SP, ref PC), "RST 10H");
-            CreateOpCode(0xE7, () => jumpUnit.Call(0x0020, ref SP, ref PC), "RST 20H");
-            CreateOpCode(0xF7, () => jumpUnit.Call(0x0030, ref SP, ref PC), "RST 30H");
-            CreateOpCode(0xCF, () => jumpUnit.Call(0x0008, ref SP, ref PC), "RST 08H");
-            CreateOpCode(0xDF, () => jumpUnit.Call(0x0018, ref SP, ref PC), "RST 18H");
-            CreateOpCode(0xEF, () => jumpUnit.Call(0x0028, ref SP, ref PC), "RST 28H");
-            CreateOpCode(0xFF, () => jumpUnit.Call(0x0038, ref SP, ref PC), "RST 38H");
+            CreateOpCode(0xC7, () => { jumpUnit.Call(0x0000, ref SP, ref PC); return 16; }, "RST 00H");
+            CreateOpCode(0xD7, () => { jumpUnit.Call(0x0010, ref SP, ref PC); return 16; }, "RST 10H");
+            CreateOpCode(0xE7, () => { jumpUnit.Call(0x0020, ref SP, ref PC); return 16; }, "RST 20H");
+            CreateOpCode(0xF7, () => { jumpUnit.Call(0x0030, ref SP, ref PC); return 16; }, "RST 30H");
+            CreateOpCode(0xCF, () => { jumpUnit.Call(0x0008, ref SP, ref PC); return 16; }, "RST 08H");
+            CreateOpCode(0xDF, () => { jumpUnit.Call(0x0018, ref SP, ref PC); return 16; }, "RST 18H");
+            CreateOpCode(0xEF, () => { jumpUnit.Call(0x0028, ref SP, ref PC); return 16; }, "RST 28H");
+            CreateOpCode(0xFF, () => { jumpUnit.Call(0x0038, ref SP, ref PC); return 16; }, "RST 38H");
         }
 
         private void CreateBitUnitOpCodes()
@@ -632,7 +621,7 @@ namespace GeemuBoy.GB
                     case 3: CreatePrefixedOpCode(code, () => bitUnit.TestBit(E, index, ref F), $"BIT {index}, E"); break;
                     case 4: CreatePrefixedOpCode(code, () => bitUnit.TestBit(H, index, ref F), $"BIT {index}, H"); break;
                     case 5: CreatePrefixedOpCode(code, () => bitUnit.TestBit(L, index, ref F), $"BIT {index}, L"); break;
-                    case 6: CreatePrefixedOpCode(code, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, index, ref F); return 16; }, $"BIT {index}, (HL)"); break;
+                    case 6: CreatePrefixedOpCode(code, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, index, ref F); return 12; }, $"BIT {index}, (HL)"); break;
                     case 7: CreatePrefixedOpCode(code, () => bitUnit.TestBit(A, index, ref F), $"BIT {index}, A"); break;
                 };
             }
@@ -737,6 +726,11 @@ namespace GeemuBoy.GB
         private void CreatePrefixedOpCode(byte command, Func<int> instruction, string name)
         {
             OpCodesPrefixed.Add(command, new OpCode(instruction, name));
+        }
+
+        private void DivResetHandler()
+        {
+            timer.ResetCounter();
         }
     }
 }

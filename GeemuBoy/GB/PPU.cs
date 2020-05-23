@@ -1,4 +1,6 @@
-﻿namespace GeemuBoy.GB
+﻿using System;
+
+namespace GeemuBoy.GB
 {
     public class PPU
     {
@@ -10,6 +12,11 @@
             VBlank = 1
         }
 
+        private const uint BLACK = 0xFF000000;
+        private const uint DARK_GRAY = 0xFF606060;
+        private const uint LIGHT_GRAY = 0xFFA0A0A0;
+        private const uint WHITE = 0xFFFFFFFF;
+
         private const ushort LCD_STAT_ADDR = 0xFF41;
 
         private const int WIDTH = 160;
@@ -19,6 +26,8 @@
         private readonly IDisplay display;
 
         private Mode currentMode;
+
+        private readonly uint[] currentDrawLine = new uint[WIDTH];
 
         public Mode CurrentMode
         {
@@ -72,6 +81,9 @@
             }
         }
 
+        public delegate void RenderHandler();
+        public RenderHandler? RenderEvent;
+
         public PPU(Memory memory, IDisplay display)
         {
             this.memory = memory;
@@ -124,8 +136,7 @@
                             CurrentMode = Mode.VBlank;
 
                             CPU.RequestInterrupt(memory, CPU.Interrupt.VBlank);
-
-                            display.Render();
+                            RenderEvent?.Invoke();
                         }
                         else
                         {
@@ -155,15 +166,15 @@
         {
             if (controlRegister.IsBitSet(0))
             {
-                // Render background
                 RenderBackgroundLine(controlRegister);
             }
 
             if (controlRegister.IsBitSet(1))
             {
-                // Render sprites
                 RenderSpriteLine(controlRegister);
             }
+
+            display.RenderLine(CurrentLine, currentDrawLine);
         }
 
         private void RenderBackgroundLine(byte controlRegister)
@@ -179,25 +190,13 @@
 
             int y = renderWindow ? CurrentLine - windowY : scrollY + CurrentLine;
             int tileY = (y / 8) % 32;
-            uint[] linePixels = new uint[160];
             for (int pixel = 0; pixel < WIDTH; pixel++)
             {
                 // Find out which tile this pixel belongs to
                 int x = renderWindow && pixel >= windowX ? pixel - windowX : pixel + scrollX;
                 int tileX = x / 8;
-                ushort tileAddress = (ushort)(tileMapAddress + tileX + (tileY * 32));
-                byte tileNumber = memory.ReadByte(tileAddress);
-                // Find out tile address
-                ushort tileDataAddress;
-                if (controlRegister.IsBitSet(4))
-                {
-                    tileDataAddress = (ushort)(0x8000 + (tileNumber * 16));
-                }
-                else
-                {
-                    // 0x8800 addressing mode uses signed tile numbers unlike 0x8000 address mode
-                    tileDataAddress = (ushort)(0x8800 + (((sbyte)tileNumber) * 16));
-                }
+                byte tileNumber = GetTileNumber(tileX, tileY, tileMapAddress);
+                ushort tileDataAddress = GetTileDataAddress(tileNumber, controlRegister.IsBitSet(4));
 
                 // Find out which tile line are we in
                 int tileLine = (y % 8) * 2;
@@ -206,21 +205,65 @@
                 byte tileLow = memory.ReadByte(tileDataAddress);
                 byte tileHigh = memory.ReadByte((ushort)(tileDataAddress + 1));
 
-                linePixels[pixel] = GetPixel((7 - (x % 8)), memory.ReadByte(0xFF47), tileHigh, tileLow);
+                currentDrawLine[pixel] = GetPixel((7 - (x % 8)), memory.ReadByte(0xFF47), tileHigh, tileLow);
             }
-            display.RenderLine(CurrentLine, linePixels);
         }
 
         private void RenderSpriteLine(byte controlRegister)
         {
-            // TODO
+            int spriteHeight = controlRegister.IsBitSet(2) ? 16 : 8;
+
+            int spritesPerLine = 0;
+            for (ushort oamAddr = 0xFE00; oamAddr < 0xFEA0; oamAddr += 4)
+            {
+                // Sprite position adjusted to screen coordinates
+                byte spriteY = (byte)(memory.ReadByte(oamAddr) - 16);
+                byte spriteX = (byte)(memory.ReadByte((ushort)(oamAddr + 1)) - 8);
+                byte tileNum = memory.ReadByte((ushort)(oamAddr + 2));
+                byte attributes = memory.ReadByte((ushort)(oamAddr + 3));
+
+                if (CurrentLine < spriteY || CurrentLine >= spriteY + spriteHeight || spritesPerLine > 10)
+                {
+                    continue;
+                }
+                spritesPerLine++;
+
+                int currentSpriteLine = CurrentLine - spriteY;
+                if (attributes.IsBitSet(6))
+                {
+                    currentSpriteLine = spriteHeight - currentSpriteLine - 1;
+                }
+
+                ushort tileAddress = (ushort)(0x8000 + (tileNum * 16) + (currentSpriteLine * 2));
+                byte high = memory.ReadByte(tileAddress);
+                byte low = memory.ReadByte((ushort)(tileAddress + 1));
+
+                uint[] pixels = new uint[8];
+                byte palette = attributes.IsBitSet(4) ? memory.ReadByte(0xFF49) : memory.ReadByte(0xFF48);
+                bool flipHorizontal = attributes.IsBitSet(5);
+                for (int i = 0; i < 8; i++)
+                {
+                    int adjustedIndex = flipHorizontal ? i : 7 - i;
+                    pixels[i] = GetPixel(adjustedIndex, palette, high, low);
+                }
+
+                int pixelIndex = 0;
+                for (int x = spriteX; x < spriteX + 8 && x < WIDTH && pixelIndex < 8; x++, pixelIndex++)
+                {
+                    if (pixels[pixelIndex] == WHITE || (attributes.IsBitSet(7) && currentDrawLine[x] != WHITE))
+                    {
+                        continue;
+                    }
+                    currentDrawLine[x] = pixels[pixelIndex];
+                }
+            }
         }
 
         private uint GetPixel(int index, byte palette, byte high, byte low)
         {
-            int colorH = (high & 1 << index) >> (index - 1);
+            int colorH = (high & 1 << index) >> index;
             int colorL = (low & 1 << index) >> index;
-            int color = colorH | colorL;
+            int color = (colorH << 1) | colorL;
 
             int paletteIndex = color switch
             {
@@ -237,11 +280,64 @@
         private uint GetColor(int index) =>
             index switch
             {
-                3 => 0xFF000000,
-                2 => 0xFF606060,
-                1 => 0xFFA0A0A0,
-                0 => 0xFFFFFFFF,
-                _ => 0xFFFFFFFF
+                3 => BLACK,
+                2 => DARK_GRAY,
+                1 => LIGHT_GRAY,
+                0 => WHITE,
+                _ => WHITE
             };
+
+        private byte GetTileNumber(int column, int row, ushort tileMapAddress)
+        {
+            ushort tileAddress = (ushort)(tileMapAddress + column + (row * 32));
+            return memory.ReadByte(tileAddress);
+        }
+
+        private ushort GetTileDataAddress(byte tileNumber, bool unsignedAddressingMode)
+        {
+            if (unsignedAddressingMode)
+            {
+                return (ushort)(0x8000 + (tileNumber * 16));
+            }
+            else
+            {
+                // 0x8800 addressing mode uses signed tile numbers and that's why +0x80
+                return (ushort)(0x8800 + (((sbyte)tileNumber + 0x80) * 16));
+            }
+        }
+
+        public void PrintBackgroundTileNumbers()
+        {
+            byte controlRegister = memory.ReadByte(0xFF40);
+            int windowY = memory.ReadByte(0xFF4A);
+            bool renderWindow = controlRegister.IsBitSet(5) && windowY <= CurrentLine;
+            ushort mapAddr = (ushort)(controlRegister.IsBitSet(renderWindow ? 6 : 3) ? 0x9C00 : 0x9800);
+            for (int y = 0; y < 0x11; y++)
+            {
+                for (int x = 0; x < 0x13; x++)
+                {
+                    Console.Write($" 0x{GetTileNumber(x, y, mapAddr):X2}");
+                }
+                Console.WriteLine("");
+            }
+        }
+
+        public void PrintBackgroundTileAddresses()
+        {
+            byte controlRegister = memory.ReadByte(0xFF40);
+            int windowY = memory.ReadByte(0xFF4A);
+            bool renderWindow = controlRegister.IsBitSet(5) && windowY <= CurrentLine;
+            ushort mapAddr = (ushort)(controlRegister.IsBitSet(renderWindow ? 6 : 3) ? 0x9C00 : 0x9800);
+            for (int y = 0; y < 0x11; y++)
+            {
+                for (int x = 0; x < 0x13; x++)
+                {
+                    byte tileNumber = GetTileNumber(x, y, mapAddr);
+                    ushort tileDataAddress = GetTileDataAddress(tileNumber, controlRegister.IsBitSet(4));
+                    Console.Write($" 0x{tileDataAddress:X4}");
+                }
+                Console.WriteLine("");
+            }
+        }
     }
 }

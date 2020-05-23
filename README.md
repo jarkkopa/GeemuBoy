@@ -3,22 +3,10 @@ Geemu Boy emulator for .NET Core 3.1.
 
 Uses [SDL2](https://www.libsdl.org/) with [SDL2-CS Bindings](https://github.com/flibitijibibo/SDL2-CS) for rendering.
 
-What should be implemented next:
-- Missing opcodes (STOP, HALT and DAA)
-- Memory banking
-- Sprite rendering
-- Input
-- Audio
+Integration tests in `/GeemuBoyRomTests` uses Gekkio's compiled test roms from [Mooneye GB](https://github.com/Gekkio/mooneye-gb)
+and [Blargg's test roms](https://github.com/retrio/gb-test-roms). Blargg's roms are included as git submodule.
 
-Blargg's individual CPU instruction test results
-- 01: Failed
-- 02: Failed
-- 03: Passed
-- 04: Passed
-- 05: Passed
-- 06: Passed
-- 07: Passed
-- 08: Passed
-- 09: Passed
-- 10: Passed
-- 11: Failed
+What should be implemented next:
+- Missing opcodes (STOP and HALT)
+- More precise clock handling
+- Audio
