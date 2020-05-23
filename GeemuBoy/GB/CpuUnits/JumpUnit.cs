@@ -1,20 +1,6 @@
 ﻿namespace GeemuBoy.GB.CpuUnits
 {
-    public interface IJumpUnit
-    {
-        public int Call(ushort address, ref ushort sp, ref ushort pc);
-        public int CallConditional(ushort address, ref ushort sp, ref ushort pc, Flag flag, bool condition, byte flags);
-        public int JumpToAddress(ushort address, ref ushort pc);
-        public int JumpToAddress(byte addrHigh, byte addrLow, ref ushort pc);
-        public int JumpToAddressConditional(ushort address, ref ushort pc, Flag flag, bool condition, byte flags);
-        public int JumpRelative(byte value, ref ushort pc);
-        public int JumpRelativeConditional(byte value, ref ushort pc, Flag flag, bool condition, byte flags);
-        public int Return(ref ushort sp, ref ushort pc);
-        public int ReturnConditional(ref ushort sp, ref ushort pc, Flag flag, bool condition, byte flags);
-        public int ReturnAndEnableInterrupts(ref ushort sp, ref ushort pc, ref int enableAfter);
-    }
-
-    public class JumpUnit : IJumpUnit
+    public class JumpUnit
     {
         private readonly Memory memory;
 

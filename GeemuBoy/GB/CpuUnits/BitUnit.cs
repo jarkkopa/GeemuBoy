@@ -1,31 +1,6 @@
 ﻿namespace GeemuBoy.GB.CpuUnits
 {
-    public interface IBitUnit
-    {
-        public int Complement(ref byte value, ref byte flags);
-        public int ComplementCarry(ref byte flags);
-        public int RotateLeft(ref byte register, ref byte flags, bool alwaysResetZero);
-        public int RotateLeft(byte addrHigh, byte addrLow, ref byte flags);
-        public int RotateLeftThroughCarry(ref byte register, ref byte flags, bool alwaysResetZero);
-        public int RotateLeftThroughCarry(byte addrHigh, byte addrLow, ref byte flags);
-        public int RotateRight(ref byte register, ref byte flags, bool alwaysResetZero);
-        public int RotateRight(byte addrHigh, byte addrLow, ref byte flags);
-        public int RotateRightThroughCarry(ref byte register, ref byte flags, bool alwaysResetZero);
-        public int RotateRightThroughCarry(byte addrHigh, byte addrLow, ref byte flags);
-        public int SetBit(ref byte target, int index, bool bit);
-        public int SetBit(byte addrHigh, byte addrLow, int index, bool bit);
-        public int ShiftLeftArithmetic(ref byte target, ref byte flags);
-        public int ShiftLeftArithmetic(byte addrHigh, byte addrLow, ref byte flags);
-        public int ShiftRightArithmetic(ref byte target, ref byte flags);
-        public int ShiftRightArithmetic(byte addrHigh, byte addrLow, ref byte flags);
-        public int ShiftRightLogic(ref byte target, ref byte flags);
-        public int ShiftRightLogic(byte addrHigh, byte addrLow, ref byte flags);
-        public int Swap(ref byte register, ref byte flags);
-        public int Swap(byte addrHigh, byte addrLow, ref byte flags);
-        public int TestBit(byte register, int index, ref byte flags);
-    }
-
-    public class BitUnit : IBitUnit
+    public class BitUnit
     {
         private readonly Memory memory;
 

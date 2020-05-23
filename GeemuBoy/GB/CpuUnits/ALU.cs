@@ -1,26 +1,6 @@
 ﻿namespace GeemuBoy.GB.CpuUnits
 {
-    public interface IALU
-    {
-        public int Add(ref byte to, byte value, ref byte flags, bool addCarryFlag = false);
-        public int Add(ref byte toHigh, ref byte toLow, byte valueHigh, byte valueLow, ref byte flags);
-        public int AddSigned(ref ushort to, byte value, ref byte flags);
-        public int Subtract(ref byte from, byte value, ref byte flags, bool subtractCarryFlag = false);
-        public int And(ref byte to, byte value, ref byte flags);
-        public int Or(ref byte to, byte value, ref byte flags);
-        public int Xor(ref byte to, byte value, ref byte flags);
-        public int Compare(byte to, byte value, ref byte flags);
-        public int Increment(ref byte target, ref byte flags);
-        public int IncrementInMemory(byte addrHigh, byte addrLow, ref byte flags);
-        public int IncrementWord(ref byte targetHigh, ref byte targetLow);
-        public int IncrementWord(ref ushort target);
-        public int Decrement(ref byte target, ref byte flags);
-        public int DecrementInMemory(byte addrHigh, byte addrLow, ref byte flags);
-        public int DecrementWord(ref byte targetHigh, ref byte targetLow);
-        public int DecrementWord(ref ushort target);
-    }
-
-    public class ALU : IALU
+    public class ALU
     {
         private readonly Memory memory;
 

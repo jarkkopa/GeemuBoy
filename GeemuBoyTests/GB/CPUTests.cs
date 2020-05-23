@@ -14,11 +14,11 @@ namespace GeemuBoy.GB.Tests
         private readonly PPU ppu;
         private readonly IDisplay display;
         private readonly CPU cpu;
-        private readonly ILoadUnit loadUnit;
-        private readonly IALU alu;
-        private readonly IMiscUnit miscUnit;
-        private readonly IJumpUnit jumpUnit;
-        private readonly IBitUnit bitUnit;
+        private readonly LoadUnit loadUnit;
+        private readonly ALU alu;
+        private readonly MiscUnit miscUnit;
+        private readonly JumpUnit jumpUnit;
+        private readonly BitUnit bitUnit;
 
         public CPUTests()
         {
@@ -29,11 +29,11 @@ namespace GeemuBoy.GB.Tests
             });
             display = new BlankDisplay();
             ppu = new PPU(memory, display);
-            loadUnit = A.Fake<ILoadUnit>();
-            alu = A.Fake<IALU>();
-            miscUnit = A.Fake<IMiscUnit>();
-            jumpUnit = A.Fake<IJumpUnit>();
-            bitUnit = A.Fake<IBitUnit>();
+            loadUnit = A.Fake<LoadUnit>();
+            alu = A.Fake<ALU>();
+            miscUnit = A.Fake<MiscUnit>();
+            jumpUnit = A.Fake<JumpUnit>();
+            bitUnit = A.Fake<BitUnit>();
             cpu = new CPU(memory, ppu, loadUnit, alu, miscUnit, jumpUnit, bitUnit)
             {
                 A = 0x0A,

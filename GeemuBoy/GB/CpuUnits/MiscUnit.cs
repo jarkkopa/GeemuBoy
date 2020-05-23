@@ -1,15 +1,6 @@
 ﻿namespace GeemuBoy.GB.CpuUnits
 {
-    public interface IMiscUnit
-    {
-        public int EnableInterruptMasterFlag(ref int enableAfter);
-        public int DisableInterruptMasterFlag(ref bool flag);
-        public int Nop();
-        public int SetCarry(ref byte flags);
-        public int DecimalAdjust(ref byte register, ref byte flags);
-    }
-
-    public class MiscUnit : IMiscUnit
+    public class MiscUnit
     {
         private readonly Memory memory;
 

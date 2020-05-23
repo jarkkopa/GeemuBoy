@@ -25,11 +25,11 @@ namespace GeemuBoy.GB
         private readonly PPU ppu;
         private readonly Timer timer;
 
-        private readonly ILoadUnit loadUnit;
-        private readonly IALU alu;
-        private readonly IMiscUnit miscUnit;
-        private readonly IJumpUnit jumpUnit;
-        private readonly IBitUnit bitUnit;
+        private readonly LoadUnit loadUnit;
+        private readonly ALU alu;
+        private readonly MiscUnit miscUnit;
+        private readonly JumpUnit jumpUnit;
+        private readonly BitUnit bitUnit;
 
         public byte A;
         public byte B;
@@ -55,7 +55,7 @@ namespace GeemuBoy.GB
         // EI enables interrupt master flag with delay. This variable is used to handle that delay.
         private int enableInterruptMasterAfter = -1;
 
-        public CPU(Memory memory, PPU ppu, ILoadUnit loadUnit, IALU alu, IMiscUnit miscUnit, IJumpUnit jumpUnit, IBitUnit bitOpsUnit)
+        public CPU(Memory memory, PPU ppu, LoadUnit loadUnit, ALU alu, MiscUnit miscUnit, JumpUnit jumpUnit, BitUnit bitOpsUnit)
         {
             this.ppu = ppu;
 

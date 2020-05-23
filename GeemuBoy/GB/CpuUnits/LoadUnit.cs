@@ -1,25 +1,6 @@
 ﻿namespace GeemuBoy.GB.CpuUnits
 {
-    public interface ILoadUnit
-    {
-        public int Load(ref byte dest, byte value);
-        public int Load(ref byte destHigh, ref byte destLow, ushort value);
-        public int Load(ref ushort dest, ushort value);
-        public int Load(ref ushort dest, byte valueHigh, byte valueLow);
-        public int LoadAdjusted(ref byte destHigh, ref byte destLow, ushort value, byte signedValue, ref byte flags);
-        public int LoadFromAddress(ref byte dest, byte addrHigh, byte addrLow);
-        public int LoadFromAddress(ref byte dest, ushort address);
-        public int LoadFromAddressAndIncrement(ref byte dest, ref byte addrHigh, ref byte addrLow, short value);
-        public int WriteToAddress(byte addrHigh, byte addrLow, byte value);
-        public int WriteToAddress(ushort address, byte value);
-        public int WriteToAddress(ushort address, ushort value);
-        public int WriteToAddressAndIncrement(ref byte addrHigh, ref byte addrLow, byte value, short addValue);
-        public int Push(ref ushort pointer, byte valueHigh, byte valueLow);
-        public int Pop(ref byte valueHigh, ref byte valuelow, ref ushort pointer);
-        public int PopWithFlags(ref byte valueHigh, ref byte valueLow, ref ushort pointer, ref byte flags);
-    }
-
-    public class LoadUnit : ILoadUnit
+    public class LoadUnit
     {
         private readonly Memory memory;
 
