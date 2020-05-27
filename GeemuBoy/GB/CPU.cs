@@ -23,7 +23,7 @@ namespace GeemuBoy.GB
 
         private readonly Memory memory;
         private readonly PPU ppu;
-        private readonly Timer timer;
+        public Timer Timer { get; private set; }
 
         private readonly LoadUnit loadUnit;
         private readonly ALU alu;
@@ -43,8 +43,6 @@ namespace GeemuBoy.GB
         public ushort PC;
         public ushort SP;
 
-        public int Cycles { get; private set; }
-
         public bool InterruptMasterEnableFlag = false;
 
         public Dictionary<byte, OpCode> OpCodes { get; private set; } = new Dictionary<byte, OpCode>();
@@ -55,7 +53,9 @@ namespace GeemuBoy.GB
         // EI enables interrupt master flag with delay. This variable is used to handle that delay.
         private int enableInterruptMasterAfter = -1;
 
-        public CPU(Memory memory, PPU ppu, LoadUnit loadUnit, ALU alu, MiscUnit miscUnit, JumpUnit jumpUnit, BitUnit bitOpsUnit)
+        public delegate void TickHandler();
+
+        public CPU(Memory memory, PPU ppu, LoadUnit loadUnit, ALU alu, MiscUnit miscUnit, JumpUnit jumpUnit, BitUnit bitUnit)
         {
             this.ppu = ppu;
 
@@ -63,7 +63,12 @@ namespace GeemuBoy.GB
             this.alu = alu;
             this.miscUnit = miscUnit;
             this.jumpUnit = jumpUnit;
-            this.bitUnit = bitOpsUnit;
+            this.bitUnit = bitUnit;
+
+            this.loadUnit.TickEvent += this.Tick;
+            this.alu.TickEvent += this.Tick;
+            this.jumpUnit.TickEvent += this.Tick;
+            this.bitUnit.TickEvent += this.Tick;
 
             CreateLoadUnitOpCodes();
             CreateALUOpCodes();
@@ -72,7 +77,7 @@ namespace GeemuBoy.GB
             CreateBitUnitOpCodes();
 
             this.memory = memory;
-            this.timer = new Timer(memory);
+            this.Timer = new Timer(memory);
             this.memory.DivResetEvent += DivResetHandler;
 
             interruptVector = new Dictionary<Interrupt, ushort>
@@ -144,6 +149,7 @@ namespace GeemuBoy.GB
             HandleInterrupts();
             var code = memory.ReadByte(PC);
             PC++;
+            Tick();
 
             if (code == PREFIX_OPCODE)
             {
@@ -152,7 +158,7 @@ namespace GeemuBoy.GB
             else if (OpCodes.ContainsKey(code))
             {
                 OpCode opCode = OpCodes[code];
-                Cycles = opCode.Instruction();
+                opCode.Instruction();
             }
             else
             {
@@ -160,10 +166,6 @@ namespace GeemuBoy.GB
             }
             // TODO: Find more elegant way to always keep lower 4 bits of F zero
             F = (byte)(F & 0xF0);
-
-            ppu.Update(Cycles);
-
-            timer.Update(Cycles);
 
             if (enableInterruptMasterAfter != -1)
             {
@@ -176,10 +178,11 @@ namespace GeemuBoy.GB
         {
             var code = memory.ReadByte(PC);
             PC++;
+            Tick();
             if (OpCodesPrefixed.ContainsKey(code))
             {
                 var opCode = OpCodesPrefixed[code];
-                Cycles = opCode.Instruction();
+                opCode.Instruction();
             }
             else
             {
@@ -187,27 +190,30 @@ namespace GeemuBoy.GB
             }
         }
 
-        public int ReadImmediateByte(out byte value)
+        public void ReadImmediateByte(out byte value)
         {
             value = memory.ReadByte(PC);
             PC++;
-            return 4;
+            Tick();
         }
 
-        public int ReadImmediateWord(out ushort value)
+        public void ReadImmediateWord(out ushort value)
         {
             var lsb = memory.ReadByte(PC);
             PC++;
+            Tick();
+
             var msb = memory.ReadByte(PC);
             PC++;
+            Tick();
+
             value = BitUtils.BytesToUshort(msb, lsb);
-            return 8;
         }
 
-        public int ReadFromMemory(byte addrHigh, byte addrLow, out byte value)
+        public void ReadFromMemory(byte addrHigh, byte addrLow, out byte value)
         {
             value = memory.ReadByte(BitUtils.BytesToUshort(addrHigh, addrLow));
-            return 4;
+            Tick();
         }
 
         public static void RequestInterrupt(Memory memory, Interrupt interrupt)
@@ -220,6 +226,12 @@ namespace GeemuBoy.GB
         public void HandleInput(InputRegister.Keys keys)
         {
             memory.UpdateInputRegister(keys);
+        }
+
+        private void Tick()
+        {
+            ppu.Update(4);
+            Timer.Update(4);
         }
 
         private void HandleInterrupts()
@@ -237,9 +249,10 @@ namespace GeemuBoy.GB
 
                         requestedInterrupts = BitUtils.SetBit(requestedInterrupts, i, false);
                         memory.WriteByte(INTERRUPT_FLAG_ADDR, requestedInterrupts);
+                        Tick();
 
                         jumpUnit.Call(interruptVector[(Interrupt)i], ref SP, ref PC);
-                        Cycles += 20;
+                        Tick();
                     }
                 }
             }
@@ -321,7 +334,7 @@ namespace GeemuBoy.GB
 
             CreateOpCode(0x0A, () => loadUnit.LoadFromAddress(ref A, B, C), "LD A, (BC)");
             CreateOpCode(0x1A, () => loadUnit.LoadFromAddress(ref A, D, E), "LD A, (DE)");
-            CreateOpCode(0xFA, () => { ReadImmediateWord(out var immediate); loadUnit.LoadFromAddress(ref A, immediate); return 16; }, "LD A, (a16)");
+            CreateOpCode(0xFA, () => { ReadImmediateWord(out var immediate); loadUnit.LoadFromAddress(ref A, immediate); return 8; }, "LD A, (a16)");
             CreateOpCode(0x3E, () => { ReadImmediateByte(out var immediate); loadUnit.Load(ref A, immediate); return 8; }, "LD A, d8");
 
             CreateOpCode(0x47, () => loadUnit.Load(ref B, A), "LD B, A");
@@ -333,7 +346,7 @@ namespace GeemuBoy.GB
             CreateOpCode(0x02, () => loadUnit.WriteToAddress(B, C, A), "LD (BC), A");
             CreateOpCode(0x12, () => loadUnit.WriteToAddress(D, E, A), "LD (DE), A");
             CreateOpCode(0x77, () => loadUnit.WriteToAddress(H, L, A), "LD (HL), A");
-            CreateOpCode(0xEA, () => { ReadImmediateWord(out var immediate); loadUnit.WriteToAddress(immediate, A); return 16; }, "LD (a16), A");
+            CreateOpCode(0xEA, () => { ReadImmediateWord(out var immediate); loadUnit.WriteToAddress(immediate, A); return 8; }, "LD (a16), A");
 
             CreateOpCode(0xF2, () => loadUnit.LoadFromAddress(ref A, (ushort)(0xFF00 + C)), "LD A, (C)");
             CreateOpCode(0xE2, () => loadUnit.WriteToAddress((ushort)(0xFF00 + C), A), "LD (C), A");
@@ -345,13 +358,13 @@ namespace GeemuBoy.GB
             CreateOpCode(0xE0, () => { ReadImmediateByte(out var immediate); loadUnit.WriteToAddress((ushort)(0xFF00 + immediate), A); return 12; }, "LDH (a8), A");
             CreateOpCode(0xF0, () => { ReadImmediateByte(out var immediate); loadUnit.LoadFromAddress(ref A, (ushort)(0xFF00 + immediate)); return 12; }, "LDH A, (a8)");
 
-            CreateOpCode(0x01, () => { ReadImmediateWord(out var immediate); loadUnit.Load(ref B, ref C, immediate); return 12; }, "LD BC, d16");
-            CreateOpCode(0x11, () => { ReadImmediateWord(out var immediate); loadUnit.Load(ref D, ref E, immediate); return 12; }, "LD DE, d16");
-            CreateOpCode(0x21, () => { ReadImmediateWord(out var immediate); loadUnit.Load(ref H, ref L, immediate); return 12; }, "LD HL, d16");
-            CreateOpCode(0x31, () => { ReadImmediateWord(out var immediate); loadUnit.Load(ref SP, immediate); return 12; }, "LD SP, d16");
+            CreateOpCode(0x01, () => { ReadImmediateWord(out var immediate); loadUnit.Load(ref B, ref C, immediate); return 4; }, "LD BC, d16");
+            CreateOpCode(0x11, () => { ReadImmediateWord(out var immediate); loadUnit.Load(ref D, ref E, immediate); return 4; }, "LD DE, d16");
+            CreateOpCode(0x21, () => { ReadImmediateWord(out var immediate); loadUnit.Load(ref H, ref L, immediate); return 4; }, "LD HL, d16");
+            CreateOpCode(0x31, () => { ReadImmediateWord(out var immediate); loadUnit.Load(ref SP, immediate); return 4; }, "LD SP, d16");
             CreateOpCode(0xF9, () => loadUnit.Load(ref SP, H, L), "LD SP, HL");
             CreateOpCode(0xF8, () => { ReadImmediateByte(out var immediate); loadUnit.LoadAdjusted(ref H, ref L, SP, immediate, ref F); return 12; }, "LD HL, SP + r8");
-            CreateOpCode(0x08, () => { ReadImmediateWord(out var immediate); loadUnit.WriteToAddress(immediate, SP); return 20; }, "LD (a16), SP");
+            CreateOpCode(0x08, () => { ReadImmediateWord(out var immediate); loadUnit.WriteToAddress(immediate, SP); return 12; }, "LD (a16), SP");
 
             CreateOpCode(0xF5, () => loadUnit.Push(ref SP, A, F), "PUSH AF");
             CreateOpCode(0xC5, () => loadUnit.Push(ref SP, B, C), "PUSH BC");
@@ -372,7 +385,7 @@ namespace GeemuBoy.GB
             CreateOpCode(0x83, () => alu.Add(ref A, E, ref F), "ADD A, E");
             CreateOpCode(0x84, () => alu.Add(ref A, H, ref F), "ADD A, H");
             CreateOpCode(0x85, () => alu.Add(ref A, L, ref F), "ADD A, L");
-            CreateOpCode(0x86, () => { ReadFromMemory(H, L, out var memValue); alu.Add(ref A, memValue, ref F); return 8; }, "ADD A, (HL)");
+            CreateOpCode(0x86, () => { ReadFromMemory(H, L, out var memValue); alu.Add(ref A, memValue, ref F); return 4; }, "ADD A, (HL)");
             CreateOpCode(0xC6, () => { ReadImmediateByte(out var immediate); alu.Add(ref A, immediate, ref F); return 8; }, "ADD A, d8");
 
             CreateOpCode(0x8F, () => alu.Add(ref A, A, ref F, true), "ADC A,A");
@@ -382,7 +395,7 @@ namespace GeemuBoy.GB
             CreateOpCode(0x8B, () => alu.Add(ref A, E, ref F, true), "ADC A,E");
             CreateOpCode(0x8C, () => alu.Add(ref A, H, ref F, true), "ADC A,H");
             CreateOpCode(0x8D, () => alu.Add(ref A, L, ref F, true), "ADC A,L");
-            CreateOpCode(0x8E, () => { ReadFromMemory(H, L, out var memValue); alu.Add(ref A, memValue, ref F, true); return 8; }, "ADC A, (HL)");
+            CreateOpCode(0x8E, () => { ReadFromMemory(H, L, out var memValue); alu.Add(ref A, memValue, ref F, true); return 4; }, "ADC A, (HL)");
             CreateOpCode(0xCE, () => { ReadImmediateByte(out var immediate); alu.Add(ref A, immediate, ref F, true); return 8; }, "ADC A, d8");
 
             CreateOpCode(0x97, () => alu.Subtract(ref A, A, ref F), "SUB A");
@@ -392,7 +405,7 @@ namespace GeemuBoy.GB
             CreateOpCode(0x93, () => alu.Subtract(ref A, E, ref F), "SUB E");
             CreateOpCode(0x94, () => alu.Subtract(ref A, H, ref F), "SUB H");
             CreateOpCode(0x95, () => alu.Subtract(ref A, L, ref F), "SUB L");
-            CreateOpCode(0x96, () => { ReadFromMemory(H, L, out var memValue); alu.Subtract(ref A, memValue, ref F); return 8; }, "SUB (HL)");
+            CreateOpCode(0x96, () => { ReadFromMemory(H, L, out var memValue); alu.Subtract(ref A, memValue, ref F); return 4; }, "SUB (HL)");
             CreateOpCode(0xD6, () => { ReadImmediateByte(out var immediate); alu.Subtract(ref A, immediate, ref F); return 8; }, "SUB d8");
 
             CreateOpCode(0x9F, () => alu.Subtract(ref A, A, ref F, true), "SBC A, A");
@@ -402,7 +415,7 @@ namespace GeemuBoy.GB
             CreateOpCode(0x9B, () => alu.Subtract(ref A, E, ref F, true), "SBC A, E");
             CreateOpCode(0x9C, () => alu.Subtract(ref A, H, ref F, true), "SBC A, H");
             CreateOpCode(0x9D, () => alu.Subtract(ref A, L, ref F, true), "SBC A, L");
-            CreateOpCode(0x9E, () => { ReadFromMemory(H, L, out var memValue); alu.Subtract(ref A, memValue, ref F, true); return 8; }, "SBC A, (HL)");
+            CreateOpCode(0x9E, () => { ReadFromMemory(H, L, out var memValue); alu.Subtract(ref A, memValue, ref F, true); return 4; }, "SBC A, (HL)");
             CreateOpCode(0xDE, () => { ReadImmediateByte(out var immediate); alu.Subtract(ref A, immediate, ref F, true); return 8; }, "SBC A, d8");
 
             CreateOpCode(0xA7, () => alu.And(ref A, A, ref F), "AND A");
@@ -412,7 +425,7 @@ namespace GeemuBoy.GB
             CreateOpCode(0xA3, () => alu.And(ref A, E, ref F), "AND E");
             CreateOpCode(0xA4, () => alu.And(ref A, H, ref F), "AND H");
             CreateOpCode(0xA5, () => alu.And(ref A, L, ref F), "AND L");
-            CreateOpCode(0xA6, () => { ReadFromMemory(H, L, out var memValue); alu.And(ref A, memValue, ref F); return 8; }, "AND (HL)");
+            CreateOpCode(0xA6, () => { ReadFromMemory(H, L, out var memValue); alu.And(ref A, memValue, ref F); return 4; }, "AND (HL)");
             CreateOpCode(0xE6, () => { ReadImmediateByte(out var immediate); alu.And(ref A, immediate, ref F); return 8; }, "AND d8");
 
             CreateOpCode(0xB7, () => alu.Or(ref A, A, ref F), "OR A");
@@ -422,7 +435,7 @@ namespace GeemuBoy.GB
             CreateOpCode(0xB3, () => alu.Or(ref A, E, ref F), "OR E");
             CreateOpCode(0xB4, () => alu.Or(ref A, H, ref F), "OR H");
             CreateOpCode(0xB5, () => alu.Or(ref A, L, ref F), "OR L");
-            CreateOpCode(0xB6, () => { ReadFromMemory(H, L, out var memValue); alu.Or(ref A, memValue, ref F); return 8; }, "OR (HL)");
+            CreateOpCode(0xB6, () => { ReadFromMemory(H, L, out var memValue); alu.Or(ref A, memValue, ref F); return 4; }, "OR (HL)");
             CreateOpCode(0xF6, () => { ReadImmediateByte(out var immediate); alu.Or(ref A, immediate, ref F); return 8; }, "OR d8");
 
             CreateOpCode(0xAF, () => alu.Xor(ref A, A, ref F), "XOR A");
@@ -432,7 +445,7 @@ namespace GeemuBoy.GB
             CreateOpCode(0xAB, () => alu.Xor(ref A, E, ref F), "XOR E");
             CreateOpCode(0xAC, () => alu.Xor(ref A, H, ref F), "XOR H");
             CreateOpCode(0xAD, () => alu.Xor(ref A, L, ref F), "XOR L");
-            CreateOpCode(0xAE, () => { ReadFromMemory(H, L, out var memValue); alu.Xor(ref A, memValue, ref F); return 8; }, "XOR (HL)");
+            CreateOpCode(0xAE, () => { ReadFromMemory(H, L, out var memValue); alu.Xor(ref A, memValue, ref F); return 4; }, "XOR (HL)");
             CreateOpCode(0xEE, () => { ReadImmediateByte(out var immediate); alu.Xor(ref A, immediate, ref F); return 8; }, "XOR d8");
 
             CreateOpCode(0xBF, () => alu.Compare(A, A, ref F), "CP A");
@@ -442,7 +455,7 @@ namespace GeemuBoy.GB
             CreateOpCode(0xBB, () => alu.Compare(A, E, ref F), "CP E");
             CreateOpCode(0xBC, () => alu.Compare(A, H, ref F), "CP H");
             CreateOpCode(0xBD, () => alu.Compare(A, L, ref F), "CP L");
-            CreateOpCode(0xBE, () => { ReadFromMemory(H, L, out var memValue); alu.Compare(A, memValue, ref F); return 8; }, "CP (HL)");
+            CreateOpCode(0xBE, () => { ReadFromMemory(H, L, out var memValue); alu.Compare(A, memValue, ref F); return 4; }, "CP (HL)");
             CreateOpCode(0xFE, () => { ReadImmediateByte(out var immediate); alu.Compare(A, immediate, ref F); return 8; }, "CP d8");
 
             CreateOpCode(0x3C, () => alu.Increment(ref A, ref F), "INC A");
@@ -588,14 +601,14 @@ namespace GeemuBoy.GB
             CreateOpCode(0xD8, () => jumpUnit.ReturnConditional(ref SP, ref PC, Flag.C, true, F), "RET C");
             CreateOpCode(0xD9, () => jumpUnit.ReturnAndEnableInterrupts(ref SP, ref PC, ref enableInterruptMasterAfter), "RETI");
 
-            CreateOpCode(0xC7, () => { jumpUnit.Call(0x0000, ref SP, ref PC); return 16; }, "RST 00H");
-            CreateOpCode(0xD7, () => { jumpUnit.Call(0x0010, ref SP, ref PC); return 16; }, "RST 10H");
-            CreateOpCode(0xE7, () => { jumpUnit.Call(0x0020, ref SP, ref PC); return 16; }, "RST 20H");
-            CreateOpCode(0xF7, () => { jumpUnit.Call(0x0030, ref SP, ref PC); return 16; }, "RST 30H");
-            CreateOpCode(0xCF, () => { jumpUnit.Call(0x0008, ref SP, ref PC); return 16; }, "RST 08H");
-            CreateOpCode(0xDF, () => { jumpUnit.Call(0x0018, ref SP, ref PC); return 16; }, "RST 18H");
-            CreateOpCode(0xEF, () => { jumpUnit.Call(0x0028, ref SP, ref PC); return 16; }, "RST 28H");
-            CreateOpCode(0xFF, () => { jumpUnit.Call(0x0038, ref SP, ref PC); return 16; }, "RST 38H");
+            CreateOpCode(0xC7, () => { jumpUnit.Call(0x0000, ref SP, ref PC); return 0; }, "RST 00H");
+            CreateOpCode(0xD7, () => { jumpUnit.Call(0x0010, ref SP, ref PC); return 0; }, "RST 10H");
+            CreateOpCode(0xE7, () => { jumpUnit.Call(0x0020, ref SP, ref PC); return 0; }, "RST 20H");
+            CreateOpCode(0xF7, () => { jumpUnit.Call(0x0030, ref SP, ref PC); return 0; }, "RST 30H");
+            CreateOpCode(0xCF, () => { jumpUnit.Call(0x0008, ref SP, ref PC); return 0; }, "RST 08H");
+            CreateOpCode(0xDF, () => { jumpUnit.Call(0x0018, ref SP, ref PC); return 0; }, "RST 18H");
+            CreateOpCode(0xEF, () => { jumpUnit.Call(0x0028, ref SP, ref PC); return 0; }, "RST 28H");
+            CreateOpCode(0xFF, () => { jumpUnit.Call(0x0038, ref SP, ref PC); return 0; }, "RST 38H");
         }
 
         private void CreateBitUnitOpCodes()
@@ -620,7 +633,7 @@ namespace GeemuBoy.GB
                     case 3: CreatePrefixedOpCode(code, () => bitUnit.TestBit(E, index, ref F), $"BIT {index}, E"); break;
                     case 4: CreatePrefixedOpCode(code, () => bitUnit.TestBit(H, index, ref F), $"BIT {index}, H"); break;
                     case 5: CreatePrefixedOpCode(code, () => bitUnit.TestBit(L, index, ref F), $"BIT {index}, L"); break;
-                    case 6: CreatePrefixedOpCode(code, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, index, ref F); return 12; }, $"BIT {index}, (HL)"); break;
+                    case 6: CreatePrefixedOpCode(code, () => { ReadFromMemory(H, L, out var data); bitUnit.TestBit(data, index, ref F); return 8; }, $"BIT {index}, (HL)"); break;
                     case 7: CreatePrefixedOpCode(code, () => bitUnit.TestBit(A, index, ref F), $"BIT {index}, A"); break;
                 };
             }
@@ -729,7 +742,7 @@ namespace GeemuBoy.GB
 
         private void DivResetHandler()
         {
-            timer.ResetCounter();
+            Timer.ResetCounter();
         }
     }
 }

@@ -150,9 +150,10 @@ namespace GeemuBoy.GB
                     {
                         // Not really rendering anything but the line counter keeps updating during the V-Blank period
                         CurrentLine++;
+                        cycles -= 456;
                     }
 
-                    if (cycles >= 4560)
+                    if (CurrentLine == 154)
                     {
                         cycles -= 4560;
                         CurrentMode = Mode.OamSearch;

@@ -1,6 +1,8 @@
 ﻿using FakeItEasy;
 using GeemuBoy.GB.CpuUnits;
+using System.Collections.Generic;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace GeemuBoy.GB.Tests
 {
@@ -20,8 +22,12 @@ namespace GeemuBoy.GB.Tests
         private readonly JumpUnit jumpUnit;
         private readonly BitUnit bitUnit;
 
-        public CPUTests()
+        private readonly ITestOutputHelper testOutputHelper;
+
+        public CPUTests(ITestOutputHelper testOutputHelper)
         {
+            this.testOutputHelper = testOutputHelper;
+
             memory = new Memory(new byte[]
             {
                 IMMEDIATE_BYTE,
@@ -52,21 +58,19 @@ namespace GeemuBoy.GB.Tests
         [Fact()]
         public void ReadImmediateByteTest()
         {
-            var cycles = cpu.ReadImmediateByte(out var immediate);
+            cpu.ReadImmediateByte(out var immediate);
 
             Assert.Equal(IMMEDIATE_BYTE, immediate);
             Assert.Equal(1, cpu.PC);
-            Assert.Equal(4, cycles);
         }
 
         [Fact()]
         public void ReadImmediateWordTest()
         {
-            var cycles = cpu.ReadImmediateWord(out var immediate);
+            cpu.ReadImmediateWord(out var immediate);
 
             Assert.Equal(IMMEDIATE_WORD, immediate);
             Assert.Equal(2, cpu.PC);
-            Assert.Equal(8, cycles);
         }
 
         [Fact()]
@@ -74,10 +78,9 @@ namespace GeemuBoy.GB.Tests
         {
             memory.WriteByte(0xABCD, 0x99);
 
-            int cycles = cpu.ReadFromMemory(0xAB, 0xCD, out var value);
+            cpu.ReadFromMemory(0xAB, 0xCD, out var value);
 
             Assert.Equal(0x99, value);
-            Assert.Equal(4, cycles);
         }
 
         [Fact()]
@@ -126,7 +129,7 @@ namespace GeemuBoy.GB.Tests
             };
             memory.WriteByte(0xFFFA, 0x23);
             memory.WriteByte(0xFFFB, 0x01);
-            
+
             cpu.RunCommand();
 
             Assert.True(cpu.InterruptMasterEnableFlag);
@@ -165,6 +168,31 @@ namespace GeemuBoy.GB.Tests
             Assert.Equal(0xFFFC, cpu.SP);
             Assert.Equal(0x0002, memory.ReadWord(0xFFFC));
             Assert.Equal(0xAA, cpu.A); // LD A, 0xFF should never execute
+        }
+
+        [Fact(Skip = "Now only prints stuff")]
+        public void TestTicks()
+        {
+            var ticks = new Dictionary<byte, string>();
+            var display = new BlankDisplay();
+            for (var msb = 0; msb <= 0xF; msb++)
+            {
+                string line = "";
+                for (var lsb = 0; lsb <= 0xF; lsb++)
+                {
+                    byte code = (byte)((msb << 4) | lsb);
+                    var memory = new Memory(new byte[]{
+                        0xCB,
+                        code
+                    });
+                    var cpu = new CPU(memory, display);
+
+                    cpu.RunCommand();
+                    // ticks.Add(code, cpu.timer.counter.ToString());
+                    line += $" {cpu.Timer.Counter:D2}";
+                }
+                testOutputHelper.WriteLine(line);
+            }
         }
     }
 }

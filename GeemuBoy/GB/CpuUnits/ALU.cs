@@ -4,6 +4,8 @@
     {
         private readonly Memory memory;
 
+        public event CPU.TickHandler? TickEvent;
+
         public ALU(Memory memory)
         {
             this.memory = memory;
@@ -20,7 +22,7 @@
                 false,
                 (origValue & 0x0F) + (value & 0x0F) + additionalValue > 0x0F,
                 newValue > 0xFF);
-            return 4;
+            return 0;
         }
 
         public int Add(ref byte toHigh, ref byte toLow, byte valueHigh, byte valueLow, ref byte flags)
@@ -34,7 +36,8 @@
             FlagUtils.SetFlag(Flag.N, false, ref flags);
             FlagUtils.SetFlag(Flag.H, (to & 0xFFF) + (value & 0xFFF) > 0xFFF, ref flags);
             FlagUtils.SetFlag(Flag.C, to + value > 0xFFFF, ref flags);
-            return 8;
+            TickEvent?.Invoke();
+            return 0;
         }
 
         public int AddSigned(ref ushort to, byte value, ref byte flags)
@@ -46,7 +49,9 @@
             FlagUtils.SetFlag(Flag.N, false, ref flags);
             FlagUtils.SetFlag(Flag.H, (originalValue & 0x0F) + (value & 0x0F) > 0x0F, ref flags);
             FlagUtils.SetFlag(Flag.C, (originalValue & 0xFF) + value > 0xFF, ref flags);
-            return 16;
+            TickEvent?.Invoke();
+            TickEvent?.Invoke();
+            return 0;
         }
 
         public int Subtract(ref byte from, byte value, ref byte flags, bool subtractCarryFlag = false)
@@ -60,7 +65,7 @@
                 true,
                 (origValue & 0x0F) - (value & 0xF) - (additionalValue & 0xF) < 0,
                 origValue < (value + additionalValue));
-            return 4;
+            return 0;
         }
 
         public int And(ref byte to, byte value, ref byte flags)
@@ -71,7 +76,7 @@
                 false,
                 true,
                 false);
-            return 4;
+            return 0;
         }
 
         public int Or(ref byte to, byte value, ref byte flags)
@@ -83,7 +88,7 @@
                 false,
                 false,
                 false);
-            return 4;
+            return 0;
         }
 
         public int Xor(ref byte to, byte value, ref byte flags)
@@ -94,7 +99,7 @@
                 false,
                 false,
                 false);
-            return 4;
+            return 0;
         }
 
         public int Compare(byte to, byte value, ref byte flags)
@@ -105,7 +110,7 @@
                 true,
                 (to & 0x0F) < (value & 0x0F),
                 to < value);
-            return 4;
+            return 0;
         }
 
         public int Increment(ref byte target, ref byte flags)
@@ -115,18 +120,20 @@
             FlagUtils.SetFlag(Flag.Z, target == 0, ref flags);
             FlagUtils.SetFlag(Flag.N, false, ref flags);
             FlagUtils.SetFlag(Flag.H, (origValue & 0x0F) + 1 > 0x0F, ref flags);
-            return 4;
+            return 0;
         }
 
         public int IncrementInMemory(byte addrHigh, byte addrLow, ref byte flags)
         {
             ushort address = BitUtils.BytesToUshort(addrHigh, addrLow);
             byte origValue = memory.ReadByte(address);
+            TickEvent?.Invoke();
             memory.WriteByte(address, (byte)(origValue + 1));
             FlagUtils.SetFlag(Flag.Z, (byte)(origValue + 1) == 0, ref flags);
             FlagUtils.SetFlag(Flag.N, false, ref flags);
             FlagUtils.SetFlag(Flag.H, (origValue & 0x0F) + 1 > 0x0F, ref flags);
-            return 12;
+            TickEvent?.Invoke();
+            return 0;
         }
 
         public int IncrementWord(ref byte targetHigh, ref byte targetLow)
@@ -135,7 +142,8 @@
             target = (ushort)(target + 1);
             targetHigh = BitUtils.MostSignificantByte(target);
             targetLow = BitUtils.LeastSignificantByte(target);
-            return 8;
+            TickEvent?.Invoke();
+            return 0;
         }
 
         public int IncrementWord(ref ushort target)
@@ -144,7 +152,7 @@
             byte low = BitUtils.LeastSignificantByte(target);
             IncrementWord(ref high, ref low);
             target = BitUtils.BytesToUshort(high, low);
-            return 8;
+            return 0;
         }
 
         public int Decrement(ref byte target, ref byte flags)
@@ -154,18 +162,20 @@
             FlagUtils.SetFlag(Flag.Z, target == 0, ref flags);
             FlagUtils.SetFlag(Flag.N, true, ref flags);
             FlagUtils.SetFlag(Flag.H, (origValue & 0x0F) < 1, ref flags);
-            return 4;
+            return 0;
         }
 
         public int DecrementInMemory(byte addrHigh, byte addrLow, ref byte flags)
         {
             ushort address = BitUtils.BytesToUshort(addrHigh, addrLow);
             byte origValue = memory.ReadByte(address);
+            TickEvent?.Invoke();
             memory.WriteByte(address, (byte)(origValue - 1));
             FlagUtils.SetFlag(Flag.Z, (byte)(origValue - 1) == 0, ref flags);
             FlagUtils.SetFlag(Flag.N, true, ref flags);
             FlagUtils.SetFlag(Flag.H, (origValue & 0x0F) < 1, ref flags);
-            return 12;
+            TickEvent?.Invoke();
+            return 0;
         }
 
         public int DecrementWord(ref byte targetHigh, ref byte targetLow)
@@ -174,7 +184,8 @@
             target = (ushort)(target - 1);
             targetHigh = BitUtils.MostSignificantByte(target);
             targetLow = BitUtils.LeastSignificantByte(target);
-            return 8;
+            TickEvent?.Invoke();
+            return 0;
         }
 
         public int DecrementWord(ref ushort target)
@@ -183,7 +194,7 @@
             byte low = BitUtils.LeastSignificantByte(target);
             DecrementWord(ref high, ref low);
             target = BitUtils.BytesToUshort(high, low);
-            return 8;
+            return 0;
         }
     }
 }
