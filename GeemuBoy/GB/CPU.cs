@@ -141,6 +141,7 @@ namespace GeemuBoy.GB
 
         public void RunCommand()
         {
+            HandleInterrupts();
             var code = memory.ReadByte(PC);
             PC++;
 
@@ -160,11 +161,15 @@ namespace GeemuBoy.GB
             // TODO: Find more elegant way to always keep lower 4 bits of F zero
             F = (byte)(F & 0xF0);
 
-            HandleInterrupts();
-
             ppu.Update(Cycles);
 
             timer.Update(Cycles);
+
+            if (enableInterruptMasterAfter != -1)
+            {
+                InterruptMasterEnableFlag = enableInterruptMasterAfter == 0;
+                enableInterruptMasterAfter--;
+            }
         }
 
         public void RunPrefixedCommand()
@@ -219,12 +224,6 @@ namespace GeemuBoy.GB
 
         private void HandleInterrupts()
         {
-            if (enableInterruptMasterAfter != -1)
-            {
-                InterruptMasterEnableFlag = enableInterruptMasterAfter == 0;
-                enableInterruptMasterAfter--;
-            }
-
             if (InterruptMasterEnableFlag)
             {
                 byte enabledInterrupts = memory.ReadByte(INTERRUPT_ENABLE_ADDR);
@@ -240,7 +239,7 @@ namespace GeemuBoy.GB
                         memory.WriteByte(INTERRUPT_FLAG_ADDR, requestedInterrupts);
 
                         jumpUnit.Call(interruptVector[(Interrupt)i], ref SP, ref PC);
-                        // TODO: Add cycles (20?)
+                        Cycles += 20;
                     }
                 }
             }

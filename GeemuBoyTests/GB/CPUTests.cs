@@ -138,28 +138,33 @@ namespace GeemuBoy.GB.Tests
         public void JumpToHighestPriorityInterruptVectorTest()
         {
             var memory = new Memory(new byte[]{
-                0xFB, // DI, enable interrupts
+                0xFB, // EI, enable interrupts
                 0x00, // NOP, interrupts enabled after this instruction
+                0x3E, // LD A, 0xFF, interrupt is handled before fetching this instruction and therefore this should not execute
+                0xFF
             });
             var cpu = new CPU(memory, display)
             {
-                SP = 0xFFFE
+                SP = 0xFFFE,
+                A = 0xAA
             };
 
             CPU.RequestInterrupt(memory, CPU.Interrupt.LCDStat);
             CPU.RequestInterrupt(memory, CPU.Interrupt.VBlank);
             CPU.RequestInterrupt(memory, CPU.Interrupt.Serial);
             // Enable LCDStat and Serial
-            memory.WriteByte(0xFFFF, 0b00000110);
+            memory.WriteByte(0xFFFF, 0b00001010);
             cpu.RunCommand();
             Assert.Equal(0x1, cpu.PC);
             Assert.False(cpu.InterruptMasterEnableFlag);
             cpu.RunCommand();
+            cpu.RunCommand();
 
-            // Highest enabled and requested interrupt is LCDStat with interrupt vector 0x48
-            Assert.Equal(0x48, cpu.PC);
+            // Highest enabled and requested interrupt is LCDStat with interrupt vector 0x48. PC is incremented after fetching the instruction
+            Assert.Equal(0x49, cpu.PC);
             Assert.Equal(0xFFFC, cpu.SP);
             Assert.Equal(0x0002, memory.ReadWord(0xFFFC));
+            Assert.Equal(0xAA, cpu.A); // LD A, 0xFF should never execute
         }
     }
 }

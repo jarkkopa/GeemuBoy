@@ -12,7 +12,7 @@ namespace GeemuBoy.GB.Tests
 
             inputRegister.UpdateState(InputRegister.Keys.Down, memory);
 
-            Assert.Equal(0x10, memory.ReadByte(0xFF0F));
+            Assert.Equal(0x10, memory.ReadByte(0xFF0F) & 0x1F);
             Assert.Equal(InputRegister.Keys.Down, inputRegister.CurrentState);
         }
 
@@ -25,7 +25,7 @@ namespace GeemuBoy.GB.Tests
 
             inputRegister.UpdateState(InputRegister.Keys.Left, memory);
 
-            Assert.Equal(0x10, memory.ReadByte(0xFF0F));
+            Assert.Equal(0x10, memory.ReadByte(0xFF0F) & 0x1F);
             Assert.Equal(InputRegister.Keys.Left, inputRegister.CurrentState);
         }
 
@@ -38,7 +38,7 @@ namespace GeemuBoy.GB.Tests
 
             inputRegister.UpdateState(InputRegister.Keys.A, memory);
 
-            Assert.Equal(0x0, memory.ReadByte(0xFF0F));
+            Assert.Equal(0x0, memory.ReadByte(0xFF0F) & 0x1F);
             Assert.Equal(InputRegister.Keys.A, inputRegister.CurrentState);
         }
 
@@ -51,7 +51,7 @@ namespace GeemuBoy.GB.Tests
 
             inputRegister.UpdateState(InputRegister.Keys.None, memory);
 
-            Assert.Equal(0x0, memory.ReadByte(0xFF0F));
+            Assert.Equal(0x0, memory.ReadByte(0xFF0F) & 0x1F);
             Assert.Equal(InputRegister.Keys.None, inputRegister.CurrentState);
         }
     }

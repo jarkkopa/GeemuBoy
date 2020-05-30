@@ -89,6 +89,11 @@ namespace GeemuBoy.GB
                 {
                     ioRegisters[0] = inputRegister.ReadValue(ioRegisters[0]);
                 }
+                if (addr == 0xFF0F)
+                {
+                    // Only lowest 5 bits of interrupts flags register are R/W. Others return 1 always when read
+                    return (byte)(ioRegisters[addr - 0xFF00] | 0xE0);
+                }
                 return ioRegisters[addr - 0xFF00];
             }
             else if (addr < 0xFF80)
