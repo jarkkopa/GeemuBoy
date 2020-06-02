@@ -173,7 +173,6 @@ namespace GeemuBoy.GB.Tests
         [Fact(Skip = "Now only prints stuff")]
         public void TestTicks()
         {
-            var ticks = new Dictionary<byte, string>();
             var display = new BlankDisplay();
             for (var msb = 0; msb <= 0xF; msb++)
             {
@@ -188,7 +187,6 @@ namespace GeemuBoy.GB.Tests
                     var cpu = new CPU(memory, display);
 
                     cpu.RunCommand();
-                    // ticks.Add(code, cpu.timer.counter.ToString());
                     line += $" {cpu.Timer.Counter:D2}";
                 }
                 testOutputHelper.WriteLine(line);

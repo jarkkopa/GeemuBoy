@@ -4,10 +4,10 @@ namespace GeemuBoy.GB
 {
     public class OpCode
     {
-        public Func<int> Instruction { get; }
-        public String Name { get; }
+        public Action Instruction { get; }
+        public string Name { get; }
 
-        public OpCode(Func<int> instruction, String name)
+        public OpCode(Action instruction, string name)
         {
             Instruction = instruction;
             Name = name;

@@ -9,32 +9,24 @@
             this.memory = memory;
         }
 
-        public int Nop()
-        {
-            return 4;
-        }
-
-        public int EnableInterruptMasterFlag(ref int enableAfter)
+        public void EnableInterruptMasterFlag(ref int enableAfter)
         {
             enableAfter = 1;
-            return 4;
         }
 
-        public int DisableInterruptMasterFlag(ref bool flag)
+        public void DisableInterruptMasterFlag(ref bool flag)
         {
             flag = false;
-            return 4;
         }
 
-        public int SetCarry(ref byte flags)
+        public void SetCarry(ref byte flags)
         {
             FlagUtils.SetFlag(Flag.C, true, ref flags);
             FlagUtils.SetFlag(Flag.N, false, ref flags);
             FlagUtils.SetFlag(Flag.H, false, ref flags);
-            return 4;
         }
 
-        public int DecimalAdjust(ref byte register, ref byte flags)
+        public void DecimalAdjust(ref byte register, ref byte flags)
         {
             bool subtract = FlagUtils.GetFlag(Flag.N, flags);
             bool carry = FlagUtils.GetFlag(Flag.C, flags);
@@ -65,7 +57,6 @@
             }
             FlagUtils.SetFlag(Flag.Z, register == 0x00, ref flags);
             FlagUtils.SetFlag(Flag.H, false, ref flags);
-            return 4;
         }
     }
 }
