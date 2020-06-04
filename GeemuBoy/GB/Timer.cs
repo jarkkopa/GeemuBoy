@@ -9,7 +9,7 @@
 
         private readonly Memory memory;
 
-        public ushort Counter { get; private set; } = 0;
+        private ushort counter = 0;
         private ushort previousCounter = 0;
 
         public Timer(Memory memory)
@@ -38,7 +38,7 @@
                 _ => 7
             };
 
-            if (previousCounter.IsBitSet(counterBit) && !(Counter.IsBitSet(counterBit) & tacValue.IsBitSet(2)))
+            if (previousCounter.IsBitSet(counterBit) && !(counter.IsBitSet(counterBit) & tacValue.IsBitSet(2)))
             {
                 byte value = memory.ReadByte(TIMA);
                 if (value == 0xFF)
@@ -54,20 +54,20 @@
             }
             if (tacValue.IsBitSet(2))
             {
-                previousCounter = Counter;
+                previousCounter = counter;
             }
         }
 
         public void ResetCounter()
         {
-            Counter = 0;
+            counter = 0;
         }
 
         private void UpdateCounter(int cpuCycles)
         {
-            Counter = (ushort)(cpuCycles + Counter);
+            counter = (ushort)(cpuCycles + counter);
 
-            memory.WriteByte(DIV, (byte)((Counter & 0xFF00) >> 8), false);
+            memory.WriteByte(DIV, (byte)((counter & 0xFF00) >> 8), false);
         }
     }
 }

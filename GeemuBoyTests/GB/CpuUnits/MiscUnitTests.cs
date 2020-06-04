@@ -1,5 +1,4 @@
-﻿using GeemuBoy.GB.CpuUnits;
-using Xunit;
+﻿using Xunit;
 
 namespace GeemuBoy.GB.CpuUnits.Tests
 {
@@ -8,7 +7,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void SetCarryTest()
         {
-            var miscUnit = new MiscUnit(new Memory());
+            var miscUnit = new MiscUnit();
             byte flags = 0b11100000;
 
             miscUnit.SetCarry(ref flags);
@@ -19,7 +18,7 @@ namespace GeemuBoy.GB.CpuUnits.Tests
         [Fact()]
         public void DecimalAdjustTest()
         {
-            var miscUnit = new MiscUnit(new Memory());
+            var miscUnit = new MiscUnit();
             byte flags = 0;
 
             byte value = 0x01;

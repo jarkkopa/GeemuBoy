@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 
 namespace GeemuBoy.GB
 {
@@ -24,7 +23,7 @@ namespace GeemuBoy.GB
 
         private readonly Memory memory;
         private readonly PPU ppu;
-        public Timer Timer { get; private set; }
+        private readonly Timer timer;
 
         private readonly LoadUnit loadUnit;
         private readonly ALU alu;
@@ -49,13 +48,13 @@ namespace GeemuBoy.GB
         public Dictionary<byte, OpCode> OpCodes { get; private set; } = new Dictionary<byte, OpCode>();
         public Dictionary<byte, OpCode> OpCodesPrefixed { get; private set; } = new Dictionary<byte, OpCode>();
 
-        private Dictionary<Interrupt, ushort> interruptVector;
+        public delegate void TickHandler();
+
+        private readonly Dictionary<Interrupt, ushort> interruptVector;
 
         // EI enables interrupt master flag with delay. This variable is used to handle that delay.
         private int enableInterruptMasterAfter = -1;
-
-        public delegate void TickHandler();
-
+        private bool halt = false;
         public CPU(Memory memory, PPU ppu, LoadUnit loadUnit, ALU alu, MiscUnit miscUnit, JumpUnit jumpUnit, BitUnit bitUnit)
         {
             this.ppu = ppu;
@@ -78,7 +77,7 @@ namespace GeemuBoy.GB
             CreateBitUnitOpCodes();
 
             this.memory = memory;
-            this.Timer = new Timer(memory);
+            this.timer = new Timer(memory);
             this.memory.DivResetEvent += DivResetHandler;
 
             interruptVector = new Dictionary<Interrupt, ushort>
@@ -96,7 +95,7 @@ namespace GeemuBoy.GB
                 ppu,
                 new LoadUnit(memory),
                 new ALU(memory),
-                new MiscUnit(memory),
+                new MiscUnit(),
                 new JumpUnit(memory),
                 new BitUnit(memory))
         { }
@@ -232,7 +231,7 @@ namespace GeemuBoy.GB
         private void Tick()
         {
             ppu.Update(4);
-            Timer.Update(4);
+            timer.Update(4);
         }
 
         private void HandleInterrupts()
@@ -498,10 +497,11 @@ namespace GeemuBoy.GB
         private void CreateMiscOpCodes()
         {
             CreateOpCode(0x00, () => { }, "NOP"); ;
-            CreateOpCode(0xF3, () => miscUnit.DisableInterruptMasterFlag(ref InterruptMasterEnableFlag), "DI");
-            CreateOpCode(0xFB, () => miscUnit.EnableInterruptMasterFlag(ref enableInterruptMasterAfter), "EI");
+            CreateOpCode(0xF3, () => InterruptMasterEnableFlag = false, "DI");
+            CreateOpCode(0xFB, () => enableInterruptMasterAfter = 1, "EI");
             CreateOpCode(0x37, () => miscUnit.SetCarry(ref F), "SCF");
             CreateOpCode(0x27, () => miscUnit.DecimalAdjust(ref A, ref F), "DAA");
+            CreateOpCode(0x76, () => halt = true, "HALT");
         }
 
         private void CreateJumpOpCodes()
@@ -674,7 +674,7 @@ namespace GeemuBoy.GB
 
         private void DivResetHandler()
         {
-            Timer.ResetCounter();
+            timer.ResetCounter();
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using FakeItEasy;
 using GeemuBoy.GB.CpuUnits;
-using System.Collections.Generic;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -170,27 +169,27 @@ namespace GeemuBoy.GB.Tests
             Assert.Equal(0xAA, cpu.A); // LD A, 0xFF should never execute
         }
 
-        [Fact(Skip = "Now only prints stuff")]
-        public void TestTicks()
-        {
-            var display = new BlankDisplay();
-            for (var msb = 0; msb <= 0xF; msb++)
-            {
-                string line = "";
-                for (var lsb = 0; lsb <= 0xF; lsb++)
-                {
-                    byte code = (byte)((msb << 4) | lsb);
-                    var memory = new Memory(new byte[]{
-                        0xCB,
-                        code
-                    });
-                    var cpu = new CPU(memory, display);
+        //[Fact(Skip = "Now only prints stuff")]
+        //public void TestTicks()
+        //{
+        //    var display = new BlankDisplay();
+        //    for (var msb = 0; msb <= 0xF; msb++)
+        //    {
+        //        string line = "";
+        //        for (var lsb = 0; lsb <= 0xF; lsb++)
+        //        {
+        //            byte code = (byte)((msb << 4) | lsb);
+        //            var memory = new Memory(new byte[]{
+        //                0xCB,
+        //                code
+        //            });
+        //            var cpu = new CPU(memory, display);
 
-                    cpu.RunCommand();
-                    line += $" {cpu.Timer.Counter:D2}";
-                }
-                testOutputHelper.WriteLine(line);
-            }
-        }
+        //            cpu.RunCommand();
+        //            line += $" {cpu.Timer.Counter:D2}";
+        //        }
+        //        testOutputHelper.WriteLine(line);
+        //    }
+        //}
     }
 }

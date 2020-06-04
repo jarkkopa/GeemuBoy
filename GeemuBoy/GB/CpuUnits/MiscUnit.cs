@@ -2,21 +2,8 @@
 {
     public class MiscUnit
     {
-        private readonly Memory memory;
-
-        public MiscUnit(Memory memory)
+        public MiscUnit()
         {
-            this.memory = memory;
-        }
-
-        public void EnableInterruptMasterFlag(ref int enableAfter)
-        {
-            enableAfter = 1;
-        }
-
-        public void DisableInterruptMasterFlag(ref bool flag)
-        {
-            flag = false;
         }
 
         public void SetCarry(ref byte flags)

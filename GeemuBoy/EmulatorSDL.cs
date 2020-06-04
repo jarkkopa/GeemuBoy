@@ -64,7 +64,6 @@ namespace GeemuBoy
 
             ppu.RenderEvent += RenderHandler;
 
-            //state = State.Stop;
             state = State.Running;
             Run();
         }
@@ -78,9 +77,9 @@ namespace GeemuBoy
                 frameStartTime = SDL.SDL_GetTicks();
 
                 PollEvents();
-                readyToRender = true;
 
-                while (state == State.Running && readyToRender)
+                readyToRender = false;
+                while (state == State.Running && !readyToRender)
                 {
                     Step();
 
@@ -208,7 +207,7 @@ namespace GeemuBoy
 
         private void RenderHandler()
         {
-            readyToRender = false;
+            readyToRender = true;
         }
 
         private void Step()
