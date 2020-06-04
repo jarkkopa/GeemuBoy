@@ -153,7 +153,7 @@ namespace GeemuBoy.GB
                         cycles -= 456;
                     }
 
-                    if (CurrentLine == 154)
+                    if (CurrentLine == 155)
                     {
                         cycles -= 4560;
                         CurrentMode = Mode.OamSearch;
