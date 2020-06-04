@@ -38,7 +38,7 @@ namespace GeemuBoy.GB.Tests
                     }
                     // One scanline takes 456 cycles
                     ppu.Update(456);
-                    if (line < 153)
+                    if (line < 154)
                     {
                         Assert.Equal(PPU.Mode.VBlank, ppu.CurrentMode);
                         Assert.Equal(line + 1, memory.ReadByte(0xFF44));
