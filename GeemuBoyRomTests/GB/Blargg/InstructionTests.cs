@@ -10,7 +10,7 @@ namespace GeemuBoyRomTests.GB.Blargg
             RunTest("Roms/blargg/gb-test-roms/cpu_instrs/individual/01-special.gb", 0xC7D2);
         }
 
-        [Fact(Skip = "HALT not implemented")]
+        [Fact()]
         public void Individual02()
         {
             RunTest("Roms/blargg/gb-test-roms/cpu_instrs/individual/02-interrupts.gb", 0xC7F4);

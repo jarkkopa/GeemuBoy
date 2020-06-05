@@ -7,6 +7,5 @@ Integration tests in `/GeemuBoyRomTests` uses Gekkio's compiled test roms from [
 and [Blargg's test roms](https://github.com/retrio/gb-test-roms). Blargg's roms are included as git submodule.
 
 What should be implemented next:
-- Missing opcodes (STOP and HALT)
-- More precise clock handling
+- Missing STOP opcode
 - Audio

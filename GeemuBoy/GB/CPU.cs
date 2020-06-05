@@ -16,6 +16,13 @@ namespace GeemuBoy.GB
             Joypad = 4
         }
 
+        public enum PowerMode
+        {
+            Normal,
+            Halt,
+            HaltBug
+        }
+
         public const byte PREFIX_OPCODE = 0xCB;
 
         private const ushort INTERRUPT_ENABLE_ADDR = 0xFFFF;
@@ -54,7 +61,8 @@ namespace GeemuBoy.GB
 
         // EI enables interrupt master flag with delay. This variable is used to handle that delay.
         private int enableInterruptMasterAfter = -1;
-        private bool halt = false;
+        private PowerMode powerMode = PowerMode.Normal;
+
         public CPU(Memory memory, PPU ppu, LoadUnit loadUnit, ALU alu, MiscUnit miscUnit, JumpUnit jumpUnit, BitUnit bitUnit)
         {
             this.ppu = ppu;
@@ -65,10 +73,10 @@ namespace GeemuBoy.GB
             this.jumpUnit = jumpUnit;
             this.bitUnit = bitUnit;
 
-            this.loadUnit.TickEvent += this.Tick;
-            this.alu.TickEvent += this.Tick;
-            this.jumpUnit.TickEvent += this.Tick;
-            this.bitUnit.TickEvent += this.Tick;
+            this.loadUnit.TickEvent += Tick;
+            this.alu.TickEvent += Tick;
+            this.jumpUnit.TickEvent += Tick;
+            this.bitUnit.TickEvent += Tick;
 
             CreateLoadUnitOpCodes();
             CreateALUOpCodes();
@@ -95,7 +103,7 @@ namespace GeemuBoy.GB
                 ppu,
                 new LoadUnit(memory),
                 new ALU(memory),
-                new MiscUnit(),
+                new MiscUnit(memory),
                 new JumpUnit(memory),
                 new BitUnit(memory))
         { }
@@ -147,22 +155,21 @@ namespace GeemuBoy.GB
         public void RunCommand()
         {
             HandleInterrupts();
-            var code = memory.ReadByte(PC);
-            PC++;
-            Tick();
+            if (powerMode == PowerMode.Halt)
+            {
+                Tick();
+                return;
+            }
 
+            var code = FetchOpcode();
             if (code == PREFIX_OPCODE)
             {
                 RunPrefixedCommand();
             }
             else if (OpCodes.ContainsKey(code))
             {
-                OpCode opCode = OpCodes[code];
+                var opCode = OpCodes[code];
                 opCode.Instruction();
-            }
-            else
-            {
-                //throw new NotImplementedException($"Trying to run opcode 0x{code:X2} that is not implemented.");
             }
             // TODO: Find more elegant way to always keep lower 4 bits of F zero
             F = (byte)(F & 0xF0);
@@ -176,17 +183,11 @@ namespace GeemuBoy.GB
 
         public void RunPrefixedCommand()
         {
-            var code = memory.ReadByte(PC);
-            PC++;
-            Tick();
+            var code = FetchOpcode();
             if (OpCodesPrefixed.ContainsKey(code))
             {
                 var opCode = OpCodesPrefixed[code];
                 opCode.Instruction();
-            }
-            else
-            {
-                throw new NotImplementedException($"Trying to run prefixed opcode 0x{PREFIX_OPCODE:X2} 0x{code:X2} that is not implemented.");
             }
         }
 
@@ -218,7 +219,7 @@ namespace GeemuBoy.GB
 
         public static void RequestInterrupt(Memory memory, Interrupt interrupt)
         {
-            byte flag = memory.ReadByte(INTERRUPT_FLAG_ADDR);
+            var flag = memory.ReadByte(INTERRUPT_FLAG_ADDR);
             flag = BitUtils.SetBit(flag, (int)interrupt, true);
             memory.WriteByte(INTERRUPT_FLAG_ADDR, flag);
         }
@@ -226,6 +227,21 @@ namespace GeemuBoy.GB
         public void HandleInput(InputRegister.Keys keys)
         {
             memory.UpdateInputRegister(keys);
+        }
+
+        private byte FetchOpcode()
+        {
+            var code = memory.ReadByte(PC);
+            if (powerMode == PowerMode.HaltBug)
+            {
+                powerMode = PowerMode.Normal;
+            }
+            else
+            {
+                PC++;
+            }
+            Tick();
+            return code;
         }
 
         private void Tick()
@@ -236,15 +252,17 @@ namespace GeemuBoy.GB
 
         private void HandleInterrupts()
         {
+            var enabledInterrupts = memory.ReadByte(INTERRUPT_ENABLE_ADDR);
+            var requestedInterrupts = memory.ReadByte(INTERRUPT_FLAG_ADDR);
+
             if (InterruptMasterEnableFlag)
             {
-                byte enabledInterrupts = memory.ReadByte(INTERRUPT_ENABLE_ADDR);
-                byte requestedInterrupts = memory.ReadByte(INTERRUPT_FLAG_ADDR);
-
                 for (int i = 0; i < (int)Interrupt.Joypad && InterruptMasterEnableFlag; i++)
                 {
                     if (requestedInterrupts.IsBitSet(i) && enabledInterrupts.IsBitSet(i))
                     {
+                        powerMode = PowerMode.Normal;
+
                         InterruptMasterEnableFlag = false;
 
                         requestedInterrupts = BitUtils.SetBit(requestedInterrupts, i, false);
@@ -254,6 +272,13 @@ namespace GeemuBoy.GB
                         jumpUnit.Call(interruptVector[(Interrupt)i], ref SP, ref PC);
                         Tick();
                     }
+                }
+            }
+            else if (powerMode == PowerMode.Halt)
+            {
+                if ((enabledInterrupts & requestedInterrupts & 0x1F) != 0)
+                {
+                    powerMode = PowerMode.Normal;
                 }
             }
         }
@@ -501,7 +526,7 @@ namespace GeemuBoy.GB
             CreateOpCode(0xFB, () => enableInterruptMasterAfter = 1, "EI");
             CreateOpCode(0x37, () => miscUnit.SetCarry(ref F), "SCF");
             CreateOpCode(0x27, () => miscUnit.DecimalAdjust(ref A, ref F), "DAA");
-            CreateOpCode(0x76, () => halt = true, "HALT");
+            CreateOpCode(0x76, () => miscUnit.Halt(ref powerMode, InterruptMasterEnableFlag), "HALT");
         }
 
         private void CreateJumpOpCodes()

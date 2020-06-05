@@ -1,4 +1,5 @@
 ﻿using GeemuBoy.GB;
+using System;
 using System.Linq;
 using Xunit;
 
@@ -6,10 +7,10 @@ namespace GeemuBoyRomTests.GB.Blargg
 {
     public abstract class TestBase
     {
-        public void RunTest(string path, ushort stopAddress)
+        public void RunTest(string path, ushort stopAddress, Action<Memory>? assertFunction = null)
         {
             var emulator = new TestEmulator(path, stopAddress);
-            emulator.Run(AssertResult);
+            emulator.Run(assertFunction ?? AssertResult);
         }
 
         private static void AssertResult(Memory memory)

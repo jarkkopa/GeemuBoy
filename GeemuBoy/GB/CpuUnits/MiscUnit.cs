@@ -1,9 +1,14 @@
-﻿namespace GeemuBoy.GB.CpuUnits
+﻿using System.Runtime.CompilerServices;
+
+namespace GeemuBoy.GB.CpuUnits
 {
     public class MiscUnit
     {
-        public MiscUnit()
+        private readonly Memory memory;
+
+        public MiscUnit(Memory memory)
         {
+            this.memory = memory;
         }
 
         public void SetCarry(ref byte flags)
@@ -44,6 +49,28 @@
             }
             FlagUtils.SetFlag(Flag.Z, register == 0x00, ref flags);
             FlagUtils.SetFlag(Flag.H, false, ref flags);
+        }
+
+        public void Halt(ref CPU.PowerMode mode, bool ime)
+        {
+            if (ime)
+            {
+                mode = CPU.PowerMode.Halt;
+            }
+            else
+            {
+                // Halt only takes four ticks even though it technically reads IF and IE from memory
+                byte enabledInterrupts = memory.ReadByte(0xFFFF);
+                byte requestedInterrupts = memory.ReadByte(0xFF0F);
+                if ((enabledInterrupts & requestedInterrupts & 0x1F) == 0x0)
+                {
+                    mode = CPU.PowerMode.Halt;
+                }
+                else
+                {
+                    mode = CPU.PowerMode.HaltBug;
+                }
+            }
         }
     }
 }

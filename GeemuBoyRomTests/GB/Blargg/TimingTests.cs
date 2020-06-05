@@ -1,9 +1,4 @@
-﻿using GeemuBoy.GB;
-using System;
-using System.Collections.Generic;
-using Xunit;
-using Xunit.Abstractions;
-using Xunit.Sdk;
+﻿using Xunit;
 
 namespace GeemuBoyRomTests.GB.Blargg
 {
