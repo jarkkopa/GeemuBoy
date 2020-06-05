@@ -26,6 +26,8 @@ namespace GeemuBoy.GB
         private readonly byte[] highRam = new byte[0x7F];
         private byte interruptEnableRegister;
 
+        private Dictionary<ushort, byte> ioMasks = new Dictionary<ushort, byte>();
+
         public delegate void DivCounterReset();
         public DivCounterReset? DivResetEvent;
 
@@ -35,6 +37,8 @@ namespace GeemuBoy.GB
             this.cartridge = CartridgeCreator.GetCartridge(cartridge);
 
             RomMapMode = bootRom != null ? MapMode.Boot : MapMode.Cartridge;
+
+            CreateIOMasks();
         }
 
         public ushort ReadWord(ushort addr)
@@ -85,16 +89,14 @@ namespace GeemuBoy.GB
             }
             else if (addr < 0xFF4C)
             {
+                ioMasks.TryGetValue(addr, out byte mask);
+
                 if (addr == 0xFF00)
                 {
                     ioRegisters[0] = inputRegister.ReadValue(ioRegisters[0]);
                 }
-                if (addr == 0xFF0F)
-                {
-                    // Only lowest 5 bits of interrupts flags register are R/W. Others return 1 always when read
-                    return (byte)(ioRegisters[addr - 0xFF00] | 0xE0);
-                }
-                return ioRegisters[addr - 0xFF00];
+
+                return (byte)(ioRegisters[addr - 0xFF00] | mask);
             }
             else if (addr < 0xFF80)
             {
@@ -228,6 +230,34 @@ namespace GeemuBoy.GB
                 WriteByte((ushort)(0xFE00 + i), data);
 
             }
+        }
+
+        private void CreateIOMasks()
+        {
+            ioMasks.Add(0xFF00, 0xC0);
+            ioMasks.Add(0xFF02, 0x7E);
+            ioMasks.Add(0xFF03, 0xFF);
+            ioMasks.Add(0xFF0F, 0xE0);
+            ioMasks.Add(0xFF07, 0xF8);
+            ioMasks.Add(0xFF08, 0xFF);
+            ioMasks.Add(0xFF09, 0xFF);
+            ioMasks.Add(0xFF0A, 0xFF);
+            ioMasks.Add(0xFF0B, 0xFF);
+            ioMasks.Add(0xFF0C, 0xFF);
+            ioMasks.Add(0xFF0D, 0xFF);
+            ioMasks.Add(0xFF0E, 0xFF);
+            ioMasks.Add(0xFF10, 0xC0);
+            ioMasks.Add(0xFF15, 0xFF);
+            ioMasks.Add(0xFF1A, 0x7F);
+            ioMasks.Add(0xFF1C, 0x9F);
+            ioMasks.Add(0xFF1F, 0xFF);
+            ioMasks.Add(0xFF20, 0xC0);
+            ioMasks.Add(0xFF23, 0x3F);
+            ioMasks.Add(0xFF26, 0x70);
+            ioMasks.Add(0xFF27, 0xFF);
+            ioMasks.Add(0xFF28, 0xFF);
+            ioMasks.Add(0xFF29, 0xFF);
+            ioMasks.Add(0xFF41, 0x80);
         }
     }
 }

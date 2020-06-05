@@ -7,7 +7,7 @@ namespace GeemuBoyRomTests.GB.Blargg
 {
     public abstract class TestBase
     {
-        public void RunTest(string path, ushort stopAddress, Action<Memory>? assertFunction = null)
+        protected void RunTest(string path, ushort stopAddress, Action<Memory>? assertFunction = null)
         {
             var emulator = new TestEmulator(path, stopAddress);
             emulator.Run(assertFunction ?? AssertResult);

@@ -69,6 +69,15 @@
     <None Update="Roms\blargg\gb-test-roms\instr_timing\instr_timing.gb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Roms\mooneye\acceptance\bits\mem_oam.gb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Roms\mooneye\acceptance\bits\reg_f.gb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Roms\mooneye\acceptance\bits\unused_hwio-GS.gb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Roms\mooneye\acceptance\timer\div_write.gb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
