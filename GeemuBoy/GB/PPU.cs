@@ -74,7 +74,7 @@ namespace GeemuBoy.GB
                 lcdStat = BitUtils.SetBit(lcdStat, 2, currentLine == memory.ReadByte(0xFF45));
                 memory.WriteByte(LCD_STAT_ADDR, lcdStat);
 
-                if (lcdStat.IsBitSet(6))
+                if (lcdStat.IsBitSet(6) && lcdStat.IsBitSet(2))
                 {
                     CPU.RequestInterrupt(memory, CPU.Interrupt.LCDStat);
                 }
@@ -148,17 +148,20 @@ namespace GeemuBoy.GB
                 case Mode.VBlank:
                     if (cycles >= 456)
                     {
-                        // Not really rendering anything but the line counter keeps updating during the V-Blank period
-                        CurrentLine++;
                         cycles -= 456;
+                        // Not really rendering anything but the line counter keeps updating during the V-Blank period
+                        if (CurrentLine == 153)
+                        {
+                            CurrentMode = Mode.OamSearch;
+                            CurrentLine = 0;
+                        }
+                        else
+                        {
+                            CurrentLine++;
+                        }
                     }
 
-                    if (CurrentLine == 155)
-                    {
-                        cycles -= 4560;
-                        CurrentMode = Mode.OamSearch;
-                        CurrentLine = 0;
-                    }
+
                     break;
             }
         }
