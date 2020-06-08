@@ -60,6 +60,7 @@ namespace GeemuBoy.GB
             }
         }
         private int cycles = 0;
+        private int windowLine = 0;
         private byte currentLine = 0;
         private byte CurrentLine
         {
@@ -101,6 +102,7 @@ namespace GeemuBoy.GB
                 CurrentMode = Mode.VBlank;
                 cycles = 456;
                 CurrentLine = 0;
+                windowLine = 0;
                 return;
             }
 
@@ -154,6 +156,7 @@ namespace GeemuBoy.GB
                         {
                             CurrentMode = Mode.OamSearch;
                             CurrentLine = 0;
+                            windowLine = 0;
                         }
                         else
                         {
@@ -188,14 +191,15 @@ namespace GeemuBoy.GB
             int windowY = memory.ReadByte(0xFF4A);
             int windowX = memory.ReadByte(0xFF4B) - 7;
 
-            bool renderWindow = controlRegister.IsBitSet(5) && windowY <= CurrentLine;
-
-            ushort tileMapAddress = (ushort)(controlRegister.IsBitSet(renderWindow ? 6 : 3) ? 0x9C00 : 0x9800);
-
-            int y = renderWindow ? CurrentLine - windowY : scrollY + CurrentLine;
-            int tileY = (y / 8) % 32;
+            bool windowRendered = false;
             for (int pixel = 0; pixel < WIDTH; pixel++)
             {
+                bool renderWindow = controlRegister.IsBitSet(5) && windowY <= CurrentLine && pixel >= windowX;
+                windowRendered = windowRendered || renderWindow;
+
+                int y = renderWindow ? windowLine : scrollY + CurrentLine;
+                int tileY = (y / 8) % 32;
+                ushort tileMapAddress = (ushort)(controlRegister.IsBitSet(renderWindow ? 6 : 3) ? 0x9C00 : 0x9800);
                 // Find out which tile this pixel belongs to
                 int x = renderWindow && pixel >= windowX ? pixel - windowX : pixel + scrollX;
                 int tileX = x / 8;
@@ -210,6 +214,11 @@ namespace GeemuBoy.GB
                 byte tileHigh = memory.ReadByte((ushort)(tileDataAddress + 1));
 
                 currentDrawLine[pixel] = GetPixel((7 - (x % 8)), memory.ReadByte(0xFF47), tileHigh, tileLow);
+            }
+
+            if (windowRendered)
+            {
+                windowLine++;
             }
         }
 
