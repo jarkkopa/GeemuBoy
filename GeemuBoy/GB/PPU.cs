@@ -202,7 +202,7 @@ namespace GeemuBoy.GB
                 ushort tileMapAddress = (ushort)(controlRegister.IsBitSet(renderWindow ? 6 : 3) ? 0x9C00 : 0x9800);
                 // Find out which tile this pixel belongs to
                 int x = renderWindow && pixel >= windowX ? pixel - windowX : pixel + scrollX;
-                int tileX = x / 8;
+                int tileX = (x / 8) % 32;
                 byte tileNumber = GetTileNumber(tileX, tileY, tileMapAddress);
                 ushort tileDataAddress = GetTileDataAddress(tileNumber, controlRegister.IsBitSet(4));
 
