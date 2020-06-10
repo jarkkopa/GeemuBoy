@@ -19,11 +19,8 @@
 
         public void Update(int cpuCycles)
         {
-            for (int i = 0; i < cpuCycles; i++)
-            {
-                UpdateCounter(1);
-                UpdateTIMA();
-            }
+            UpdateCounter(cpuCycles);
+            UpdateTIMA();
         }
 
         private void UpdateTIMA()

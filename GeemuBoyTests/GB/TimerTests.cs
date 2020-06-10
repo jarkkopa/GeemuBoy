@@ -47,26 +47,26 @@ namespace GeemuBoy.GB.Tests
             // Set timer clock to 4096 Hz and disable timer
             memory.WriteByte(0xFF07, 0x00);
 
-            timer.Update(clock);
+            Tick(clock, timer);
             // Timer is not updated when disabled
             Assert.Equal(0x00, memory.ReadByte(0xFF05));
 
             // Enable timer
             memory.WriteByte(0xFF07, 0x04);
-            timer.Update(clock - 4);
+            Tick(clock - 4, timer);
             Assert.Equal(0x0, memory.ReadByte(0xFF05));
 
             timer.Update(4);
             Assert.Equal(0x1, memory.ReadByte(0xFF05));
             for (int i = 1; i < 255; i++)
             {
-                timer.Update(clock);
+                Tick(clock, timer);
                 Assert.Equal(i + 1, memory.ReadByte(0xFF05));
             }
 
             // Overflow sets timer to modulo register value
             memory.WriteByte(0xFF06, 0xF0);
-            timer.Update(clock);
+            Tick(clock, timer);
             Assert.Equal(0xF0, memory.ReadByte(0xFF05));
 
             // Interrupt is requested after the overflow
@@ -85,23 +85,23 @@ namespace GeemuBoy.GB.Tests
 
             memory.WriteByte(0xFF07, 0x01);
 
-            timer.Update(clock);
+            Tick(clock, timer);
             Assert.Equal(0x00, memory.ReadByte(0xFF05));
 
             memory.WriteByte(0xFF07, 0x05);
-            timer.Update(clock - 4);
+            Tick(clock - 4, timer);
             Assert.Equal(0x0, memory.ReadByte(0xFF05));
-            
+
             timer.Update(4);
             Assert.Equal(0x1, memory.ReadByte(0xFF05));
             for (int i = 1; i < 255; i++)
             {
-                timer.Update(clock);
+                Tick(clock, timer);
                 Assert.Equal(i + 1, memory.ReadByte(0xFF05));
             }
 
             memory.WriteByte(0xFF06, 0x0);
-            timer.Update(clock);
+            Tick(clock, timer);
             Assert.Equal(0x0, memory.ReadByte(0xFF05));
 
             Assert.True(memory.ReadByte(0xFF0F).IsBitSet(2));
@@ -119,23 +119,23 @@ namespace GeemuBoy.GB.Tests
 
             memory.WriteByte(0xFF07, 0x02);
 
-            timer.Update(clock);
+            Tick(clock, timer);
             Assert.Equal(0x00, memory.ReadByte(0xFF05));
 
             memory.WriteByte(0xFF07, 0x06);
-            timer.Update(clock - 4);
+            Tick(clock - 4, timer);
             Assert.Equal(0x0, memory.ReadByte(0xFF05));
 
             timer.Update(4);
             Assert.Equal(0x1, memory.ReadByte(0xFF05));
             for (int i = 1; i < 255; i++)
             {
-                timer.Update(clock);
+                Tick(clock, timer);
                 Assert.Equal(i + 1, memory.ReadByte(0xFF05));
             }
 
             memory.WriteByte(0xFF06, 0x10);
-            timer.Update(clock);
+            Tick(clock, timer);
             Assert.Equal(0x10, memory.ReadByte(0xFF05));
 
             Assert.True(memory.ReadByte(0xFF0F).IsBitSet(2));
@@ -153,26 +153,34 @@ namespace GeemuBoy.GB.Tests
 
             memory.WriteByte(0xFF07, 0x03);
 
-            timer.Update(clock);
+            Tick(clock, timer);
             Assert.Equal(0x00, memory.ReadByte(0xFF05));
 
             memory.WriteByte(0xFF07, 0x07);
-            timer.Update(clock - 4);
+            Tick(clock - 4, timer);
             Assert.Equal(0x0, memory.ReadByte(0xFF05));
 
             timer.Update(4);
             Assert.Equal(0x1, memory.ReadByte(0xFF05));
             for (int i = 1; i < 255; i++)
             {
-                timer.Update(clock);
+                Tick(clock, timer);
                 Assert.Equal(i + 1, memory.ReadByte(0xFF05));
             }
 
             memory.WriteByte(0xFF06, 0xF0);
-            timer.Update(clock);
+            Tick(clock, timer);
             Assert.Equal(0xF0, memory.ReadByte(0xFF05));
 
             Assert.True(memory.ReadByte(0xFF0F).IsBitSet(2));
+        }
+
+        private static void Tick(int cycles, Timer timer)
+        {
+            for (int i = 0; i < cycles / 4; i++)
+            {
+                timer.Update(4);
+            }
         }
     }
 }
