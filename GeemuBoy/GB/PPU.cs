@@ -247,6 +247,18 @@ namespace GeemuBoy.GB
                     currentSpriteLine = spriteHeight - currentSpriteLine - 1;
                 }
 
+                if (spriteHeight == 16)
+                {
+                    if (currentSpriteLine < 8)
+                    {
+                        tileNum = (byte)(tileNum & 0xFE);
+                    }
+                    else
+                    {
+                        tileNum = (byte)(tileNum | 0x01);
+                    }
+                }
+
                 ushort tileAddress = (ushort)(0x8000 + (tileNum * 16) + (currentSpriteLine * 2));
                 byte high = memory.ReadByte(tileAddress);
                 byte low = memory.ReadByte((ushort)(tileAddress + 1));
