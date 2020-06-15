@@ -71,7 +71,7 @@ namespace GeemuBoy
         private void Run()
         {
             PrintDebugger();
-
+            
             while (state != State.Quit)
             {
                 frameStartTime = SDL.SDL_GetTicks();
@@ -194,11 +194,11 @@ namespace GeemuBoy
                 }
                 if (data[(int)SDL.SDL_Scancode.SDL_SCANCODE_Z] != 0)
                 {
-                    keys |= InputRegister.Keys.A;
+                    keys |= InputRegister.Keys.B;
                 }
                 if (data[(int)SDL.SDL_Scancode.SDL_SCANCODE_X] != 0)
                 {
-                    keys |= InputRegister.Keys.B;
+                    keys |= InputRegister.Keys.A;
                 }
             }
 
