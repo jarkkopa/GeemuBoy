@@ -1,16 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace GeemuBoy.GB
 {
     public class PPU
     {
-        private class Sprite
+        private class Sprite : IComparable<Sprite>
         {
+            public Sprite(byte x, byte y, byte tileNum, byte attributes, ushort oamAddress)
+            {
+                X = x;
+                Y = y;
+                TileNum = tileNum;
+                Attributes = attributes;
+                OamAddress = oamAddress;
+            }
+
             public byte X { get; set; }
             public byte Y { get; set; }
+            public byte TileNum { get; set; }
             public byte Attributes { get; set; }
-            public ushort Address { get; set; }
+            public ushort OamAddress { get; set; }
+            public ushort TileAddress { get; set; }
+
+            public int CompareTo([AllowNull] Sprite other)
+            {
+                if (other == null)
+                {
+                    return -1;
+                }
+
+                if (X < other.X)
+                {
+                    return -1;
+                }
+                else if (X > other.X)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return OamAddress.CompareTo(other.OamAddress);
+                }
+            }
         }
 
         public enum Mode : byte
@@ -237,12 +271,12 @@ namespace GeemuBoy.GB
 
             foreach (Sprite sprite in GetPrioritizedSprites(CurrentLine, spriteHeight))
             {
-                byte high = memory.ReadByte(sprite.Address);
-                byte low = memory.ReadByte((ushort)(sprite.Address + 1));
-
-                uint[] pixels = new uint[8];
                 byte palette = sprite.Attributes.IsBitSet(4) ? memory.ReadByte(0xFF49) : memory.ReadByte(0xFF48);
                 bool flipHorizontal = sprite.Attributes.IsBitSet(5);
+                byte low = memory.ReadByte(sprite.TileAddress);
+                byte high = memory.ReadByte((ushort)(sprite.TileAddress + 1));
+
+                uint[] pixels = new uint[8];
                 for (int i = 0; i < 8; i++)
                 {
                     int adjustedIndex = flipHorizontal ? i : 7 - i;
@@ -263,48 +297,46 @@ namespace GeemuBoy.GB
 
         private List<Sprite> GetPrioritizedSprites(int line, int spriteHeight)
         {
-            var sprites = new List<Sprite>();
-            for (ushort oamAddr = 0xFE00; oamAddr < 0xFEA0; oamAddr += 4)
-            {
-                // Sprite position adjusted to screen coordinates
-                byte spriteY = (byte)(memory.ReadByte(oamAddr) - 16);
-                byte spriteX = (byte)(memory.ReadByte((ushort)(oamAddr + 1)) - 8);
-                byte tileNum = memory.ReadByte((ushort)(oamAddr + 2));
-                byte attributes = memory.ReadByte((ushort)(oamAddr + 3));
-                if (CurrentLine < spriteY || CurrentLine >= spriteY + spriteHeight || sprites.Count > 10)
-                {
-                    continue;
-                }
+            ushort address = 0xFE00 - 4;
+            return Enumerable.Range(0, 40)
+                 .Select(a => address += 4)
+                 .Select(addr => new Sprite(
+                     (byte)(memory.ReadByte((ushort)(address + 1)) - 8),
+                     (byte)(memory.ReadByte(address) - 16),
+                     memory.ReadByte((ushort)(address + 2)),
+                     memory.ReadByte((ushort)(address + 3)),
+                     addr))
+                 .Where(s => s.Y < 160)
+                 .Where(s => line >= s.Y && line < s.Y + spriteHeight)
+                 .OrderByDescending(s => s)
+                 .TakeLast(10)
+                 .Select(s =>
+                 {
+                     int currentSpriteLine = GetSpriteLine(line, s.Y, spriteHeight, s.Attributes.IsBitSet(6));
 
-                int currentSpriteLine = CurrentLine - spriteY;
-                if (attributes.IsBitSet(6))
-                {
-                    currentSpriteLine = spriteHeight - currentSpriteLine - 1;
-                }
-
-                if (spriteHeight == 16)
-                {
-                    if (currentSpriteLine < 8)
-                    {
-                        tileNum = (byte)(tileNum & 0xFE);
-                    }
-                    else
-                    {
-                        tileNum = (byte)(tileNum | 0x01);
-                    }
-                }
-                ushort tileAddress = (ushort)(0x8000 + (tileNum * 16) + (currentSpriteLine * 2));
-                sprites.Add(new Sprite()
-                {
-                    X = spriteX,
-                    Y = spriteY,
-                    Attributes = attributes,
-                    Address = tileAddress
-                });
-            }
-
-            return sprites;
+                     if (spriteHeight == 16)
+                     {
+                         if (currentSpriteLine < 8)
+                         {
+                             s.TileNum = (byte)(s.TileNum & 0xFE);
+                         }
+                         else
+                         {
+                             s.TileNum = (byte)(s.TileNum | 0x01);
+                         }
+                     }
+                     ushort tileAddress = GetSpriteTileAddress(s, currentSpriteLine);
+                     s.TileAddress = tileAddress;
+                     return s;
+                 })
+                 .ToList();
         }
+
+        private static ushort GetSpriteTileAddress(Sprite s, int currentSpriteLine) =>
+            (ushort)(0x8000 + (s.TileNum * 16) + (currentSpriteLine * 2));
+
+        private static int GetSpriteLine(int line, byte spriteY, int spriteHeight, bool verticalMirror) =>
+            verticalMirror ? spriteHeight - (line - spriteY) - 1 : line - spriteY;
 
         private uint GetPixel(int index, byte palette, byte high, byte low)
         {
