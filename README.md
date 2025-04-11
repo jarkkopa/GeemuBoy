@@ -1,4 +1,5 @@
-# Geemu Boy ![](https://github.com/jarkkopa/GeemuBoy/workflows/.NET%20Core/badge.svg?branch=build-action)
+# Geemu Boy [![.NET Core](https://github.com/jarkkopa/GeemuBoy/actions/workflows/dotnetcore.yml/badge.svg)](https://github.com/jarkkopa/GeemuBoy/actions/workflows/dotnetcore.yml)
+
 Geemu Boy emulator for .NET 9.
 
 Uses [SDL3](https://www.libsdl.org/) with [SDL3-CS Bindings](https://www.nuget.org/packages/SDL3-CS) for rendering.
